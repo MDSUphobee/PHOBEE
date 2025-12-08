@@ -38,7 +38,7 @@ const HowItWorksSection = () => {
               )}
               
               {/* Step number */}
-              <div className="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-gradient-honey flex items-center justify-center">
+              <div className="relative z-10 flex-shrink-0 w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-bold">{step.number}</span>
               </div>
               
