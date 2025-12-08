@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Mail, Lock, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { saveAuthSession, getStoredSession } from "@/hooks/use-auth";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(searchParams.get("mode") === "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,18 +21,55 @@ const Auth = () => {
     setIsSignUp(searchParams.get("mode") === "signup");
   }, [searchParams]);
 
+  useEffect(() => {
+    const session = getStoredSession();
+    if (session?.token) {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate auth - Replace with real Supabase auth when Cloud is enabled
-    setTimeout(() => {
-      setIsLoading(false);
+    const endpoint = isSignUp ? "/auth/register" : "/auth/login";
+    const payload = isSignUp
+      ? { username: name, email, password }
+      : { email, password };
+
+    try {
+      const res = await fetch(`http://localhost:3000${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || "Erreur d'authentification");
+      }
+
+      const token = data.token || data.access_token || data.jwt || "session-cookie";
+      if (token && data.user) {
+        saveAuthSession(token, data.user);
+      }
+
       toast({
         title: isSignUp ? "Compte créé !" : "Connexion réussie !",
-        description: "Pour activer l'authentification réelle, connectez Lovable Cloud.",
+        description: data.user?.username
+          ? `Bienvenue ${data.user.username}`
+          : "Action réussie",
       });
-    }, 1500);
+      navigate("/", { replace: true });
+    } catch (err: any) {
+      toast({
+        title: "Erreur",
+        description: err.message || "Impossible de se connecter",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
