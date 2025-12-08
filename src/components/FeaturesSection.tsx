@@ -54,7 +54,7 @@ const FeaturesSection = () => {
               key={index}
               className="group p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-honey flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <feature.icon className="w-6 h-6 text-primary-foreground" />
               </div>
               <h3 className="text-xl font-semibold mb-3 text-foreground">{feature.title}</h3>

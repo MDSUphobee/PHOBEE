@@ -50,12 +50,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        honey: {
-          DEFAULT: "hsl(var(--honey))",
-          glow: "hsl(var(--honey-glow))",
-          dark: "hsl(var(--honey-dark))",
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+          glow: "hsl(var(--blue-glow))",
+          dark: "hsl(var(--blue-dark))",
         },
-        amber: "hsl(var(--amber))",
+        cyan: "hsl(var(--cyan))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

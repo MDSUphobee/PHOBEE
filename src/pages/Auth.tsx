@@ -48,7 +48,7 @@ const Auth = () => {
         <div className="max-w-md">
           {/* Logo */}
           <div className="flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-gradient-honey flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-xl">P</span>
             </div>
             <span className="text-2xl font-bold text-foreground">PhoBee</span>
@@ -148,7 +148,7 @@ const Auth = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/30 rounded-full blur-[150px] animate-pulse-glow" />
         
         <div className="relative z-10 flex flex-col justify-center items-center p-16 text-center">
-          <div className="w-24 h-24 rounded-3xl bg-gradient-honey flex items-center justify-center mb-8 animate-float">
+          <div className="w-24 h-24 rounded-3xl bg-gradient-primary flex items-center justify-center mb-8 animate-float">
             <span className="text-primary-foreground font-bold text-5xl">P</span>
           </div>
           <h2 className="text-3xl font-bold mb-4">
