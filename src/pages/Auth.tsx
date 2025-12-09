@@ -14,17 +14,18 @@ type NatureIncome = {
   id: number;
   name: string;
 };
-// Les patterns doivent être compatibles avec le flag /v utilisé par les inputs HTML
-const EMAIL_REGEX =
-  /^[A-Za-z0-9.!#$%&'*+/=?^_{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
+// Patterns compatibles avec le flag /v des inputs HTML
+const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const STRONG_PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!"#$%&'()*+,.:;<=>?@\[\]^_{|}~-])[A-Za-z0-9!"#$%&'()*+,.:;<=>?@\[\]^_{|}~-]{8,}$/;
+
+const USERNAME_REGEX = "^[A-Za-z0-9_.-]+$";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(searchParams.get("mode") === "signup");
-  const [step, setStep] = useState(0); // 0: email/pass, 1: infos (si signup)
+  const [step, setStep] = useState(0); // 0: email/pseudo/pass, 1: infos supplémentaires
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -75,6 +76,11 @@ const Auth = () => {
   // Validation helpers
   function validateStep0() {
     let stepErrors: { [key: string]: string } = {};
+    if (isSignUp) {
+      if (!username) stepErrors.username = "Le pseudo est requis.";
+      else if (!/^[A-Za-z0-9_.-]+$/.test(username)) stepErrors.username = "Le pseudo contient des caractères invalides.";
+      else if (username.length < 3) stepErrors.username = "Le pseudo doit contenir au moins 3 caractères.";
+    }
     if (!email) stepErrors.email = "L'email est requis";
     else if (!EMAIL_REGEX.test(email)) stepErrors.email = "Email invalide";
     if (!password) stepErrors.password = "Le mot de passe est requis";
@@ -83,9 +89,9 @@ const Auth = () => {
         "Le mot de passe doit comporter au moins 8 caractères avec minuscule, majuscule, chiffre et un caractère spécial.";
     return stepErrors;
   }
+
   function validateStep1() {
     let stepErrors: { [key: string]: string } = {};
-    if (!username) stepErrors.username = "Ce champ est requis.";
     if (!fullName) stepErrors.fullName = "Ce champ est requis.";
     if (!exploitingName) stepErrors.exploitingName = "Ce champ est requis.";
     if (!exploitingAddress) stepErrors.exploitingAddress = "Ce champ est requis.";
@@ -120,7 +126,7 @@ const Auth = () => {
       const resLogin = await fetch(`${AUTH_API}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, username, password }),
       });
       const dataLogin = await resLogin.json().catch(() => ({}));
       if (!resLogin.ok) {
@@ -130,7 +136,7 @@ const Auth = () => {
         dataLogin.token || dataLogin.access_token || dataLogin.jwt || "session-cookie";
       const user = dataLogin.user || {
         email,
-        username: dataLogin.username || email.split("@")[0],
+        username: dataLogin.username || username || email.split("@")[0],
       };
       saveAuthSession(token, user);
       toast({
@@ -189,6 +195,33 @@ const Auth = () => {
   // Step Forms
   const renderStep0 = () => (
     <form onSubmit={handleStepContinue} className="space-y-5">
+      {isSignUp && (
+        <div className="space-y-2">
+          <Label htmlFor="username">Pseudo</Label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              id="username"
+              type="text"
+              autoComplete="username"
+              placeholder="mon.pseudo"
+              value={username}
+              minLength={3}
+              maxLength={32}
+              pattern={USERNAME_REGEX}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setErrors({ ...errors, username: undefined });
+              }}
+              className="pl-11 h-12 bg-secondary border-border"
+              required={isSignUp}
+            />
+          </div>
+          {errors.username && (
+            <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+          )}
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <div className="relative">
@@ -261,31 +294,6 @@ const Auth = () => {
 
   const renderStep1 = () => (
     <form onSubmit={handleStepContinue} className="space-y-5">
-      <div className="space-y-2">
-        <Label htmlFor="username">Nom d'utilisateur</Label>
-        <div className="relative">
-          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            id="username"
-            type="text"
-            autoComplete="username"
-            placeholder="mon.pseudo"
-            value={username}
-            minLength={3}
-            maxLength={32}
-            pattern="^[A-Za-z0-9_.-]+$"
-            onChange={(e) => {
-              setUsername(e.target.value);
-              setErrors({ ...errors, username: undefined });
-            }}
-            className="pl-11 h-12 bg-secondary border-border"
-            required
-          />
-        </div>
-        {errors.username && (
-          <p className="text-red-500 text-xs mt-1">{errors.username}</p>
-        )}
-      </div>
       <div className="space-y-2">
         <Label htmlFor="fullname">Nom et prénom</Label>
         <Input
