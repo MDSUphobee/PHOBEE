@@ -50,8 +50,13 @@ const Auth = () => {
       }
 
       const token = data.token || data.access_token || data.jwt || "session-cookie";
-      if (token && data.user) {
-        saveAuthSession(token, data.user);
+      if (token) {
+        const user = data.user || {
+          email,
+          username: data.username || name || email.split("@")[0],
+        };
+        // On persiste immédiatement le token pour rester connecté après reload
+        saveAuthSession(token, user);
       }
 
       toast({

@@ -5,6 +5,9 @@ import profileIcon from "@/style/icone/profile.ico";
 
 const Navbar = () => {
   const { session, isAuthenticated, hydrated } = useAuthSession();
+  console.log("session", session);
+  console.log("isAuthenticated", isAuthenticated);
+  console.log("hydrated", hydrated);
   const navigate = useNavigate();
 
   return (

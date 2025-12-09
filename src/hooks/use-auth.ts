@@ -13,6 +13,7 @@ type AuthSession = {
 
 const STORAGE_TOKEN = "auth_token";
 const STORAGE_USER = "auth_user";
+const AUTH_EVENT = "phobee-auth-updated";
 
 const getFromStorage = (key: string) => {
   if (typeof window === "undefined") return null;
@@ -35,12 +36,14 @@ export const saveAuthSession = (token: string, user: AuthUser) => {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_TOKEN, token);
   localStorage.setItem(STORAGE_USER, JSON.stringify(user));
+  window.dispatchEvent(new Event(AUTH_EVENT));
 };
 
 export const clearAuthSession = () => {
   if (typeof window === "undefined") return;
   localStorage.removeItem(STORAGE_TOKEN);
   localStorage.removeItem(STORAGE_USER);
+  window.dispatchEvent(new Event(AUTH_EVENT));
 };
 
 export const useAuthSession = () => {
@@ -58,12 +61,15 @@ export const useAuthSession = () => {
       }
     };
     const onFocus = () => refresh();
+    const onAuthUpdated = () => refresh();
 
     window.addEventListener("storage", onStorage);
     window.addEventListener("focus", onFocus);
+    window.addEventListener(AUTH_EVENT, onAuthUpdated);
     return () => {
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("focus", onFocus);
+      window.removeEventListener(AUTH_EVENT, onAuthUpdated);
     };
   }, []);
 
