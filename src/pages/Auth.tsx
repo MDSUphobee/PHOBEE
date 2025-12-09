@@ -7,19 +7,52 @@ import { ArrowLeft, Mail, Lock, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { saveAuthSession, getStoredSession } from "@/hooks/use-auth";
 
+const API_BASE = "http://localhost:3000/api/auth";
+
+type NatureIncome = {
+  id: number;
+  name: string;
+};
+
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(searchParams.get("mode") === "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [exploitingName, setExploitingName] = useState("");
+  const [exploitingAddress, setExploitingAddress] = useState("");
+  const [siret, setSiret] = useState("");
+  const [natureIncomeId, setNatureIncomeId] = useState<number | "">("");
+  const [natureOptions, setNatureOptions] = useState<NatureIncome[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     setIsSignUp(searchParams.get("mode") === "signup");
   }, [searchParams]);
+
+  useEffect(() => {
+    // Charge les natures de revenu uniquement en mode inscription
+    if (!isSignUp) return;
+    const fetchNatures = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/auth/nature-income");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Échec du chargement");
+        setNatureOptions(data);
+      } catch (err: any) {
+        toast({
+          title: "Erreur",
+          description: err.message || "Impossible de charger les natures de revenu",
+          variant: "destructive",
+        });
+      }
+    };
+    fetchNatures();
+  }, [isSignUp, toast]);
 
   useEffect(() => {
     const session = getStoredSession();
@@ -32,38 +65,66 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const endpoint = isSignUp ? "/auth/register" : "/auth/login";
-    const payload = isSignUp
-      ? { username: name, email, password }
-      : { email, password };
+    if (
+      isSignUp &&
+      (!email || !password || !username || !fullName || !exploitingName || !exploitingAddress || !siret || natureIncomeId === "")
+    ) {
+      toast({
+        title: "Champs manquants",
+        description: "Merci de remplir tous les champs pour créer votre compte.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      const res = await fetch(`http://localhost:3000${endpoint}`, {
+      if (isSignUp) {
+        const registerPayload = {
+          email,
+          password,
+          username: username || email.split("@")[0],
+          exploiting_name: exploitingName,
+          name: fullName || username || email.split("@")[0],
+          exploiting_address: exploitingAddress,
+          siret,
+          nature_income_id: natureIncomeId,
+        };
+
+        const resRegister = await fetch(`${API_BASE}/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(registerPayload),
+        });
+
+        const dataRegister = await resRegister.json().catch(() => ({}));
+        if (!resRegister.ok) {
+          throw new Error(dataRegister.message || "Erreur lors de la création du compte");
+        }
+      }
+
+      const resLogin = await fetch(`${API_BASE}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.message || "Erreur d'authentification");
+      const dataLogin = await resLogin.json().catch(() => ({}));
+      if (!resLogin.ok) {
+        throw new Error(dataLogin.message || "Erreur d'authentification");
       }
 
-      const token = data.token || data.access_token || data.jwt || "session-cookie";
-      if (token) {
-        const user = data.user || {
-          email,
-          username: data.username || name || email.split("@")[0],
-        };
-        // On persiste immédiatement le token pour rester connecté après reload
-        saveAuthSession(token, user);
-      }
+      const token =
+        dataLogin.token || dataLogin.access_token || dataLogin.jwt || "session-cookie";
+      const user = dataLogin.user || {
+        email,
+        username: dataLogin.username || username || email.split("@")[0],
+      };
+      saveAuthSession(token, user);
 
       toast({
         title: isSignUp ? "Compte créé !" : "Connexion réussie !",
-        description: data.user?.username
-          ? `Bienvenue ${data.user.username}`
-          : "Action réussie",
+        description: user.username ? `Bienvenue ${user.username}` : "Action réussie",
       });
       navigate("/", { replace: true });
     } catch (err: any) {
@@ -109,19 +170,97 @@ const Auth = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Prénom</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Ton prénom"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="pl-11 h-12 bg-secondary border-border"
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Nom d'utilisateur</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="mon.pseudo"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="pl-11 h-12 bg-secondary border-border"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fullname">Nom et prénom</Label>
+                  <div className="relative">
+                    <Input
+                      id="fullname"
+                      type="text"
+                      placeholder="Jean Dupont"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="h-12 bg-secondary border-border"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="exploiting_name">Nom de l'exploitation</Label>
+                  <div className="relative">
+                    <Input
+                      id="exploiting_name"
+                      type="text"
+                      placeholder="Exploitation PhoBee"
+                      value={exploitingName}
+                      onChange={(e) => setExploitingName(e.target.value)}
+                      className="h-12 bg-secondary border-border"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="exploiting_address">Adresse de l'exploitation</Label>
+                  <div className="relative">
+                    <Input
+                      id="exploiting_address"
+                      type="text"
+                      placeholder="12 rue des Abeilles, 75000 Paris"
+                      value={exploitingAddress}
+                      onChange={(e) => setExploitingAddress(e.target.value)}
+                      className="h-12 bg-secondary border-border"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="siret">SIRET</Label>
+                  <div className="relative">
+                    <Input
+                      id="siret"
+                      type="text"
+                      placeholder="00000000000000"
+                      value={siret}
+                      onChange={(e) => setSiret(e.target.value)}
+                      className="h-12 bg-secondary border-border"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nature_income">Nature des revenus</Label>
+                  <select
+                    id="nature_income"
+                    className="w-full h-12 rounded-md border border-border bg-secondary px-3 text-foreground"
+                    value={natureIncomeId === "" ? "" : String(natureIncomeId)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setNatureIncomeId(value ? Number(value) : "");
+                    }}
                     required
-                  />
+                  >
+                    <option value="">Choisis une nature de revenus</option>
+                    {natureOptions.map((opt) => (
+                      <option key={opt.id} value={opt.id}>
+                        {opt.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             )}

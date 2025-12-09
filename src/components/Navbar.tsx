@@ -5,9 +5,6 @@ import profileIcon from "@/style/icone/profile.ico";
 
 const Navbar = () => {
   const { session, isAuthenticated, hydrated } = useAuthSession();
-  console.log("session", session);
-  console.log("isAuthenticated", isAuthenticated);
-  console.log("hydrated", hydrated);
   const navigate = useNavigate();
 
   return (
@@ -20,17 +17,6 @@ const Navbar = () => {
           <span className="text-xl font-bold text-foreground">PhoBee</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-            Fonctionnalités
-          </a>
-          <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-            Comment ça marche
-          </a>
-          <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-            Tarifs
-          </a>
-        </div>
 
         {!hydrated ? null : isAuthenticated && session?.user ? (
           <button
