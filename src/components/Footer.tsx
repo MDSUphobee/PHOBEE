@@ -17,7 +17,7 @@ const Footer = () => {
           <div className="flex items-center gap-8 text-sm text-muted-foreground">
             <a href="#" className="hover:text-foreground transition-colors">Confidentialité</a>
             <a href="#" className="hover:text-foreground transition-colors">Conditions</a>
-            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+            <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
           </div>
 
           {/* Copyright */}
