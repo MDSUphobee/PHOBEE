@@ -26,6 +26,9 @@ type NatureOption = {
   name: string;
 };
 
+const API_BASE = import.meta.env.VITE_API_BASE as string;
+const AUTH_API = `${API_BASE}/api/auth`;
+
 const Profile = () => {
   const { session, isAuthenticated, logout } = useAuthSession();
   const navigate = useNavigate();
@@ -67,9 +70,7 @@ const Profile = () => {
       setMessage(null);
       try {
         // Récupère l'utilisateur (id, username, email)
-        const resUser = await fetch(
-          `http://localhost:3000/api/auth/user?email=${encodeURIComponent(email)}`
-        );
+        const resUser = await fetch(`${AUTH_API}/user?email=${encodeURIComponent(email)}`);
         const dataUser = await resUser.json().catch(() => ({}));
         if (!resUser.ok) throw new Error(dataUser.message || "Impossible de récupérer le profil");
         setAccount(dataUser);
@@ -77,8 +78,8 @@ const Profile = () => {
         // Récupère les informations complémentaires
         if (dataUser?.id) {
           const [resInfo, resNature] = await Promise.all([
-            fetch(`http://localhost:3000/api/auth/user-info/${dataUser.id}`),
-            fetch("http://localhost:3000/api/auth/nature-income"),
+            fetch(`${AUTH_API}/user-info/${dataUser.id}`),
+            fetch(`${AUTH_API}/nature-income`),
           ]);
 
           const dataInfo = await resInfo.json().catch(() => ({}));
@@ -163,7 +164,7 @@ const Profile = () => {
         nature_income_id: form.nature_income_id,
       };
 
-      const res = await fetch(`http://localhost:3000/api/auth/user-info/${account.id}`, {
+      const res = await fetch(`${AUTH_API}/user-info/${account.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -196,7 +197,7 @@ const Profile = () => {
     setError(null);
     setMessage(null);
     try {
-      const resInfo = await fetch(`http://localhost:3000/api/auth/user-info/${account.id}`, {
+      const resInfo = await fetch(`${AUTH_API}/user-info/${account.id}`, {
         method: "DELETE",
       });
       if (!resInfo.ok && resInfo.status !== 204 && resInfo.status !== 404) {
@@ -204,7 +205,7 @@ const Profile = () => {
         throw new Error(data.message || "Échec de la suppression des infos");
       }
 
-      const resUser = await fetch(`http://localhost:3000/api/auth/user/${account.id}`, {
+      const resUser = await fetch(`${AUTH_API}/user/${account.id}`, {
         method: "DELETE",
       });
       if (!resUser.ok && resUser.status !== 204) {
