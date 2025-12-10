@@ -35,9 +35,9 @@ export default function Navbar() {
                         <img
                             src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Blanc.svg"
                             alt="Logo Phobee"
-                            className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+                            className="h-48 w-auto transition-transform duration-300 group-hover:scale-105"
                         />
-                        <span className="text-xl font-bold text-secondary tracking-tight">Phobee</span>
+                        {/* <span className="text-xl font-bold text-secondary tracking-tight">Phobee</span> */}
                     </Link>
 
                     {/* Desktop Nav */}

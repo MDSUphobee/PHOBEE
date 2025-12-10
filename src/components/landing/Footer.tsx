@@ -5,7 +5,7 @@ import { Twitter, Linkedin, Instagram } from "lucide-react";
 
 export default function Footer() {
     return (
-        <footer className="bg-secondary text-white pt-20 pb-10">
+        <footer className="bg-secondary text-white pt-10 pb-10">
 
 
             <div className="container mx-auto px-4 md:px-6 grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 border-b border-white/10 pb-12">
@@ -14,9 +14,9 @@ export default function Footer() {
                         <img
                             src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-ToutBlanc.svg"
                             alt="Logo Phobee"
-                            className="h-9 w-auto"
+                            className="h-32 w-auto"
                         />
-                        <span className="text-xl font-bold tracking-tight text-white">Phobee</span>
+                        {/* <span className="text-xl font-bold tracking-tight text-white">Phobee</span> */}
                     </Link>
                     <p className="text-slate-400 text-sm">
                         L'assistant administratif intelligent pour les micro-entrepreneurs.

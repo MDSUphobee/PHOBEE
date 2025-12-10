@@ -62,9 +62,32 @@ export default function SignupForm() {
                 return;
             }
 
-            // succès : redirection vers login
-            toast.success("Compte créé avec succès ! Connectez-vous.");
-            router.push("/login");
+            // succès : tentative de connexion automatique avec les éléments du register
+            try {
+                const loginRes = await fetch(`${AUTH_API}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: formData.email,
+                        password: formData.password,
+                    }),
+                });
+
+                if (loginRes.ok) {
+                    const loginData = await loginRes.json();
+                    localStorage.setItem("token", loginData.token);
+                    toast.success("Compte créé et connexion réussie !");
+                    router.push("/profile");
+                } else {
+                    // Fallback si l'auto-login échoue
+                    toast.success("Compte créé avec succès ! Connectez-vous.");
+                    router.push("/login"); // Redirection vers login pour qu'il tente manuellement
+                }
+            } catch (e) {
+                // En cas d'erreur réseau sur le login, on redirige quand même vers le login car le compte est créé
+                toast.success("Compte créé avec succès ! Connectez-vous.");
+                router.push("/login");
+            }
         } catch (err) {
             setError("Erreur réseau.");
             toast.error("Erreur réseau.");
