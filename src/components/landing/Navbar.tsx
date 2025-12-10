@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, Hexagon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -24,11 +24,12 @@ export default function Navbar() {
 
                 <div className="relative container mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="relative">
-                            <Hexagon className="w-8 h-8 text-primary fill-primary/20 transition-transform group-hover:rotate-12" />
-                            <div className="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-primary-foreground">P</div>
-                        </div>
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <img
+                            src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Blanc.svg"
+                            alt="Logo Phobee"
+                            className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+                        />
                         <span className="text-xl font-bold text-secondary tracking-tight">Phobee</span>
                     </Link>
 
