@@ -1,0 +1,35 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="60" width="1160" height="620" rx="26" fill="#F7F9FB" stroke="#E6ECF5" stroke-width="2"/>
+  <rect x="40" y="80" width="1120" height="120" rx="8" fill="#111827" stroke="#0D1525" stroke-width="2"/>
+  <circle cx="80" cy="140" r="10" fill="#EF4444"/>
+  <circle cx="110" cy="140" r="10" fill="#F59E0B"/>
+  <circle cx="140" cy="140" r="10" fill="#22C55E"/>
+
+  <!-- Left column -->
+  <rect x="80" y="240" width="200" height="30" rx="6" fill="#EEF2F7"/>
+  <rect x="80" y="290" width="220" height="18" rx="5" fill="#EEF2F7"/>
+  <rect x="80" y="320" width="200" height="18" rx="5" fill="#EEF2F7"/>
+  <rect x="80" y="350" width="210" height="18" rx="5" fill="#EEF2F7"/>
+  <rect x="80" y="380" width="160" height="18" rx="5" fill="#EEF2F7"/>
+
+  <!-- Cards -->
+  <rect x="340" y="240" width="240" height="40" rx="8" fill="#EEF2F7"/>
+  <rect x="620" y="240" width="260" height="40" rx="8" fill="#EEF2F7"/>
+  <rect x="940" y="240" width="160" height="40" rx="8" fill="#FACC15"/>
+
+  <rect x="340" y="310" width="220" height="140" rx="12" fill="#F3F6FB"/>
+  <rect x="590" y="310" width="220" height="140" rx="12" fill="#F3F6FB"/>
+  <rect x="840" y="310" width="220" height="140" rx="12" fill="#F3F6FB"/>
+
+  <rect x="340" y="480" width="720" height="140" rx="14" fill="#F5F8FC"/>
+
+  <!-- Shadow -->
+  <ellipse cx="600" cy="700" rx="360" ry="40" fill="url(#shadow)" opacity="0.35"/>
+
+  <defs>
+    <linearGradient id="shadow" x1="600" y1="660" x2="600" y2="740" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1020" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#0B1020" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>
