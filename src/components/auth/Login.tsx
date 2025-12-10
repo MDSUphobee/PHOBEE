@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Mail, Lock, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
 const AUTH_API = `${API_BASE}/api/auth`;
@@ -44,6 +45,7 @@ export default function LoginForm() {
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}));
                 setError(data?.message || "Échec de la connexion.");
+                toast.error(data?.message || "Échec de la connexion.");
                 setLoading(false);
                 return;
             }
@@ -51,9 +53,11 @@ export default function LoginForm() {
             const data = await res.json();
             localStorage.setItem("token", data.token);
 
+            toast.success("Connexion réussie !");
             router.push("/profile");
         } catch (err) {
             setError("Erreur réseau.");
+            toast.error("Erreur réseau.");
             setLoading(false);
         }
     };

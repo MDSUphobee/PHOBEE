@@ -10,11 +10,6 @@ export async function POST(req: Request) {
             email,
             password,
             username,
-            exploiting_name,
-            name,
-            exploiting_address,
-            siret,
-            nature_income_id,
         } = body;
 
         if (!email || !password) {
@@ -24,12 +19,7 @@ export async function POST(req: Request) {
             );
         }
 
-        if (!exploiting_name || !name || !exploiting_address || !siret || !nature_income_id) {
-            return NextResponse.json(
-                { message: 'Tous les champs users_info sont requis' },
-                { status: 400 }
-            );
-        }
+
 
         // Check existing email
         const [existing] = await db.execute<RowDataPacket[]>(
@@ -57,10 +47,7 @@ export async function POST(req: Request) {
 
             const userId = userResult.insertId;
 
-            await connection.execute(
-                'INSERT INTO users_info (user_id, exploiting_name, name, exploiting_address, siret, nature_income_id) VALUES (?, ?, ?, ?, ?, ?)',
-                [userId, exploiting_name, name, exploiting_address, siret, nature_income_id]
-            );
+
 
             await connection.commit();
 
@@ -68,7 +55,6 @@ export async function POST(req: Request) {
                 id: userId,
                 email,
                 username: username || email,
-                users_info: { exploiting_name, name, exploiting_address, siret, nature_income_id },
             }, { status: 201 });
 
         } catch (err) {

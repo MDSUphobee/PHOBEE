@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // Using Inter as requested
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -19,6 +20,7 @@ export default function RootLayout({
         <html lang="fr" className="scroll-smooth">
             <body className={cn("min-h-screen bg-background font-sans antialiased overflow-x-hidden", inter.variable)}>
                 {children}
+                <Toaster richColors position="top-center" />
             </body>
         </html>
     );

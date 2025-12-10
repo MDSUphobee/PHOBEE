@@ -20,7 +20,7 @@ function parseJwt(token: string) {
 export default function ProfilePage() {
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
-    const [userInfo, setUserInfo] = useState<any>(null);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -38,16 +38,7 @@ export default function ProfilePage() {
         }
 
         setUser(decoded);
-
-        // Fetch user info
-        fetch(`${AUTH_API}/user-info/${decoded.sub}`)
-            .then(res => {
-                if (res.ok) return res.json();
-                throw new Error("Failed to fetch info");
-            })
-            .then(data => setUserInfo(data))
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
+        setLoading(false);
 
     }, [router]);
 
@@ -67,18 +58,7 @@ export default function ProfilePage() {
                     <p><strong>Username:</strong> {user?.username}</p>
                 </div>
 
-                {userInfo && (
-                    <div className="bg-gray-50 p-6 rounded-lg shadow-sm border">
-                        <h2 className="text-xl font-semibold mb-4">Informations personnelles</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <p><strong>Nom:</strong> {userInfo.name}</p>
-                            <p><strong>Nom d'exploitation:</strong> {userInfo.exploiting_name}</p>
-                            <p><strong>Adresse:</strong> {userInfo.exploiting_address}</p>
-                            <p><strong>SIRET:</strong> {userInfo.siret}</p>
-                            <p><strong>Nature Revenus ID:</strong> {userInfo.nature_income_id}</p>
-                        </div>
-                    </div>
-                )}
+
 
                 <button
                     onClick={() => {

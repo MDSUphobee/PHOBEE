@@ -3,15 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Mail, Lock, User, Building, MapPin, FileText, Briefcase, Loader2 } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
 const AUTH_API = `${API_BASE}/api/auth`;
 
-interface NatureIncome {
-    id: number;
-    name: string;
-}
+
 
 export default function SignupForm() {
     const router = useRouter();
@@ -19,28 +17,12 @@ export default function SignupForm() {
         email: "",
         password: "",
         username: "",
-        exploiting_name: "",
-        name: "",
-        exploiting_address: "",
-        siret: "",
-        nature_income_id: "",
     });
 
-    const [natureIncomes, setNatureIncomes] = useState<NatureIncome[]>([]);
+
+
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        // Fetch nature of incomes
-        fetch(`${AUTH_API}/nature-income`)
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setNatureIncomes(data);
-                }
-            })
-            .catch(err => console.error("Failed to load nature incomes", err));
-    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -49,7 +31,6 @@ export default function SignupForm() {
 
     const validate = () => {
         if (!formData.email || !formData.password || !formData.username) return false;
-        // if (!formData.exploiting_name || !formData.name || !formData.exploiting_address || !formData.siret || !formData.nature_income_id) return false;
         return true;
     };
 
@@ -74,15 +55,19 @@ export default function SignupForm() {
 
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}));
-                setError(data?.message || "Échec de l'inscription.");
+                const msg = data?.message || "Échec de l'inscription.";
+                setError(msg);
+                toast.error(msg);
                 setLoading(false);
                 return;
             }
 
             // succès : redirection vers login
+            toast.success("Compte créé avec succès ! Connectez-vous.");
             router.push("/login");
         } catch (err) {
             setError("Erreur réseau.");
+            toast.error("Erreur réseau.");
             setLoading(false);
         }
     };
@@ -172,95 +157,7 @@ export default function SignupForm() {
                                 </div>
                             </div>
 
-                            {/* Informations Personnelles & Exploitation */}
-                            {/* <div className="md:col-span-2 mt-2">
-                                <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider">Exploitation</h3>
-                            </div>
 
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">Nom complet</label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                                        placeholder="Prénom Nom"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">Nom d'exploitation</label>
-                                <div className="relative">
-                                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        name="exploiting_name"
-                                        value={formData.exploiting_name}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                                        placeholder="Nom de la structure"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="text-sm font-medium text-slate-700">Adresse</label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        name="exploiting_address"
-                                        value={formData.exploiting_address}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                                        placeholder="Adresse complète"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">SIRET</label>
-                                <div className="relative">
-                                    <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        name="siret"
-                                        value={formData.siret}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                                        placeholder="14 chiffres"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">Nature des revenus</label>
-                                <div className="relative">
-                                    <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <select
-                                        name="nature_income_id"
-                                        value={formData.nature_income_id}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 appearance-none"
-                                        required
-                                    >
-                                        <option value="">Sélectionner</option>
-                                        {natureIncomes.map(income => (
-                                            <option key={income.id} value={income.id}>
-                                                {income.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div> */}
                         </div>
 
                         <button
