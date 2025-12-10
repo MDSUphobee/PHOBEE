@@ -43,57 +43,51 @@ export default function LoadingOverlay({ speed = 1 }: LoadingOverlayProps) {
     const safeSpeed = Math.max(speed, 0.2);
 
     const timings = useMemo(() => {
-        const flightDurationMs = Math.round(5200 / safeSpeed);
-        const fadeDurationMs = Math.round(900 / safeSpeed);
-        const totalDurationMs = flightDurationMs + fadeDurationMs + 400;
-        const spinDurationMs = Math.round(1400 / safeSpeed);
-        const barDurationMs = Math.round(2600 / safeSpeed);
-
-        return { flightDurationMs, totalDurationMs, spinDurationMs, barDurationMs };
+        const totalDurationMs = Math.round(2000 / safeSpeed); // environ 2s
+        return { totalDurationMs, barDurationMs: totalDurationMs };
     }, [safeSpeed]);
 
     const [isAnimating, setIsAnimating] = useState(true);
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
-        const stopAnim = setTimeout(() => setIsAnimating(false), timings.flightDurationMs);
-        const hide = setTimeout(() => setIsVisible(false), timings.totalDurationMs);
+        const stopAnim = setTimeout(() => setIsAnimating(false), timings.totalDurationMs);
+        // laisse le fondu s'exécuter avant de retirer le DOM
+        const hide = setTimeout(() => setIsVisible(false), timings.totalDurationMs + 600);
 
         return () => {
             clearTimeout(stopAnim);
             clearTimeout(hide);
         };
-    }, [timings.flightDurationMs, timings.totalDurationMs]);
+    }, [timings.totalDurationMs]);
 
     if (!isVisible) return null;
 
     return (
         <div
             className={cn(
-                "fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0b1224] text-white transition-opacity duration-700",
+                "fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0b1224] text-white transition-opacity duration-800",
+                "gap-3 md:gap-4 px-4",
                 isAnimating ? "opacity-100" : "opacity-0 pointer-events-none"
             )}
             style={{ ["--bee-speed" as string]: safeSpeed }}
+            aria-hidden={!isVisible}
         >
-            <div className="relative w-full max-w-4xl h-48 md:h-52 overflow-hidden">
-                <div
-                    className="absolute left-0 top-1/2 -translate-y-1/2 bee-flight"
-                    style={{ animationDuration: `${timings.flightDurationMs}ms` }}
-                >
-                    <div
-                        className="w-16 h-16 md:w-20 md:h-20 origin-center bee-spin drop-shadow-[0_0_22px_rgba(255,199,39,0.35)]"
-                        style={{ animationDuration: `${timings.spinDurationMs}ms` }}
-                    >
-                        <BeeIcon className="w-full h-full" />
-                    </div>
+            <div className="flex items-center justify-center w-full h-[32vh] md:h-[36vh]">
+                <div className="drop-shadow-[0_0_22px_rgba(255,199,39,0.35)] bee-pulse">
+                    <BeeIcon className="w-28 h-28 md:w-36 md:h-36" />
                 </div>
             </div>
 
-            <div className="mt-6 text-xs md:text-sm tracking-[0.45em] text-slate-200 uppercase">
-                Phobee
+            <div className="w-full flex justify-center">
+                <img
+                    src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Noir.svg"
+                    alt="Phobee"
+                    className="h-32 md:h-36 w-auto"
+                />
             </div>
 
-            <div className="mt-4 h-1.5 w-40 max-w-[70%] rounded-full bg-white/10 overflow-hidden">
+            <div className="h-1.5 w-48 max-w-[80%] rounded-full bg-white/10 overflow-hidden">
                 <div
                     className="h-full bg-[#F7B500] animate-loader-bar"
                     style={{ animationDuration: `${timings.barDurationMs}ms` }}

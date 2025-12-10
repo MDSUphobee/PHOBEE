@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // Using Inter as requested
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import LoadingOverlay from "@/components/LoadingOverlay";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -19,7 +18,6 @@ export default function RootLayout({
     return (
         <html lang="fr" className="scroll-smooth">
             <body className={cn("min-h-screen bg-background font-sans antialiased overflow-x-hidden", inter.variable)}>
-                <LoadingOverlay />
                 {children}
             </body>
         </html>
