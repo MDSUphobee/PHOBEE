@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, Hexagon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -24,11 +24,12 @@ export default function Navbar() {
 
                 <div className="relative container mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="relative">
-                            <Hexagon className="w-8 h-8 text-primary fill-primary/20 transition-transform group-hover:rotate-12" />
-                            <div className="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-primary-foreground">P</div>
-                        </div>
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <img
+                            src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Blanc.svg"
+                            alt="Logo Phobee"
+                            className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+                        />
                         <span className="text-xl font-bold text-secondary tracking-tight">Phobee</span>
                     </Link>
 
@@ -51,13 +52,13 @@ export default function Navbar() {
                             href="/login"
                             className="px-4 py-2 text-sm font-medium text-secondary hover:text-primary transition-colors"
                         >
-                            Espace Membre
+                            Se connecter
                         </Link>
                         <Link
                             href="/signup"
                             className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-105 transition-all duration-300"
                         >
-                            Essayer Gratuitement
+                            S'enregistrer
                         </Link>
                     </div>
 
@@ -115,7 +116,7 @@ export default function Navbar() {
 
                                 <div className="mt-auto pt-6 border-t flex flex-col gap-4">
                                     <Link
-                                        href="/login"
+                                        href="/login/Page"
                                         onClick={() => setIsOpen(false)}
                                         className="w-full py-3 text-center font-medium text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
                                     >
