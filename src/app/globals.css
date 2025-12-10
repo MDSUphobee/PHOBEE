@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 248 71% 98%; /* #F8FAFC (Slate-50) */
+    --foreground: 215 25% 27%; /* #334155 (Slate-700) */
+
+    --primary: 48 100% 50%; /* #FFCC00 */
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 222 47% 11%; /* #0F172A */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 60 4.8% 95.9%;
+    --accent-foreground: 24 9.8% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 48 100% 50%;
+
+    --radius: 1rem;
+  }
+
+  /* Optional: Dark mode variables if needed, but strict prompt asked for specific look */
+  /* For now staying consistent with "Clean SaaS" light/hybrid vibe described */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
