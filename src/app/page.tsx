@@ -25,7 +25,7 @@ export default function Home() {
     }, [hideAfter]);
 
     return (
-        <main className="min-h-screen bg-white">
+        <main className="min-h-screen bg-background text-foreground">
             {showLoader && <LoadingOverlay speed={loaderSpeed} />}
             <Navbar />
             <Hero />

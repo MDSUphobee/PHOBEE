@@ -17,27 +17,31 @@ module.exports = {
         },
         extend: {
             colors: {
+                border: "hsl(var(--border))",
+                input: "hsl(var(--input))",
+                ring: "hsl(var(--ring))",
+                background: "hsl(var(--background))",
+                foreground: "hsl(var(--foreground))",
                 primary: {
-                    DEFAULT: "#FFCC00", // Jaune Or
-                    foreground: "#0F172A",
+                    DEFAULT: "hsl(var(--primary))",
+                    foreground: "hsl(var(--primary-foreground))",
                 },
                 secondary: {
-                    DEFAULT: "#0F172A", // Bleu Nuit Profond
-                    foreground: "#FFFFFF",
+                    DEFAULT: "hsl(var(--secondary))",
+                    foreground: "hsl(var(--secondary-foreground))",
                 },
-                background: "#F8FAFC", // Gris très léger
-                foreground: "#334155", // Gris Ardoise
                 muted: {
-                    DEFAULT: "#F1F5F9",
-                    foreground: "#64748B",
+                    DEFAULT: "hsl(var(--muted))",
+                    foreground: "hsl(var(--muted-foreground))",
                 },
                 accent: {
-                    DEFAULT: "#FEFCE8", // Yellow-50
-                    foreground: "#0F172A",
+                    DEFAULT: "hsl(var(--accent))",
+                    foreground: "hsl(var(--accent-foreground))",
                 },
-                border: "#E2E8F0",
-                input: "#E2E8F0",
-                ring: "#FFCC00",
+                destructive: {
+                    DEFAULT: "hsl(var(--destructive))",
+                    foreground: "hsl(var(--destructive-foreground))",
+                },
             },
             fontFamily: {
                 sans: ["var(--font-inter)", "sans-serif"],
