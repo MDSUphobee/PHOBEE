@@ -5,19 +5,20 @@ services:
       dockerfile: Dockerfile
     container_name: phobee-app
     restart: always
+    # ports: # Décommente si tu veux un accès direct sans Traefik
+    #   - "3000:3000"
     env_file:
       - .env
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.app-phobee.rule=Host(`${DOMAIN_NAME}`)
-      - traefik.http.routers.app-phobee.tls=true
-      - traefik.http.routers.app-phobee.entrypoints=web,websecure
-      - traefik.http.routers.app-phobee.tls.certresolver=http_resolver
-      - traefik.http.services.app-phobee.loadbalancer.server.port=3000
+      - "traefik.enable=true"
+      - "traefik.http.routers.app-phobee.rule=Host(`phobee.frize.xyz`)"
+      - "traefik.http.routers.app-phobee.entrypoints=web,websecure"
+      - "traefik.http.routers.app-phobee.tls=true"
+      - "traefik.http.routers.app-phobee.tls.certresolver=http_resolver"
+      - "traefik.http.services.app-phobee.loadbalancer.server.port=3000"
     networks:
-      - traefik_public
-
+      - traefik-main_public
 
 networks:
-  traefik_public:
+  traefik-main_public:
     external: true
