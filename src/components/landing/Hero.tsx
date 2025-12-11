@@ -90,9 +90,14 @@ export default function Hero() {
                                 <div className="h-full w-full bg-white rounded-[32px] overflow-hidden flex flex-col">
                                     {/* Fake App Header */}
                                     <div className="bg-slate-50 p-4 border-b flex items-center justify-between">
-                                        <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                                            <span className="font-bold text-primary text-xs">P</span>
+                                        <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                                            <img
+                                                src="/Logo PhoBee/Logo PhoBee/Picto-Phobee.svg"
+                                                alt="Logo Phobee"
+                                                className="h-48 w-auto transition-transform duration-300 group-hover:scale-105"
+                                            />
                                         </div>
+
                                         <div className="w-20 h-2 bg-slate-200 rounded-full" />
                                     </div>
                                     {/* Fake App Body */}
