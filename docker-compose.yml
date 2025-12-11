@@ -11,7 +11,7 @@ services:
       - .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app-phobee.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.app-phobee.rule=Host(`phobee.frize.xyz`)"
       - "traefik.http.routers.app-phobee.entrypoints=web,websecure"
       - "traefik.http.routers.app-phobee.tls=true"
       - "traefik.http.routers.app-phobee.tls.certresolver=http_resolver"
