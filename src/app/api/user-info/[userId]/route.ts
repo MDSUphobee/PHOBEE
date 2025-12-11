@@ -14,7 +14,7 @@ export async function GET(req: Request, { params }: { params: { userId: string }
 
     try {
         const [rows] = await db.execute<RowDataPacket[]>(
-            'SELECT id, user_id, exploiting_name, name, exploiting_address, siret, nature_income_id FROM users_info WHERE user_id = ? LIMIT 1',
+            'SELECT id, user_id, exploiting_name, name, exploiting_address, siret, nature_income_id, start_date, payment_frequency, has_acre FROM users_info WHERE user_id = ? LIMIT 1',
             [userId]
         );
 
@@ -47,27 +47,41 @@ export async function PUT(req: Request, { params }: { params: { userId: string }
 
     try {
         const body = await req.json();
-        const {
-            exploiting_name,
-            name,
-            exploiting_address,
-            siret,
-            nature_income_id,
-        } = body;
 
-        if (!exploiting_name || !name || !exploiting_address || !siret || !nature_income_id) {
+        // Fields allowed to be updated
+        const allowedFields = [
+            'exploiting_name',
+            'name',
+            'exploiting_address',
+            'siret',
+            'nature_income_id',
+            'start_date',
+            'payment_frequency',
+            'has_acre'
+        ];
+
+        const fieldsToUpdate: string[] = [];
+        const values: any[] = [];
+
+        for (const field of allowedFields) {
+            if (body[field] !== undefined) {
+                fieldsToUpdate.push(`${field} = ?`);
+                values.push(body[field]);
+            }
+        }
+
+        if (fieldsToUpdate.length === 0) {
             return NextResponse.json(
-                { message: 'Tous les champs users_info sont requis' },
+                { message: 'Aucune donnée fournie pour la mise à jour' },
                 { status: 400 }
             );
         }
 
-        const [result] = await db.execute<ResultSetHeader>(
-            `UPDATE users_info
-       SET exploiting_name = ?, name = ?, exploiting_address = ?, siret = ?, nature_income_id = ?
-       WHERE user_id = ?`,
-            [exploiting_name, name, exploiting_address, siret, nature_income_id, userId]
-        );
+        values.push(userId);
+
+        const query = `UPDATE users_info SET ${fieldsToUpdate.join(', ')} WHERE user_id = ?`;
+
+        const [result] = await db.execute<ResultSetHeader>(query, values);
 
         if (result.affectedRows === 0) {
             return NextResponse.json(
@@ -77,12 +91,8 @@ export async function PUT(req: Request, { params }: { params: { userId: string }
         }
 
         return NextResponse.json({
-            user_id: userId,
-            exploiting_name,
-            name,
-            exploiting_address,
-            siret,
-            nature_income_id,
+            message: 'Informations mises à jour avec succès',
+            updatedFields: Object.keys(body).filter(k => allowedFields.includes(k))
         });
     } catch (err: any) {
         console.error('Erreur lors de la mise à jour de users_info:', err);

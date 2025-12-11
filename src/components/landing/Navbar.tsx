@@ -20,7 +20,7 @@ export default function Navbar() {
         // { name: "Fonctionnalités", href: "#features" },
         { name: "Contact", href: "/contact" },
         { name: "Dictionnaire", href: "/dictionary" },
-        { name: "Calculateur", href: "/tools" },
+        { name: "Calculateur", href: "/calculateur" },
         // { name: "Guide Aides", href: "/guide" },
         // { name: "La Ruche", href: "#community" },
     ];
