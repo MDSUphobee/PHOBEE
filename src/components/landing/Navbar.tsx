@@ -18,10 +18,11 @@ export default function Navbar() {
     // Future proper links, anchors for now as requested
     const navLinks = [
         // { name: "Fonctionnalités", href: "#features" },
-        { name: "Contact", href: "/contact" },
+
         { name: "Dictionnaire", href: "/dictionary" },
+        { name: "Guide de Survie", href: "/guide" },
         { name: "Calculateur", href: "/calculateur" },
-        // { name: "Guide Aides", href: "/guide" },
+        { name: "Contact", href: "/contact" },
         // { name: "La Ruche", href: "#community" },
     ];
 
