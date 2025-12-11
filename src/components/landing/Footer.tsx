@@ -54,7 +54,15 @@ export default function Footer() {
                 <div className="flex items-center gap-6 mt-4 md:mt-0">
                     <Link href="#" className="hover:text-white transition-colors"><Twitter className="w-5 h-5" /></Link>
                     <Link href="#" className="hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></Link>
-                    <Link href="#" className="hover:text-white transition-colors"><Instagram className="w-5 h-5" /></Link>
+                    <Link
+                        href="https://www.instagram.com/phobee.fr/?utm_source=ig_web_button_share_sheet"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:text-white transition-colors"
+                        aria-label="Instagram Phobee"
+                    >
+                        <Instagram className="w-5 h-5" />
+                    </Link>
                 </div>
             </div>
         </footer>
