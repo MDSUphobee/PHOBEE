@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,13 +8,20 @@ import { cn } from "@/lib/utils";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        setIsLoggedIn(!!token);
+    }, []);
 
     // Future proper links, anchors for now as requested
     const navLinks = [
-        { name: "Fonctionnalités", href: "#features" },
+        // { name: "Fonctionnalités", href: "#features" },
+        { name: "Dictionnaire", href: "/dictionary" },
         { name: "Calculateur", href: "/tools" },
-        { name: "Guide Aides", href: "/guide" },
-        { name: "La Ruche", href: "#community" },
+        // { name: "Guide Aides", href: "/guide" },
+        // { name: "La Ruche", href: "#community" },
     ];
 
     return (
@@ -28,9 +35,9 @@ export default function Navbar() {
                         <img
                             src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Blanc.svg"
                             alt="Logo Phobee"
-                            className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+                            className="h-48 w-auto transition-transform duration-300 group-hover:scale-105"
                         />
-                        <span className="text-xl font-bold text-secondary tracking-tight">Phobee</span>
+                        {/* <span className="text-xl font-bold text-secondary tracking-tight">Phobee</span> */}
                     </Link>
 
                     {/* Desktop Nav */}
@@ -48,18 +55,29 @@ export default function Navbar() {
 
                     {/* Desktop GTA */}
                     <div className="hidden md:flex items-center gap-4">
-                        <Link
-                            href="/login"
-                            className="px-4 py-2 text-sm font-medium text-secondary hover:text-primary transition-colors"
-                        >
-                            Se connecter
-                        </Link>
-                        <Link
-                            href="/signup"
-                            className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-105 transition-all duration-300"
-                        >
-                            S'enregistrer
-                        </Link>
+                        {isLoggedIn ? (
+                            <Link
+                                href="/profile"
+                                className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-105 transition-all duration-300"
+                            >
+                                Mon Espace
+                            </Link>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="px-4 py-2 text-sm font-medium text-secondary hover:text-primary transition-colors"
+                                >
+                                    Se connecter
+                                </Link>
+                                <Link
+                                    href="/signup"
+                                    className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-105 transition-all duration-300"
+                                >
+                                    S'enregistrer
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -115,26 +133,38 @@ export default function Navbar() {
                                 </nav>
 
                                 <div className="mt-auto pt-6 border-t flex flex-col gap-4">
-                                    <Link
-                                        href="/login/Page"
-                                        onClick={() => setIsOpen(false)}
-                                        className="w-full py-3 text-center font-medium text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
-                                    >
-                                        Espace Membre
-                                    </Link>
-                                    <Link
-                                        href="/signup"
-                                        onClick={() => setIsOpen(false)}
-                                        className="w-full py-3 text-center font-bold text-primary-foreground bg-primary rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform"
-                                    >
-                                        Essayer Gratuitement
-                                    </Link>
+                                    {isLoggedIn ? (
+                                        <Link
+                                            href="/profile"
+                                            onClick={() => setIsOpen(false)}
+                                            className="w-full py-3 text-center font-bold text-primary-foreground bg-primary rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform"
+                                        >
+                                            Mon Espace
+                                        </Link>
+                                    ) : (
+                                        <>
+                                            <Link
+                                                href="/login"
+                                                onClick={() => setIsOpen(false)}
+                                                className="w-full py-3 text-center font-medium text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+                                            >
+                                                Se connecter
+                                            </Link>
+                                            <Link
+                                                href="/signup"
+                                                onClick={() => setIsOpen(false)}
+                                                className="w-full py-3 text-center font-bold text-primary-foreground bg-primary rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform"
+                                            >
+                                                S'enregistrer
+                                            </Link>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>
                     </>
                 )}
-            </AnimatePresence>
+            </AnimatePresence >
         </>
     );
 }
