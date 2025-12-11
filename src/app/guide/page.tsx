@@ -229,19 +229,19 @@ export default function SurvivalManualPage() {
     const activeCategory = categories.find(c => c.id === activeTab) || categories[0];
 
     return (
-        <main className="min-h-screen bg-slate-50 flex flex-col mt-16 font-sans">
+        <main className="min-h-screen bg-background text-foreground flex flex-col mt-16 font-sans">
             <Navbar />
 
             {/* Header */}
-            <div className="bg-white border-b border-slate-100 pb-12 pt-16 md:pt-24 px-4">
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 pb-12 pt-16 md:pt-24 px-4">
                 <div className="container mx-auto max-w-4xl text-center">
-                    <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFCC00]/10 text-[#af8c00] text-xs font-bold tracking-wide uppercase mb-6">
+                    <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFCC00]/15 text-[#af8c00] dark:text-[#FFD54F] text-xs font-bold tracking-wide uppercase mb-6">
                         Documentation Développeur
                     </p>
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-6 tracking-tight">
                         Manuel de Survie <span className="text-[#FFCC00]">PhoBee</span>
                     </h1>
-                    <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                         Le guide ultime pour survivre à la jungle administrative. Tout ce qu'on aurait aimé savoir avant de se lancer.
                     </p>
 
@@ -251,7 +251,7 @@ export default function SurvivalManualPage() {
                         <input
                             type="text"
                             placeholder="Ex: TVA, Facture, Peur..."
-                            className="w-full h-12 pl-12 pr-4 rounded-full border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#FFCC00] focus:ring-4 focus:ring-[#FFCC00]/10 outline-none transition-all shadow-sm"
+                            className="w-full h-12 pl-12 pr-4 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 focus:border-[#FFCC00] focus:ring-4 focus:ring-[#FFCC00]/10 outline-none transition-all shadow-sm"
                         />
                     </div>
                 </div>
@@ -261,7 +261,7 @@ export default function SurvivalManualPage() {
 
                 {/* Sidebar Navigation */}
                 <div className="w-full md:w-1/4 flex-shrink-0">
-                    <div className="sticky top-24 space-y-2 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                    <div className="sticky top-24 space-y-2 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                         {categories.map((cat) => {
                             const Icon = cat.icon;
                             const isActive = activeTab === cat.id;
@@ -272,7 +272,7 @@ export default function SurvivalManualPage() {
                                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 text-left group
                                         ${isActive
                                             ? 'bg-slate-900 text-white shadow-md transform scale-[1.02]'
-                                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                                         }
                                     `}
                                 >
@@ -280,8 +280,8 @@ export default function SurvivalManualPage() {
                                         <Icon className={`w-5 h-5 ${isActive ? 'text-white' : ''}`} />
                                     </div>
                                     <div>
-                                        <div className={`font-bold ${isActive ? 'text-white' : 'text-slate-800'}`}>{cat.title}</div>
-                                        <div className={`text-xs ${isActive ? 'text-slate-300' : 'text-slate-400'}`}>{cat.subtitle}</div>
+                                        <div className={`font-bold ${isActive ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>{cat.title}</div>
+                                        <div className={`text-xs ${isActive ? 'text-slate-300' : 'text-slate-400 dark:text-slate-400'}`}>{cat.subtitle}</div>
                                     </div>
                                 </button>
                             )
@@ -297,8 +297,8 @@ export default function SurvivalManualPage() {
                                 <activeCategory.icon className="w-8 h-8" />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-bold text-slate-900">{activeCategory.title}</h2>
-                                <p className="text-slate-500">{activeCategory.subtitle}</p>
+                                <h2 className="text-3xl font-bold text-foreground">{activeCategory.title}</h2>
+                                <p className="text-muted-foreground">{activeCategory.subtitle}</p>
                             </div>
                         </div>
 
@@ -311,10 +311,10 @@ export default function SurvivalManualPage() {
                         </div>
 
                         {/* Actions Footer */}
-                        <div className="mt-12 p-8 bg-slate-900 rounded-3xl text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-slate-900/10">
+                        <div className="mt-12 p-8 bg-slate-900 dark:bg-slate-800 rounded-3xl text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-slate-900/10">
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-2">Besoin d'aller plus loin ?</h3>
-                                <p className="text-slate-400 text-sm">Simplifiez votre gestion avec nos outils dédiés.</p>
+                                <p className="text-slate-300 text-sm">Simplifiez votre gestion avec nos outils dédiés.</p>
                             </div>
                             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                                 <button className="px-6 py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors border border-white/10">

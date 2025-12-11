@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTheme } from "../ThemeProvider";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { theme, toggleTheme } = useTheme();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -31,13 +33,13 @@ export default function Navbar() {
     return (
         <>
             <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-                <div className="absolute inset-0 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm" />
+                <div className="absolute inset-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-white/20 dark:border-slate-800/60 shadow-sm" />
 
                 <div className="relative container mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group">
                         <img
-                            src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Blanc.svg"
+                            src={theme === "dark" ? "/Logo PhoBee/Logo PhoBee/Logo-Phobee-ToutBlanc.svg" : "/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Blanc.svg"}
                             alt="Logo Phobee"
                             className="h-48 w-auto transition-transform duration-300 group-hover:scale-105"
                         />
@@ -50,7 +52,7 @@ export default function Navbar() {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-sm font-medium text-slate-600 hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full"
+                                className="text-sm font-medium text-slate-600 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full"
                             >
                                 {link.name}
                             </Link>
@@ -59,6 +61,13 @@ export default function Navbar() {
 
                     {/* Desktop GTA */}
                     <div className="hidden md:flex items-center gap-4">
+                        <button
+                            onClick={toggleTheme}
+                            aria-label="Basculer le thème"
+                            className="p-2 rounded-full border border-border/80 bg-white/60 dark:bg-slate-800/80 dark:border-slate-700 text-slate-700 dark:text-slate-100 shadow-sm hover:shadow-md transition-all"
+                        >
+                            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                        </button>
                         {isLoggedIn ? (
                             <Link
                                 href="/profile"
@@ -87,7 +96,7 @@ export default function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsOpen(true)}
-                        className="md:hidden p-2 text-secondary hover:bg-slate-100 rounded-full transition-colors"
+                        className="md:hidden p-2 text-secondary dark:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
                     >
                         <Menu className="w-6 h-6" />
                     </button>
@@ -110,15 +119,15 @@ export default function Navbar() {
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 bottom-0 z-[70] w-full max-w-xs bg-white shadow-2xl md:hidden flex flex-col"
+                            className="fixed top-0 right-0 bottom-0 z-[70] w-full max-w-xs bg-white dark:bg-slate-950 shadow-2xl md:hidden flex flex-col"
                         >
-                            <div className="p-4 flex items-center justify-between border-b">
-                                <span className="text-lg font-bold text-secondary">Menu</span>
+                            <div className="p-4 flex items-center justify-between border-b border-border/80 dark:border-slate-800">
+                                <span className="text-lg font-bold text-secondary dark:text-foreground">Menu</span>
                                 <button
                                     onClick={() => setIsOpen(false)}
-                                    className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
                                 >
-                                    <X className="w-6 h-6 text-slate-500" />
+                                    <X className="w-6 h-6 text-slate-500 dark:text-slate-300" />
                                 </button>
                             </div>
 
@@ -129,14 +138,21 @@ export default function Navbar() {
                                             key={link.name}
                                             href={link.href}
                                             onClick={() => setIsOpen(false)}
-                                            className="text-lg font-medium text-slate-700 hover:text-primary transition-colors"
+                                            className="text-lg font-medium text-slate-700 dark:text-slate-200 hover:text-primary transition-colors"
                                         >
                                             {link.name}
                                         </Link>
                                     ))}
                                 </nav>
 
-                                <div className="mt-auto pt-6 border-t flex flex-col gap-4">
+                                <div className="mt-auto pt-6 border-t border-border/80 dark:border-slate-800 flex flex-col gap-4">
+                                    <button
+                                        onClick={toggleTheme}
+                                        className="w-full py-3 flex items-center justify-center gap-2 text-sm font-medium border border-border/80 dark:border-slate-800 rounded-xl bg-white/70 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                                    >
+                                        {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                                        <span>{theme === "dark" ? "Mode clair" : "Mode sombre"}</span>
+                                    </button>
                                     {isLoggedIn ? (
                                         <Link
                                             href="/profile"
@@ -150,7 +166,7 @@ export default function Navbar() {
                                             <Link
                                                 href="/login"
                                                 onClick={() => setIsOpen(false)}
-                                                className="w-full py-3 text-center font-medium text-slate-700 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+                                                className="w-full py-3 text-center font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                             >
                                                 Se connecter
                                             </Link>

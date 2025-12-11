@@ -4,16 +4,16 @@ import { Mail, Instagram, MessageCircle } from "lucide-react";
 // Contact page content extracted for reuse/testing.
 export default function ContactContent() {
     return (
-        <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-28 pb-24">
+        <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 pt-28 pb-24">
             <div className="container mx-auto max-w-3xl px-4">
                 <div className="text-center mb-12">
                     <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-semibold tracking-wide">
                         Contactez-nous
                     </p>
-                    <h1 className="mt-3 text-4xl md:text-5xl font-bold text-secondary mb-3">
+                    <h1 className="mt-3 text-4xl md:text-5xl font-bold text-foreground mb-3">
                         Entrer en contact avec Phobee
                     </h1>
-                    <p className="text-slate-600 text-base max-w-lg mx-auto">
+                    <p className="text-muted-foreground text-base max-w-lg mx-auto">
                         Notre équipe se tient à votre disposition pour toute question, retour ou suggestion de partenariat.<br />
                         Remplissez le formulaire ci-dessous ou choisissez le mode de contact qui vous convient le mieux.
                     </p>
@@ -23,16 +23,16 @@ export default function ContactContent() {
                     {/* FORMULAIRE DE CONTACT */}
                     <div>
                         <form
-                            className="bg-white p-6 md:p-8 rounded-2xl shadow-md border border-slate-100 space-y-6"
+                            className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800 space-y-6"
                             action="https://formspree.io/f/mrgnkdqj"
                             method="POST"
                         >
                             <div>
-                                <label className="block text-sm font-medium text-secondary mb-1" htmlFor="name">
+                                <label className="block text-sm font-medium text-foreground mb-1" htmlFor="name">
                                     Nom complet
                                 </label>
                                 <input
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary"
+                                    className="w-full border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-base bg-white dark:bg-slate-900 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                                     id="name"
                                     name="name"
                                     type="text"
@@ -42,11 +42,11 @@ export default function ContactContent() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-secondary mb-1" htmlFor="email">
+                                <label className="block text-sm font-medium text-foreground mb-1" htmlFor="email">
                                     Email
                                 </label>
                                 <input
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary"
+                                    className="w-full border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-base bg-white dark:bg-slate-900 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                                     id="email"
                                     name="email"
                                     type="email"
@@ -56,11 +56,11 @@ export default function ContactContent() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-secondary mb-1" htmlFor="message">
+                                <label className="block text-sm font-medium text-foreground mb-1" htmlFor="message">
                                     Message
                                 </label>
                                 <textarea
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-base min-h-[100px] focus:outline-none focus:ring-2 focus:ring-primary"
+                                    className="w-full border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-base min-h-[100px] bg-white dark:bg-slate-900 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                                     id="message"
                                     name="message"
                                     required
@@ -80,7 +80,7 @@ export default function ContactContent() {
                     </div>
                     {/* COORDONNÉES & SUPPORT */}
                     <div className="flex flex-col gap-6 justify-center">
-                        <div className="flex items-start gap-4 p-4 bg-white rounded-xl border border-slate-100 shadow-md">
+                        <div className="flex items-start gap-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-md">
                             <Mail className="w-6 h-6 text-primary flex-shrink-0" />
                             <div>
                                 <h2 className="text-md font-semibold text-secondary mb-1">Par email</h2>
@@ -93,7 +93,7 @@ export default function ContactContent() {
                                 <p className="text-slate-600 text-xs">Réponse sous 24h ouvrées</p>
                             </div>
                         </div>
-                        <div className="flex items-start gap-4 p-4 bg-white rounded-xl border border-slate-100 shadow-md">
+                        <div className="flex items-start gap-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-md">
                             <MessageCircle className="w-6 h-6 text-primary flex-shrink-0" />
                             <div>
                                 <h2 className="text-md font-semibold text-secondary mb-1">Support utilisateur</h2>
@@ -106,7 +106,7 @@ export default function ContactContent() {
                                 <p className="text-slate-600 text-xs">Pour tout problème technique ou de compte</p>
                             </div>
                         </div>
-                        <div className="flex items-start gap-4 p-4 bg-white rounded-xl border border-slate-100 shadow-md">
+                        <div className="flex items-start gap-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-md">
                             <Instagram className="w-6 h-6 text-primary flex-shrink-0" />
                             <div>
                                 <h2 className="text-md font-semibold text-secondary mb-1">Instagram</h2>
@@ -126,10 +126,10 @@ export default function ContactContent() {
 
                 <div className="mt-16 text-center">
                     <div className="inline-block bg-primary/5 px-6 py-4 rounded-2xl">
-                        <h3 className="text-xl font-semibold text-secondary mb-1">
+                        <h3 className="text-xl font-semibold text-foreground mb-1">
                             Nous répondons du lundi au vendredi de 9h à 18h
                         </h3>
-                        <p className="text-slate-600 text-sm">
+                        <p className="text-muted-foreground text-sm">
                             L'équipe Phobee s'efforce d'apporter une réponse personnelle et rapide à chaque message.
                         </p>
                     </div>
