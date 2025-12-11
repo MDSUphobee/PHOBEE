@@ -112,6 +112,9 @@ export default function CalculateurPage() {
             const data = await res.json();
             toast.success(mode === "create" ? "Informations enregistrées !" : "Mise à jour réussie !");
 
+            // Redirect to profile
+            router.push('/profile');
+
             // If created, switch mode to update for next time without reload
             if (mode === "create") {
                 setMode("update");

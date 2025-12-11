@@ -164,7 +164,7 @@ export default function DictionaryPage() {
     })).filter(section => section.definitions.length > 0);
 
     return (
-        <main className="min-h-screen bg-background flex flex-col">
+        <main className="min-h-screen bg-background flex flex-col mt-16">
             <Navbar />
 
             <div className="flex-grow">
