@@ -29,16 +29,76 @@
     --radius: 1rem;
   }
 
-  /* Optional: Dark mode variables if needed, but strict prompt asked for specific look */
-  /* For now staying consistent with "Clean SaaS" light/hybrid vibe described */
+  .dark {
+    --background: 222 47% 11%; /* #0F172A */
+    --foreground: 210 40% 98%; /* #E2E8F0 */
+
+    --primary: 48 100% 50%; /* #FFCC00 */
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 210 40% 16%; /* #0B1224 */
+    --secondary-foreground: 210 40% 98%; /* #E2E8F0 */
+
+    --muted: 220 17% 22%; /* #1F2937 */
+    --muted-foreground: 215 20% 72%;
+
+    --accent: 220 15% 18%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 219 14% 28%;
+    --input: 219 14% 28%;
+    --ring: 48 100% 50%;
+  }
 }
 
 @layer base {
+  @font-face {
+    font-family: "PoppinsBold";
+    src: url("/police/Poppins-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "GowunDodum";
+    src: url("/police/Gowun-Dodum.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --font-heading: "PoppinsBold", sans-serif;
+    --font-body: "GowunDodum", sans-serif;
+  }
+
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  /* Force les textes en "text-secondary" à devenir clairs en mode sombre */
+  .dark .text-secondary {
+    color: hsl(var(--foreground)) !important;
+  }
+  .dark .hover\:text-secondary:hover {
+    color: hsl(var(--foreground)) !important;
   }
 }
 

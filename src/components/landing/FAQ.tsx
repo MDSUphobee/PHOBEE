@@ -77,19 +77,19 @@ export default function FAQ() {
     ];
 
     return (
-        <section className="py-24 bg-white">
+        <section className="py-24 bg-background text-foreground">
             <div className="container mx-auto px-4 md:px-6 max-w-3xl">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold text-secondary">Questions Fréquentes</h2>
+                    <h2 className="text-3xl font-bold text-foreground">Questions Fréquentes</h2>
                 </div>
 
                 <AccordionRoot type="single" collapsible className="w-full">
                     {faqs.map((faq, i) => (
-                        <AccordionItemWrapper key={i} value={`item-${i}`} className="border-b border-slate-100">
-                            <AccordionTriggerWrapper className="text-left text-lg font-medium text-secondary py-6 hover:no-underline hover:text-primary transition-colors">
+                        <AccordionItemWrapper key={i} value={`item-${i}`} className="border-b border-slate-100 dark:border-slate-800">
+                            <AccordionTriggerWrapper className="text-left text-lg font-medium text-foreground py-6 hover:no-underline hover:text-primary transition-colors">
                                 {faq.q}
                             </AccordionTriggerWrapper>
-                            <AccordionContentWrapper className="text-slate-600 text-base leading-relaxed pb-6">
+                            <AccordionContentWrapper className="text-muted-foreground text-base leading-relaxed pb-6">
                                 {faq.a}
                             </AccordionContentWrapper>
                         </AccordionItemWrapper>

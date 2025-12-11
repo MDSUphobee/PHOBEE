@@ -361,29 +361,29 @@ export default function InvoiceBuilderPage() {
     };
 
     return (
-        <main className="min-h-screen bg-slate-50 flex flex-col">
+        <main className="min-h-screen bg-background text-foreground flex flex-col">
             <Navbar />
 
             <div className="flex-grow">
                 <div className="pt-24 pb-16 container mx-auto px-4 md:px-8">
                     <header className="max-w-4xl mb-10">
-                        <div className="inline-flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-200">
+                        <div className="inline-flex items-center gap-3 bg-white dark:bg-slate-900 px-4 py-2 rounded-full shadow-sm border border-slate-200 dark:border-slate-800">
                             <Sparkles className="w-4 h-4 text-secondary" />
                             <span className="text-xs font-semibold text-secondary uppercase tracking-widest">
                                 Générateur de facture "Zéro Stress"
                             </span>
                         </div>
-                        <h1 className="mt-4 text-4xl font-bold text-slate-900 leading-tight">
+                        <h1 className="mt-4 text-4xl font-bold text-foreground leading-tight">
                             Crée ta facture légale en quelques clics
                         </h1>
-                        <p className="mt-3 text-lg text-slate-600 max-w-2xl">
+                        <p className="mt-3 text-lg text-muted-foreground max-w-2xl">
                             Formulaire guidé, contrôles anti-erreurs, et export PDF prêt à envoyer.
                             Reste focus sur ton client, on sécurise le cadre légal.
                         </p>
                     </header>
 
                     {formError && (
-                        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <div className="mb-6 rounded-xl border border-red-200 dark:border-red-600/60 bg-red-50 dark:bg-red-900/30 px-4 py-3 text-sm text-red-700 dark:text-red-200">
                             {formError}
                         </div>
                     )}
@@ -392,7 +392,7 @@ export default function InvoiceBuilderPage() {
                         {/* Identities */}
                         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                             <div className="space-y-6">
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-3 w-full max-w-sm">
+                                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-3 w-full max-w-sm">
                                     <div className="flex items-center justify-between">
                                         <h2 className="text-lg font-semibold text-secondary">Identité visuelle</h2>
                                         {logoData && (
@@ -406,7 +406,7 @@ export default function InvoiceBuilderPage() {
                                         )}
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-slate-700">Logo (PNG/JPEG)</label>
+                                        <label className="text-sm font-medium text-foreground">Logo (PNG/JPEG)</label>
                                         <div className="flex flex-col gap-2">
                                             <input
                                                 type="file"
@@ -424,27 +424,27 @@ export default function InvoiceBuilderPage() {
                                     </div>
                                 </div>
 
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h2 className="text-lg font-semibold text-secondary">Identité du client</h2>
-                                        <span className="text-xs text-slate-500">Obligatoire</span>
+                                        <h2 className="text-lg font-semibold text-foreground">Identité du client</h2>
+                                        <span className="text-xs text-muted-foreground">Obligatoire</span>
                                     </div>
 
                                     <div className="space-y-3">
-                                        <label className="text-sm font-medium text-slate-700">Nom du client / entreprise</label>
+                                        <label className="text-sm font-medium text-foreground">Nom du client / entreprise</label>
                                         <input
                                             type="text"
                                             value={clientName}
                                             onChange={(e) => setClientName(e.target.value)}
                                             placeholder="Ex : Studio Horizon"
-                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                                             required
                                         />
                                     </div>
 
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-2">
-                                            <label className="text-sm font-medium text-slate-700">Adresse du client</label>
+                                            <label className="text-sm font-medium text-foreground">Adresse du client</label>
                                             <Info className="w-4 h-4 text-slate-400" /* title removed for TS error */ />
                                         </div>
                                         <textarea
@@ -452,18 +452,18 @@ export default function InvoiceBuilderPage() {
                                             onChange={(e) => setClientAddress(e.target.value)}
                                             placeholder="Numéro, rue, CP, ville..."
                                             rows={4}
-                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                                             required
                                         />
-                                        <p className="text-xs text-slate-500">La génération du PDF sera bloquée si ce champ est vide.</p>
+                                        <p className="text-xs text-muted-foreground">La génération du PDF sera bloquée si ce champ est vide.</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <h2 className="text-lg font-semibold text-secondary">Identité de l'émetteur</h2>
-                                    <span className="text-xs text-slate-500">Freelance</span>
+                                        <h2 className="text-lg font-semibold text-foreground">Identité de l'émetteur</h2>
+                                        <span className="text-xs text-muted-foreground">Freelance</span>
                                 </div>
 
                                 <div className="space-y-3">
@@ -561,10 +561,10 @@ export default function InvoiceBuilderPage() {
                         </section>
 
                         {/* Metadata */}
-                        <section className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-5">
+                            <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-5">
                             <div className="flex items-center justify-between flex-wrap gap-3">
-                                <h2 className="text-lg font-semibold text-secondary">Paramètres de la facture</h2>
-                                <div className="flex items-center gap-2 text-sm text-slate-600">
+                                    <h2 className="text-lg font-semibold text-foreground">Paramètres de la facture</h2>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Info className="w-4 h-4 text-slate-400" />
                                     Conseils express pour éviter les erreurs légales.
                                 </div>
@@ -623,11 +623,11 @@ export default function InvoiceBuilderPage() {
                         </section>
 
                         {/* Lines */}
-                        <section className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                            <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-4">
                             <div className="flex items-center justify-between flex-wrap gap-3">
                                 <div>
-                                    <h2 className="text-lg font-semibold text-secondary mt-4">Prestations</h2>
-                                    <p className="text-sm text-slate-500">Ajoute, modifie ou supprime des lignes librement.</p>
+                                        <h2 className="text-lg font-semibold text-foreground mt-4">Prestations</h2>
+                                        <p className="text-sm text-muted-foreground">Ajoute, modifie ou supprime des lignes librement.</p>
                                 </div>
                                 <button
                                     type="button"

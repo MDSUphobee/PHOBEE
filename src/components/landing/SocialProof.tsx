@@ -25,33 +25,33 @@ const testimonials = [
 
 export default function SocialProof() {
     return (
-        <section className="py-24 bg-white border-b border-slate-100">
+        <section className="py-24 bg-background border-b border-slate-100 dark:border-slate-800">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                         Ils dorment mieux depuis qu'ils ont Phobee.
                     </h2>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8">
                     {testimonials.map((t, i) => (
-                        <div key={i} className="bg-slate-50 p-8 rounded-2xl hover:shadow-lg transition-shadow duration-300">
+                        <div key={i} className="bg-slate-50 dark:bg-slate-900 p-8 rounded-2xl hover:shadow-lg transition-shadow duration-300">
                             <div className="flex gap-1 mb-4">
                                 {[...Array(t.stars)].map((_, idx) => (
                                     <Star key={idx} className="w-5 h-5 fill-primary text-primary" />
                                 ))}
                             </div>
-                            <p className="text-slate-700 italic mb-6">"{t.content}"</p>
+                            <p className="text-foreground/80 italic mb-6">"{t.content}"</p>
                             <div>
-                                <p className="font-bold text-secondary">{t.name}</p>
-                                <p className="text-sm text-slate-500">{t.role}</p>
+                                <p className="font-bold text-foreground">{t.name}</p>
+                                <p className="text-sm text-muted-foreground">{t.role}</p>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <div className="mt-16 pt-8 border-t border-slate-100">
-                    <p className="text-center text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">Vu sur</p>
+                <div className="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800">
+                    <p className="text-center text-sm font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-6">Vu sur</p>
                     <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
                         {/* Fake Logos */}
                         <div className="text-xl font-bold font-serif">TechCrunch</div>
