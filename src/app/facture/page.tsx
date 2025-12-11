@@ -29,6 +29,8 @@ const LEGAL_MENTION_DEFAULT =
 const formatCurrency = (value: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(value || 0);
 
+const noBreak = (value: string) => value.replace(/\s/g, "\u00a0");
+
 const formatDate = (value: string) => {
     if (!value) return "";
     return new Intl.DateTimeFormat("fr-FR").format(new Date(value));
@@ -63,6 +65,8 @@ export default function InvoiceBuilderPage() {
     const [lines, setLines] = useState<LineItem[]>([
         { description: "", quantity: 1, unitPrice: 0, tvaRate: 20 },
     ]);
+
+    const [logoData, setLogoData] = useState<string | null>(null);
 
     const [bankDetails, setBankDetails] = useState("");
     const [legalMention, setLegalMention] = useState(LEGAL_MENTION_DEFAULT);
@@ -99,6 +103,21 @@ export default function InvoiceBuilderPage() {
 
     const handleRemoveLine = (index: number) => {
         setLines((prev) => (prev.length === 1 ? prev : prev.filter((_, i) => i !== index)));
+    };
+
+    const handleLogoUpload = (file?: File | null) => {
+        if (!file) {
+            setLogoData(null);
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const result = e.target?.result;
+            if (typeof result === "string") {
+                setLogoData(result);
+            }
+        };
+        reader.readAsDataURL(file);
     };
 
     const toggleSiretPending = (checked: boolean) => {
@@ -169,6 +188,19 @@ export default function InvoiceBuilderPage() {
 
         doc.setFont("helvetica", "normal");
 
+        // Logo (if any) - top right
+        if (logoData) {
+            try {
+                const logoWidth = 120;
+                const logoHeight = 120 * 0.6;
+                const logoX = pageWidth - PAGE_MARGIN - logoWidth;
+                doc.addImage(logoData, "PNG", logoX, cursorY, logoWidth, logoHeight, undefined, "FAST");
+                cursorY += logoHeight + 12;
+            } catch (e) {
+                // ignore bad logo data, keep generating
+            }
+        }
+
         // Title
         doc.setFontSize(20);
         doc.text("Facture", PAGE_MARGIN, cursorY);
@@ -182,6 +214,9 @@ export default function InvoiceBuilderPage() {
         cursorY += LSPACE;
         doc.text(`Échéance : ${formatDate(dueDate)}`, PAGE_MARGIN, cursorY);
         cursorY += BSPACE;
+
+        doc.setDrawColor("#D0D7E2");
+        doc.line(PAGE_MARGIN, cursorY - 8, pageWidth - PAGE_MARGIN, cursorY - 8);
 
         // Identities
         doc.setFontSize(13);
@@ -207,12 +242,15 @@ export default function InvoiceBuilderPage() {
         clientBlock.forEach((line, i) => doc.text(line as string, pageWidth / 2, cursorY + i * LSPACE));
         cursorY += blockHeight + BSPACE;
 
+        doc.setDrawColor("#D0D7E2");
+        doc.line(PAGE_MARGIN, cursorY - 10, pageWidth - PAGE_MARGIN, cursorY - 10);
+
         // Table columns
         const colDesc = PAGE_MARGIN;
-        const colQty = colDesc + 250;
-        const colPU = colQty + 70;
+        const colQty = colDesc + 210;
+        const colPU = colQty + 80;
         const colTVA = isTvaEnabled ? colPU + 70 : null;
-        const colTotal = isTvaEnabled ? (colTVA! + 80) : (colPU + 100);
+        const colTotal = isTvaEnabled ? (colTVA! + 100) : (colPU + 120);
         const tableWidth = colTotal - colDesc;
 
         const drawTableHeader = () => {
@@ -255,9 +293,9 @@ export default function InvoiceBuilderPage() {
 
             doc.text(descLines, colDesc, cursorY);
             doc.text(String(line.quantity || 0), colQty, cursorY, { align: "right" });
-            doc.text(formatCurrency(line.unitPrice || 0), colPU, cursorY, { align: "right" });
+            doc.text(formatCurrency(line.unitPrice || 0).replace(/\s/g, "\u00a0"), colPU, cursorY, { align: "right" });
             if (isTvaEnabled && colTVA !== null) doc.text(`${line.tvaRate || 0}%`, colTVA, cursorY, { align: "right" });
-            doc.text(formatCurrency(lineTotal + lineTVA), colTotal, cursorY, { align: "right" });
+            doc.text(formatCurrency(lineTotal + lineTVA).replace(/\s/g, "\u00a0"), colTotal, cursorY, { align: "right" });
 
             doc.setDrawColor("#E2E8F0");
             doc.line(colDesc - 8, cursorY + rowHeight - ROW_HEIGHT + 4, colDesc + tableWidth + 8, cursorY + rowHeight - ROW_HEIGHT + 4);
@@ -266,6 +304,8 @@ export default function InvoiceBuilderPage() {
         });
 
         cursorY += BSPACE / 2;
+        doc.setDrawColor("#D0D7E2");
+        doc.line(PAGE_MARGIN, cursorY - 4, pageWidth - PAGE_MARGIN, cursorY - 4);
 
         // Totals
         ensureSpace(BSPACE * 2);
@@ -275,17 +315,17 @@ export default function InvoiceBuilderPage() {
         cursorY += LSPACE + 2;
         doc.setFont("helvetica", "normal");
         doc.setFontSize(11);
-        doc.text(`Total HT : ${formatCurrency(totals.totalHT)}`, PAGE_MARGIN, cursorY);
+        doc.text(noBreak(`Total HT : ${formatCurrency(totals.totalHT)}`), PAGE_MARGIN, cursorY);
         cursorY += LSPACE + 2;
         if (isTvaEnabled) {
-            doc.text(`Montant TVA : ${formatCurrency(totals.totalTVA)}`, PAGE_MARGIN, cursorY);
+            doc.text(noBreak(`Montant TVA : ${formatCurrency(totals.totalTVA)}`), PAGE_MARGIN, cursorY);
             cursorY += LSPACE + 2;
         } else {
             doc.text("TVA non applicable, art. 293 B du CGI", PAGE_MARGIN, cursorY);
             cursorY += LSPACE + 2;
         }
         doc.setFont("helvetica", "bold");
-        doc.text(`Total TTC : ${formatCurrency(totals.totalTTC)}`, PAGE_MARGIN, cursorY);
+        doc.text(noBreak(`Total TTC : ${formatCurrency(totals.totalTTC)}`), PAGE_MARGIN, cursorY);
         doc.setFont("helvetica", "normal");
         cursorY += BSPACE;
 
@@ -301,6 +341,9 @@ export default function InvoiceBuilderPage() {
         const bankLines = doc.splitTextToSize(String(bankText), pageWidth - PAGE_MARGIN * 2) as string[];
         doc.text(bankLines, PAGE_MARGIN, cursorY);
         cursorY += bankLines.length * LSPACE + BSPACE / 2;
+
+        doc.setDrawColor("#D0D7E2");
+        doc.line(PAGE_MARGIN, cursorY - 6, pageWidth - PAGE_MARGIN, cursorY - 6);
 
         // Legal
         ensureSpace(BSPACE);
@@ -347,7 +390,76 @@ export default function InvoiceBuilderPage() {
 
                     <div className="space-y-8">
                         {/* Identities */}
-                        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                            <div className="space-y-6">
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-3 w-full max-w-sm">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-lg font-semibold text-secondary">Identité visuelle</h2>
+                                        {logoData && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleLogoUpload(null)}
+                                                className="text-sm text-red-600 hover:underline"
+                                            >
+                                                Supprimer le logo
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-slate-700">Logo (PNG/JPEG)</label>
+                                        <div className="flex flex-col gap-2">
+                                            <input
+                                                type="file"
+                                                accept="image/png,image/jpeg"
+                                                onChange={(e) => handleLogoUpload(e.target.files?.[0] ?? null)}
+                                                className="w-full text-sm"
+                                            />
+                                            {logoData && (
+                                                <div className="border border-slate-200 rounded-lg p-2 bg-slate-50 inline-flex items-center gap-2 w-fit">
+                                                    <img src={logoData} alt="Logo" className="h-12 w-auto object-contain rounded border border-slate-200 bg-white" />
+                                                    <span className="text-xs text-slate-600">Prévisualisation (PDF)</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-lg font-semibold text-secondary">Identité du client</h2>
+                                        <span className="text-xs text-slate-500">Obligatoire</span>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="text-sm font-medium text-slate-700">Nom du client / entreprise</label>
+                                        <input
+                                            type="text"
+                                            value={clientName}
+                                            onChange={(e) => setClientName(e.target.value)}
+                                            placeholder="Ex : Studio Horizon"
+                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-2">
+                                            <label className="text-sm font-medium text-slate-700">Adresse du client</label>
+                                            <Info className="w-4 h-4 text-slate-400" /* title removed for TS error */ />
+                                        </div>
+                                        <textarea
+                                            value={clientAddress}
+                                            onChange={(e) => setClientAddress(e.target.value)}
+                                            placeholder="Numéro, rue, CP, ville..."
+                                            rows={4}
+                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                                            required
+                                        />
+                                        <p className="text-xs text-slate-500">La génération du PDF sera bloquée si ce champ est vide.</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-lg font-semibold text-secondary">Identité de l'émetteur</h2>
@@ -446,41 +558,6 @@ export default function InvoiceBuilderPage() {
                                     </div>
                                 )}
                             </div>
-
-                            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-lg font-semibold text-secondary">Identité du client</h2>
-                                    <span className="text-xs text-slate-500">Obligatoire</span>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <label className="text-sm font-medium text-slate-700">Nom du client / entreprise</label>
-                                    <input
-                                        type="text"
-                                        value={clientName}
-                                        onChange={(e) => setClientName(e.target.value)}
-                                        placeholder="Ex : Studio Horizon"
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                                        required
-                                    />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2">
-                                        <label className="text-sm font-medium text-slate-700">Adresse du client</label>
-                                        <Info className="w-4 h-4 text-slate-400" /* title removed for TS error */ />
-                                    </div>
-                                    <textarea
-                                        value={clientAddress}
-                                        onChange={(e) => setClientAddress(e.target.value)}
-                                        placeholder="Numéro, rue, CP, ville..."
-                                        rows={4}
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
-                                        required
-                                    />
-                                    <p className="text-xs text-slate-500">La génération du PDF sera bloquée si ce champ est vide.</p>
-                                </div>
-                            </div>
                         </section>
 
                         {/* Metadata */}
@@ -549,7 +626,7 @@ export default function InvoiceBuilderPage() {
                         <section className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
                             <div className="flex items-center justify-between flex-wrap gap-3">
                                 <div>
-                                    <h2 className="text-lg font-semibold text-secondary">Prestations</h2>
+                                    <h2 className="text-lg font-semibold text-secondary mt-4">Prestations</h2>
                                     <p className="text-sm text-slate-500">Ajoute, modifie ou supprime des lignes librement.</p>
                                 </div>
                                 <button
@@ -651,21 +728,32 @@ export default function InvoiceBuilderPage() {
                         {/* TVA & Totals */}
                         <section className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-5">
                             <div className="flex items-center justify-between flex-wrap gap-3">
-                                <div>
-                                    <h2 className="text-lg font-semibold text-secondary">TVA &amp; Totaux</h2>
-                                    <p className="text-sm text-slate-500">Active la TVA si tu es assujetti.</p>
+                                <div className="flex items-center gap-3">
+                                    <div>
+                                        <h2 className="text-lg font-semibold text-secondary">TVA &amp; Totaux</h2>
+                                        <p className="text-sm text-slate-500">Active la TVA si tu es assujetti.</p>
+                                    </div>
+                                    <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-xs text-slate-700 border border-slate-200">
+                                        <Info className="w-4 h-4 text-secondary" />
+                                        <span>{isTvaEnabled ? "Assujetti : TVA 20% appliquée" : "Franchise : TVA non applicable"}</span>
+                                    </div>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsTvaEnabled((v) => !v)}
-                                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${isTvaEnabled
-                                        ? "bg-secondary text-white border-secondary"
-                                        : "bg-white text-secondary border-slate-200"
-                                        }`}
-                                >
-                                    <ShieldCheck className="w-4 h-4" />
-                                    {isTvaEnabled ? "TVA activée" : "TVA non facturée"}
-                                </button>
+                                <div className="flex flex-col items-end gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsTvaEnabled((v) => !v)}
+                                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${isTvaEnabled
+                                            ? "bg-secondary text-white border-secondary"
+                                            : "bg-white text-secondary border-slate-200"
+                                            }`}
+                                    >
+                                        <ShieldCheck className="w-4 h-4" />
+                                        {isTvaEnabled ? "TVA activée" : "TVA non facturée"}
+                                    </button>
+                                    <span className="text-[11px] text-slate-500 sm:hidden">
+                                        {isTvaEnabled ? "Assujetti : TVA 20% appliquée" : "Franchise : TVA non applicable"}
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
