@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, AlertCircle, CheckCircle2, DollarSign } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, AlertCircle, CheckCircle2, DollarSign, Edit2, Save, X, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
+// const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
+const AUTH_API = `${API_BASE}/api/auth`;
 
 // Helper to decode JWT
 function parseJwt(token: string) {
@@ -132,6 +135,10 @@ export default function ProfilePage() {
                     // Calculate deadlines
                     const d = getNextDeadlines(data);
                     setDeadlines(d);
+                } else if (res.status === 404) {
+                    // Data not defined yet, handle gracefully
+                    setUserInfo(null);
+                    setDeadlines({});
                 }
             })
             .catch(err => console.error(err))
@@ -211,6 +218,70 @@ export default function ProfilePage() {
         }
     };
 
+    // Edit Profile State
+    const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    });
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            setEditForm(prev => ({ ...prev, username: user.username || "", email: user.email || "" }));
+        }
+    }, [user]);
+
+    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setEditForm({ ...editForm, [e.target.name]: e.target.value });
+    };
+
+    const handleEditSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (editForm.password && editForm.password !== editForm.confirmPassword) {
+            toast.error("Les mots de passe ne correspondent pas.");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const id = Number(user.id || user.sub);
+            const res = await fetch(`${AUTH_API}/user/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: editForm.username,
+                    email: editForm.email,
+                    password: editForm.password || undefined
+                })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                toast.error(data.message || "Erreur lors de la mise à jour.");
+                setIsSaving(false);
+                return;
+            }
+
+            toast.success("Profil mis à jour avec succès !");
+            setIsEditing(false);
+
+            // Update local user state if username/email changed
+            // Ideally we should update the token or re-fetch profile, but for now let's just update UI
+            setUser((prev: any) => ({ ...prev, username: data.username || prev.username, email: data.email || prev.email }));
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Erreur réseau.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">Chargement...</div>;
     }
@@ -228,15 +299,104 @@ export default function ProfilePage() {
                     {/* Sidebar / Info Card */}
                     <div className="w-full md:w-1/3 space-y-6">
                         <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-full bg-[#FFCC00]/20 flex items-center justify-center text-[#FFCC00] font-bold text-xl">
+                            <div className="flex items-center gap-4 mb-6 relative">
+                                <div className="w-12 h-12 rounded-full bg-[#FFCC00]/20 flex items-center justify-center text-[#FFCC00] font-bold text-xl shrink-0">
                                     {user?.username ? user.username[0].toUpperCase() : 'U'}
                                 </div>
-                                <div>
-                                    <h2 className="text-xl font-bold text-slate-900">{user?.username}</h2>
-                                    <p className="text-slate-500 text-sm">{user?.email}</p>
+                                <div className="flex-1 overflow-hidden">
+                                    {!isEditing ? (
+                                        <>
+                                            <h2 className="text-xl font-bold text-slate-900 truncate">{user?.username}</h2>
+                                            <p className="text-slate-500 text-sm truncate">{user?.email}</p>
+                                        </>
+                                    ) : (
+                                        <div className="text-sm font-medium text-slate-900">Modification du profil</div>
+                                    )}
                                 </div>
+                                {!isEditing && (
+                                    <button
+                                        onClick={() => setIsEditing(true)}
+                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+                                        title="Modifier le profil"
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                    </button>
+                                )}
                             </div>
+
+                            {isEditing && (
+                                <form onSubmit={handleEditSubmit} className="space-y-3 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div>
+                                        <label className="text-xs font-semibold text-slate-500 mb-1 block">Nom d'utilisateur</label>
+                                        <div className="relative">
+                                            <User className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                                            <input
+                                                type="text"
+                                                name="username"
+                                                value={editForm.username}
+                                                onChange={handleEditChange}
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                placeholder="Username"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-semibold text-slate-500 mb-1 block">Email</label>
+                                        <div className="relative">
+                                            <Mail className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={editForm.email}
+                                                onChange={handleEditChange}
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                placeholder="Email"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="pt-2 border-t border-slate-200 mt-2">
+                                        <label className="text-xs font-semibold text-slate-500 mb-1 block">Nouveau mot de passe (optionnel)</label>
+                                        <div className="relative mb-2">
+                                            <Lock className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                                            <input
+                                                type="password"
+                                                name="password"
+                                                value={editForm.password}
+                                                onChange={handleEditChange}
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                placeholder="Nouveau mot de passe"
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <Lock className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                                            <input
+                                                type="password"
+                                                name="confirmPassword"
+                                                value={editForm.confirmPassword}
+                                                onChange={handleEditChange}
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                placeholder="Confirmer le mot de passe"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2 pt-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsEditing(false)}
+                                            className="flex-1 py-1.5 px-3 rounded-lg border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-colors"
+                                        >
+                                            Annuler
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={isSaving}
+                                            className="flex-1 py-1.5 px-3 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors disabled:opacity-70 flex items-center justify-center gap-1"
+                                        >
+                                            {isSaving ? '...' : <><Save className="w-3 h-3" /> Enregistrer</>}
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
 
                             <div className="space-y-4">
                                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
