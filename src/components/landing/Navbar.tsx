@@ -22,6 +22,8 @@ export default function Navbar() {
         { name: "Dictionnaire", href: "/dictionary" },
         { name: "Guide de Survie", href: "/guide" },
         { name: "Calculateur", href: "/calculateur" },
+        { name: "Générateur de facture", href: "/facture" },
+        // { name: "Guide Aides", href: "/guide" },
         { name: "Contact", href: "/contact" },
         // { name: "La Ruche", href: "#community" },
     ];
