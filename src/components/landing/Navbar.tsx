@@ -21,6 +21,7 @@ export default function Navbar() {
         { name: "Contact", href: "/contact" },
         { name: "Dictionnaire", href: "/dictionary" },
         { name: "Calculateur", href: "/calculateur" },
+        { name: "Générateur de facture", href: "/facture" },
         // { name: "Guide Aides", href: "/guide" },
         // { name: "La Ruche", href: "#community" },
     ];
