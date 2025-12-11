@@ -19,7 +19,7 @@ export default function Navbar() {
     const navLinks = [
         // { name: "Fonctionnalités", href: "#features" },
         { name: "Dictionnaire", href: "/dictionary" },
-        { name: "Calculateur", href: "/tools" },
+        { name: "Calculateur", href: "/calculateur" },
         // { name: "Guide Aides", href: "/guide" },
         // { name: "La Ruche", href: "#community" },
     ];
