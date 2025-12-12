@@ -24,20 +24,20 @@ export default function Footer() {
                 </div>
 
                 <div>
-                    <h4 className="font-bold mb-4 text-primary">Produit</h4>
+                    <h4 className="font-bold mb-4 text-primary">Nos services</h4>
                     <ul className="space-y-2 text-sm text-slate-400">
-                        <li><Link href="#" className="hover:text-white transition-colors">Fonctionnalités</Link></li>
-                        <li><Link href="#" className="hover:text-white transition-colors">Tarifs</Link></li>
-                        <li><Link href="#" className="hover:text-white transition-colors">Témoignages</Link></li>
+                        <li><Link href="/calculateur" className="hover:text-white transition-colors">Calculateur</Link></li>
+                        <li><Link href="/facture" className="hover:text-white transition-colors">Générer une facture</Link></li>
+                        <li><Link href="/profile" className="hover:text-white transition-colors">Profil</Link></li>
                     </ul>
                 </div>
 
                 <div>
                     <h4 className="font-bold mb-4 text-primary">Ressources</h4>
                     <ul className="space-y-2 text-sm text-slate-400">
-                        <li><Link href="#" className="hover:text-white transition-colors">Blog</Link></li>
-                        <li><Link href="#" className="hover:text-white transition-colors">Guide URSSAF</Link></li>
-                        <li><Link href="#" className="hover:text-white transition-colors">Simulateur</Link></li>
+                        <li><Link href="/dictionary" className="hover:text-white transition-colors">Dictionnaire</Link></li>
+                        <li><Link href="/guide" className="hover:text-white transition-colors">Guide de survie</Link></li>
+                        <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
                     </ul>
                 </div>
 
@@ -52,8 +52,8 @@ export default function Footer() {
             <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between text-sm text-slate-500">
                 <p>© 2024 Phobee. Tous droits réservés.</p>
                 <div className="flex items-center gap-6 mt-4 md:mt-0">
-                    <Link href="#" className="hover:text-white transition-colors"><Twitter className="w-5 h-5" /></Link>
-                    <Link href="#" className="hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></Link>
+                    {/* <Link href="#" className="hover:text-white transition-colors"><Twitter className="w-5 h-5" /></Link>
+                    <Link href="#" className="hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></Link> */}
                     <Link
                         href="https://www.instagram.com/phobee.fr/?utm_source=ig_web_button_share_sheet"
                         target="_blank"
@@ -65,6 +65,6 @@ export default function Footer() {
                     </Link>
                 </div>
             </div>
-        </footer>
+        </footer >
     );
 }
