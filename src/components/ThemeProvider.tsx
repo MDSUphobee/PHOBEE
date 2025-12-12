@@ -16,10 +16,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     // Synchronise avec le stockage et le media query.
     useEffect(() => {
-        const stored = (typeof window !== "undefined" && (localStorage.getItem("theme") as Theme | null)) ?? null;
+        const stored = typeof window !== "undefined" ? (localStorage.getItem("theme") as Theme | null) : null;
         const prefersDark =
             typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const initial = stored ?? (prefersDark ? "dark" : "light");
+        const initial: Theme = stored ?? (prefersDark ? "dark" : "light");
         setTheme(initial);
     }, []);
 
