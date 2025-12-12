@@ -283,13 +283,13 @@ export default function ProfilePage() {
     };
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">Chargement...</div>;
+        return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-200">Chargement...</div>;
     }
 
     const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
     return (
-        <main className="min-h-screen bg-slate-50 flex flex-col font-sans">
+        <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans text-slate-900 dark:text-slate-100">
             <Navbar />
 
             <div className="flex-grow container mx-auto px-4 py-8 md:py-12 mt-16">
@@ -298,7 +298,7 @@ export default function ProfilePage() {
 
                     {/* Sidebar / Info Card */}
                     <div className="w-full md:w-1/3 space-y-6">
-                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
                             <div className="flex items-center gap-4 mb-6 relative">
                                 <div className="w-12 h-12 rounded-full bg-[#FFCC00]/20 flex items-center justify-center text-[#FFCC00] font-bold text-xl shrink-0">
                                     {user?.username ? user.username[0].toUpperCase() : 'U'}
@@ -306,17 +306,17 @@ export default function ProfilePage() {
                                 <div className="flex-1 overflow-hidden">
                                     {!isEditing ? (
                                         <>
-                                            <h2 className="text-xl font-bold text-slate-900 truncate">{user?.username}</h2>
-                                            <p className="text-slate-500 text-sm truncate">{user?.email}</p>
+                                            <h2 className="text-xl font-bold text-slate-900 dark:text-white truncate">{user?.username}</h2>
+                                            <p className="text-slate-500 dark:text-slate-300 text-sm truncate">{user?.email}</p>
                                         </>
                                     ) : (
-                                        <div className="text-sm font-medium text-slate-900">Modification du profil</div>
+                                        <div className="text-sm font-medium text-slate-900 dark:text-white">Modification du profil</div>
                                     )}
                                 </div>
                                 {!isEditing && (
                                     <button
                                         onClick={() => setIsEditing(true)}
-                                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+                                        className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                                         title="Modifier le profil"
                                     >
                                         <Edit2 className="w-4 h-4" />
@@ -325,9 +325,9 @@ export default function ProfilePage() {
                             </div>
 
                             {isEditing && (
-                                <form onSubmit={handleEditSubmit} className="space-y-3 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <form onSubmit={handleEditSubmit} className="space-y-3 mb-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div>
-                                        <label className="text-xs font-semibold text-slate-500 mb-1 block">Nom d'utilisateur</label>
+                                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-300 mb-1 block">Nom d'utilisateur</label>
                                         <div className="relative">
                                             <User className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
                                             <input
@@ -335,13 +335,13 @@ export default function ProfilePage() {
                                                 name="username"
                                                 value={editForm.username}
                                                 onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
                                                 placeholder="Username"
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-xs font-semibold text-slate-500 mb-1 block">Email</label>
+                                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-300 mb-1 block">Email</label>
                                         <div className="relative">
                                             <Mail className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
                                             <input
@@ -349,13 +349,13 @@ export default function ProfilePage() {
                                                 name="email"
                                                 value={editForm.email}
                                                 onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
                                                 placeholder="Email"
                                             />
                                         </div>
                                     </div>
-                                    <div className="pt-2 border-t border-slate-200 mt-2">
-                                        <label className="text-xs font-semibold text-slate-500 mb-1 block">Nouveau mot de passe (optionnel)</label>
+                                    <div className="pt-2 border-t border-slate-200 dark:border-slate-800 mt-2">
+                                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-300 mb-1 block">Nouveau mot de passe (optionnel)</label>
                                         <div className="relative mb-2">
                                             <Lock className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
                                             <input
@@ -363,7 +363,7 @@ export default function ProfilePage() {
                                                 name="password"
                                                 value={editForm.password}
                                                 onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
                                                 placeholder="Nouveau mot de passe"
                                             />
                                         </div>
@@ -374,7 +374,7 @@ export default function ProfilePage() {
                                                 name="confirmPassword"
                                                 value={editForm.confirmPassword}
                                                 onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
                                                 placeholder="Confirmer le mot de passe"
                                             />
                                         </div>
@@ -383,7 +383,7 @@ export default function ProfilePage() {
                                         <button
                                             type="button"
                                             onClick={() => setIsEditing(false)}
-                                            className="flex-1 py-1.5 px-3 rounded-lg border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-colors"
+                                            className="flex-1 py-1.5 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                         >
                                             Annuler
                                         </button>
@@ -399,9 +399,9 @@ export default function ProfilePage() {
                             )}
 
                             <div className="space-y-4">
-                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <h3 className="text-sm font-semibold text-slate-500 mb-1">Fréquence de paiement</h3>
-                                    <p className="text-slate-900 font-medium capitalize">
+                                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                    <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Fréquence de paiement</h3>
+                                    <p className="text-slate-900 dark:text-white font-medium capitalize">
                                         {userInfo?.payment_frequency ?
                                             (userInfo.payment_frequency === 'monthly' ? 'Mensuel' :
                                                 userInfo.payment_frequency === 'quarterly' ? 'Trimestriel' :
@@ -409,22 +409,22 @@ export default function ProfilePage() {
                                             : 'Non défini'}
                                     </p>
                                 </div>
-                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <h3 className="text-sm font-semibold text-slate-500 mb-1">Date de début</h3>
-                                    <p className="text-slate-900 font-medium">
+                                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                    <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Date de début</h3>
+                                    <p className="text-slate-900 dark:text-white font-medium">
                                         {userInfo?.start_date ? new Date(userInfo.start_date).toLocaleDateString() : 'Non définie'}
                                     </p>
                                 </div>
-                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <h3 className="text-sm font-semibold text-slate-500 mb-1">Prochaine Échéance URSSAF</h3>
-                                    <p className="text-slate-900 font-medium flex items-center gap-2">
+                                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                    <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Prochaine Échéance URSSAF</h3>
+                                    <p className="text-slate-900 dark:text-white font-medium flex items-center gap-2">
                                         {nextUrssaf ? nextUrssaf.toLocaleDateString() : 'Aucune'}
                                         {nextUrssaf && <AlertCircle className="w-4 h-4 text-orange-500" />}
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="mt-6 pt-6 border-t border-slate-100">
+                            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
                                 <Link href="/calculateur" className="block w-full py-3 text-center bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 transition-colors">
                                     Mettre à jour mes infos
                                 </Link>
@@ -443,27 +443,27 @@ export default function ProfilePage() {
 
                     {/* Calendar Section */}
                     <div className="w-full md:w-2/3">
-                        <div className="bg-white rounded-3xl shadow-lg shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-lg shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 overflow-hidden relative">
 
                             {/* Header */}
-                            <div className="p-4 md:p-6 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
-                                <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                            <div className="p-4 md:p-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80">
+                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
                                     <CalendarIcon className="w-6 h-6 text-[#FFCC00]" />
                                     Calendrier Fiscal
                                 </h2>
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={goToToday}
-                                        className="hidden md:block px-3 py-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition-colors"
+                                        className="hidden md:block px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                     >
                                         Aujourd'hui
                                     </button>
-                                    <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
-                                        <button onClick={prevMonth} className="p-1 hover:bg-slate-100 rounded-full transition-colors"><ChevronLeft className="w-5 h-5 text-slate-600" /></button>
-                                        <span className="font-bold text-slate-800 w-32 text-center select-none">
+                                    <div className="flex items-center gap-4 bg-white dark:bg-slate-900 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
+                                        <button onClick={prevMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"><ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-200" /></button>
+                                        <span className="font-bold text-slate-800 dark:text-white w-32 text-center select-none">
                                             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                                         </span>
-                                        <button onClick={nextMonth} className="p-1 hover:bg-slate-100 rounded-full transition-colors"><ChevronRight className="w-5 h-5 text-slate-600" /></button>
+                                        <button onClick={nextMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"><ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-200" /></button>
                                     </div>
                                 </div>
                             </div>
@@ -472,14 +472,14 @@ export default function ProfilePage() {
                             <div className="p-4 md:p-6">
                                 <div className="grid grid-cols-7 mb-4">
                                     {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
-                                        <div key={day} className="text-center text-slate-400 text-sm font-semibold uppercase tracking-wider">
+                                        <div key={day} className="text-center text-slate-400 dark:text-slate-300 text-sm font-semibold uppercase tracking-wider">
                                             {day}
                                         </div>
                                     ))}
                                 </div>
                                 <div className="grid grid-cols-7 gap-1 md:gap-2">
                                     {Array.from({ length: firstDay }).map((_, i) => (
-                                        <div key={`empty-${i}`} className="h-16 md:h-24 bg-slate-50/50 rounded-xl border border-transparent" />
+                                        <div key={`empty-${i}`} className="h-16 md:h-24 bg-slate-50/50 dark:bg-slate-900 rounded-xl border border-transparent" />
                                     ))}
                                     {Array.from({ length: daysInMonth }).map((_, i) => {
                                         const day = i + 1;
@@ -492,12 +492,12 @@ export default function ProfilePage() {
                                                 key={day}
                                                 onClick={() => handleDayClick(day, events)}
                                                 className={`h-16 md:h-24 p-1.5 md:p-2 rounded-xl border transition-all relative group flex flex-col justify-between
-                                                    ${today ? 'border-[#FFCC00] bg-[#FFCC00]/5 ring-2 ring-[#FFCC00]/10' : 'border-slate-100 bg-white hover:border-slate-300 hover:shadow-md'}
+                                                    ${today ? 'border-[#FFCC00] bg-[#FFCC00]/5 dark:bg-[#FFCC00]/10 ring-2 ring-[#FFCC00]/10' : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md'}
                                                     ${hasEvents ? 'cursor-pointer hover:scale-[1.02]' : ''}
                                                 `}
                                             >
                                                 <div className="flex justify-between items-start">
-                                                    <span className={`text-sm font-bold ${today ? 'text-[#e5b800]' : 'text-slate-700'}`}>
+                                                    <span className={`text-sm font-bold ${today ? 'text-[#e5b800]' : 'text-slate-700 dark:text-white'}`}>
                                                         {day}
                                                     </span>
                                                     {today && <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />}
@@ -517,9 +517,9 @@ export default function ProfilePage() {
                             </div>
 
                             {/* Legend / Info */}
-                            <div className="px-8 pb-8 flex gap-6 text-sm text-slate-500">
+                            <div className="px-8 pb-8 flex gap-6 text-sm text-slate-500 dark:text-slate-400">
                                 {deadlines.cfe?.exempt && (
-                                    <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+                                    <div className="flex items-center gap-2 text-green-600 dark:text-green-300 bg-green-50 dark:bg-green-900/30 px-3 py-1.5 rounded-lg border border-green-100 dark:border-green-800">
                                         <CheckCircle2 className="w-4 h-4" />
                                         <span>{deadlines.cfe.message}</span>
                                     </div>
@@ -535,18 +535,18 @@ export default function ProfilePage() {
             {/* Event Details Modal */}
             {selectedDateEvents && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setSelectedDateEvents(null)}>
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                            <h3 className="font-bold text-lg text-slate-900">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80 flex justify-between items-center">
+                            <h3 className="font-bold text-lg text-slate-900 dark:text-white">
                                 {selectedDateEvents.date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                             </h3>
-                            <button onClick={() => setSelectedDateEvents(null)} className="p-1 hover:bg-slate-200 rounded-full transition-colors">
+                            <button onClick={() => setSelectedDateEvents(null)} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
                                 <ChevronLeft className="w-5 h-5 rotate-180" /> {/* Close icon workaround or just X */}
                             </button>
                         </div>
                         <div className="p-6 space-y-4">
                             {selectedDateEvents.events.map((evt, idx) => (
-                                <div key={idx} className={`p-4 rounded-xl border ${evt.color.replace('bg-', 'bg-opacity-20 bg-')}`}>
+                                <div key={idx} className={`p-4 rounded-xl border ${evt.color.replace('bg-', 'bg-opacity-20 bg-')} dark:border-slate-700`}>
                                     <h4 className="font-bold text-base mb-1">{evt.label}</h4>
                                     <p className="text-sm opacity-90">
                                         N'oubliez pas de déclarer et payer avant minuit.
@@ -554,7 +554,7 @@ export default function ProfilePage() {
                                 </div>
                             ))}
                         </div>
-                        <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+                        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-end">
                             <button
                                 onClick={() => setSelectedDateEvents(null)}
                                 className="px-4 py-2 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors"

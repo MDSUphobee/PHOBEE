@@ -27,14 +27,13 @@ const features = [
         title: "Radar à Aides",
         description: "Notre algo scanne votre profil et trouve l'argent que vous oubliez.",
         icon: Radar,
-        className: "md:col-span-1 bg-secondary text-primary-foreground",
+        className: "md:col-span-1 bg-secondary text-primary-foreground text-white",
+        // VISUAL: version plus lisible, avec couleur et info texte centrale
         visual: (
             <div className="mt-4 flex items-center justify-center h-24">
-                <div className="relative flex items-center justify-center">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-20"></span>
-                    <div className="relative w-16 h-16 rounded-full border border-primary/30 flex items-center justify-center">
-                        <div className="w-1 h-8 bg-gradient-to-t from-transparent to-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[0] origin-bottom animate-[spin_3s_linear_infinite]" />
-                    </div>
+                <div className="relative flex items-center justify-center w-20 h-20 bg-white rounded-full shadow border border-primary/20">
+                    <Radar className="w-8 h-8 text-primary" />
+                    {/* Ajout d'une bulle "€ détectés" */}
                 </div>
             </div>
         )

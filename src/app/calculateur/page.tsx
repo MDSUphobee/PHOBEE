@@ -129,14 +129,14 @@ export default function CalculateurPage() {
 
     if (loading) {
         return (
-            <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+            <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-600 dark:text-slate-100">
                 <Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" />
             </main>
         );
     }
 
     return (
-        <main className="min-h-screen bg-slate-50 flex flex-col font-sans mt-16">
+        <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans mt-16 text-slate-900 dark:text-slate-100">
             <Navbar />
 
             <div className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
@@ -145,18 +145,18 @@ export default function CalculateurPage() {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#FFCC00] text-slate-900 mb-6 shadow-lg shadow-yellow-500/20">
                             <Calculator className="w-8 h-8" />
                         </div>
-                        <h1 className="text-4xl font-bold text-slate-900 mb-4">Calculateur de Cotisations</h1>
-                        <p className="text-slate-600 text-lg max-w-lg mx-auto">
+                        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Calculateur de Cotisations</h1>
+                        <p className="text-slate-600 dark:text-slate-300 text-lg max-w-lg mx-auto">
                             Renseignez vos informations pour estimer vos cotisations sociales avec précision.
                         </p>
                     </div>
 
-                    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 overflow-hidden border border-slate-100 dark:border-slate-800">
                         <div className="p-8 md:p-10">
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 {/* Start Date */}
                                 <div className="space-y-3">
-                                    <label className="flex items-center text-base font-semibold text-slate-800" htmlFor="start_date">
+                                    <label className="flex items-center text-base font-semibold text-slate-800 dark:text-slate-100" htmlFor="start_date">
                                         <Calendar className="w-5 h-5 mr-2 text-[#FFCC00]" />
                                         Date de début d'activité
                                     </label>
@@ -165,15 +165,15 @@ export default function CalculateurPage() {
                                         id="start_date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-4 focus:ring-[#FFCC00]/10 bg-slate-50 transition-all outline-none text-slate-900"
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-[#FFCC00] focus:ring-4 focus:ring-[#FFCC00]/10 bg-slate-50 dark:bg-slate-900 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                         required
                                     />
-                                    <p className="text-sm text-slate-500">La date à laquelle vous avez commencé votre exploitation.</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">La date à laquelle vous avez commencé votre exploitation.</p>
                                 </div>
 
                                 {/* Payment Frequency */}
                                 <div className="space-y-3">
-                                    <label className="flex items-center text-base font-semibold text-slate-800" htmlFor="payment_frequency">
+                                    <label className="flex items-center text-base font-semibold text-slate-800 dark:text-slate-100" htmlFor="payment_frequency">
                                         <CreditCard className="w-5 h-5 mr-2 text-[#FFCC00]" />
                                         Fréquence de paiement
                                     </label>
@@ -182,8 +182,8 @@ export default function CalculateurPage() {
                                             type="button"
                                             onClick={() => setPaymentFrequency("monthly")}
                                             className={`px-4 py-3 rounded-xl border-2 transition-all font-medium flex items-center justify-center ${paymentFrequency === "monthly"
-                                                ? "border-[#FFCC00] bg-[#FFCC00]/10 text-slate-900"
-                                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200"
+                                                ? "border-[#FFCC00] bg-[#FFCC00]/10 dark:bg-[#FFCC00]/20 text-slate-900"
+                                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-500"
                                                 }`}
                                         >
                                             Mensuel
@@ -192,8 +192,8 @@ export default function CalculateurPage() {
                                             type="button"
                                             onClick={() => setPaymentFrequency("quarterly")}
                                             className={`px-4 py-3 rounded-xl border-2 transition-all font-medium flex items-center justify-center ${paymentFrequency === "quarterly"
-                                                ? "border-[#FFCC00] bg-[#FFCC00]/10 text-slate-900"
-                                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200"
+                                                ? "border-[#FFCC00] bg-[#FFCC00]/10 dark:bg-[#FFCC00]/20 text-slate-900"
+                                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-500"
                                                 }`}
                                         >
                                             Trimestriel
@@ -202,8 +202,8 @@ export default function CalculateurPage() {
                                             type="button"
                                             onClick={() => setPaymentFrequency("annually")}
                                             className={`px-4 py-3 rounded-xl border-2 transition-all font-medium flex items-center justify-center ${paymentFrequency === "annually"
-                                                ? "border-[#FFCC00] bg-[#FFCC00]/10 text-slate-900"
-                                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200"
+                                                ? "border-[#FFCC00] bg-[#FFCC00]/10 dark:bg-[#FFCC00]/20 text-slate-900"
+                                                : "border-slate-100 bg-slate-50 text-slate-500 hover:border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-500"
                                                 }`}
                                         >
                                             Annuel
@@ -213,13 +213,13 @@ export default function CalculateurPage() {
                                 </div>
 
                                 {/* ACRE Checkbox */}
-                                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-4 cursor-pointer hover:border-slate-200 transition-colors" onClick={() => setHasAcre(!hasAcre)}>
-                                    <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${hasAcre ? "bg-[#FFCC00] border-[#FFCC00]" : "border-slate-300 bg-white"}`}>
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center gap-4 cursor-pointer hover:border-slate-200 dark:hover:border-slate-600 transition-colors" onClick={() => setHasAcre(!hasAcre)}>
+                                    <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${hasAcre ? "bg-[#FFCC00] border-[#FFCC00]" : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950"}`}>
                                         {hasAcre && <CheckCircle2 className="w-4 h-4 text-slate-900" />}
                                     </div>
                                     <div className="flex-1">
-                                        <span className="font-semibold text-slate-800 block">Bénéficiaire de l'ACRE</span>
-                                        <span className="text-sm text-slate-500">Cochez cette case si vous bénéficiez de l'aide à la création ou à la reprise d'une entreprise.</span>
+                                        <span className="font-semibold text-slate-800 dark:text-slate-100 block">Bénéficiaire de l'ACRE</span>
+                                        <span className="text-sm text-slate-500 dark:text-slate-400">Cochez cette case si vous bénéficiez de l'aide à la création ou à la reprise d'une entreprise.</span>
                                     </div>
                                 </div>
 

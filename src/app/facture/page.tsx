@@ -417,7 +417,7 @@ export default function InvoiceBuilderPage() {
                                             {logoData && (
                                                 <div className="border border-slate-200 rounded-lg p-2 bg-slate-50 inline-flex items-center gap-2 w-fit">
                                                     <img src={logoData} alt="Logo" className="h-12 w-auto object-contain rounded border border-slate-200 bg-white" />
-                                                    <span className="text-xs text-slate-600">Prévisualisation (PDF)</span>
+                                                    <span className="text-xs text-slate-600 dark:text-white">Prévisualisation (PDF)</span>
                                                 </div>
                                             )}
                                         </div>
@@ -467,60 +467,60 @@ export default function InvoiceBuilderPage() {
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-sm font-medium text-slate-700">Nom &amp; prénom</label>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-white">Nom &amp; prénom</label>
                                     <input
                                         type="text"
                                         value={issuerName}
                                         onChange={(e) => setIssuerName(e.target.value)}
                                         placeholder="Ex : Léa Dupont"
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                         required
                                     />
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-sm font-medium text-slate-700">Adresse complète</label>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-white">Adresse complète</label>
                                     <textarea
                                         value={issuerAddress}
                                         onChange={(e) => setIssuerAddress(e.target.value)}
                                         placeholder="Numéro, rue, CP, ville..."
                                         rows={3}
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-3">
-                                        <label className="text-sm font-medium text-slate-700">Email</label>
+                                        <label className="text-sm font-medium text-slate-700 dark:text-white">Email</label>
                                         <input
                                             type="email"
                                             value={issuerEmail}
                                             onChange={(e) => setIssuerEmail(e.target.value)}
                                             placeholder="freelance@email.com"
-                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-sm font-medium text-slate-700">Téléphone</label>
+                                        <label className="text-sm font-medium text-slate-700 dark:text-white">Téléphone</label>
                                         <input
                                             type="tel"
                                             value={issuerPhone}
                                             onChange={(e) => setIssuerPhone(e.target.value)}
                                             placeholder="+33 6 12 34 56 78"
-                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <label className="text-sm font-medium text-slate-700">Numéro SIRET</label>
-                                        <label className="flex items-center gap-2 text-xs text-slate-600">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-white">Numéro SIRET</label>
+                                        <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-white">
                                             <input
                                                 type="checkbox"
                                                 checked={isSiretPending}
                                                 onChange={(e) => toggleSiretPending(e.target.checked)}
-                                                className="rounded border-slate-300 text-primary focus:ring-primary"
+                                                className="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary"
                                             />
                                             Je suis en cours d'immatriculation
                                         </label>
@@ -536,10 +536,10 @@ export default function InvoiceBuilderPage() {
                                         inputMode="numeric"
                                         maxLength={14}
                                         placeholder="14 chiffres"
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-100 disabled:text-slate-500"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:text-white dark:placeholder:text-slate-500"
                                     />
                                     {isSiretPending && (
-                                        <p className="text-xs text-slate-500">
+                                        <p className="text-xs text-slate-500 dark:text-white">
                                             SIRET : En cours d'attribution (sera inscrit automatiquement sur la facture)
                                         </p>
                                     )}
@@ -547,13 +547,13 @@ export default function InvoiceBuilderPage() {
 
                                 {isTvaEnabled && (
                                     <div className="space-y-3">
-                                        <label className="text-sm font-medium text-slate-700">Numéro de TVA intracommunautaire</label>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-white">Numéro de TVA intracommunautaire</label>
                                         <input
                                             type="text"
                                             value={tvaNumber}
                                             onChange={(e) => setTvaNumber(e.target.value)}
                                             placeholder="FRXX999999999"
-                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                         />
                                     </div>
                                 )}
@@ -572,7 +572,7 @@ export default function InvoiceBuilderPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-white">
                                         Numéro de facture
                                         <Info
                                             className="w-4 h-4 text-slate-400"
@@ -584,12 +584,12 @@ export default function InvoiceBuilderPage() {
                                         value={invoiceNumber}
                                         onChange={(e) => setInvoiceNumber(e.target.value)}
                                         placeholder="Ex: 2025-001"
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-white">
                                         Date d'émission
                                         <CalendarDays className="w-4 h-4 text-slate-400" />
                                     </label>
@@ -597,12 +597,12 @@ export default function InvoiceBuilderPage() {
                                         type="date"
                                         value={issueDate}
                                         onChange={(e) => setIssueDate(e.target.value)}
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                    <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-white">
                                         Date d'échéance
                                         <Info
                                             className="w-4 h-4 text-slate-400"
@@ -612,12 +612,12 @@ export default function InvoiceBuilderPage() {
                                     <select
                                         value={dueOption}
                                         onChange={(e) => setDueOption(e.target.value as "reception" | "30j")}
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     >
                                         <option value="reception">Paiement à réception ({formatDate(issueDate)})</option>
                                         <option value="30j">30 jours ({formatDate(dueDate)})</option>
                                     </select>
-                                    <p className="text-xs text-slate-500">Échéance calculée automatiquement.</p>
+                                    <p className="text-xs text-slate-500 dark:text-white">Échéance calculée automatiquement.</p>
                                 </div>
                             </div>
                         </section>
@@ -641,7 +641,7 @@ export default function InvoiceBuilderPage() {
 
                             <div className="overflow-x-auto">
                                 <div className="min-w-[760px] space-y-3">
-                                    <div className="grid grid-cols-12 gap-3 text-xs font-semibold text-slate-500">
+                                    <div className="grid grid-cols-12 gap-3 text-xs font-semibold text-slate-500 dark:text-white">
                                         <div className="col-span-5">Description</div>
                                         <div className="col-span-2">Quantité</div>
                                         <div className="col-span-2">Prix unitaire</div>
@@ -655,7 +655,7 @@ export default function InvoiceBuilderPage() {
                                         return (
                                             <div
                                                 key={index}
-                                                className="grid grid-cols-12 gap-3 items-start bg-slate-50/80 border border-slate-100 rounded-xl p-3"
+                                                className="grid grid-cols-12 gap-3 items-start bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 rounded-xl p-3"
                                             >
                                                 <div className="col-span-5">
                                                     <textarea
@@ -663,9 +663,9 @@ export default function InvoiceBuilderPage() {
                                                         onChange={(e) => handleLineChange(index, "description", e.target.value)}
                                                         placeholder="Description détaillée"
                                                         rows={3}
-                                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                                                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                                     />
-                                                    <p className="text-[11px] text-slate-500 mt-1">
+                                                    <p className="text-[11px] text-slate-500 dark:text-white mt-1">
                                                         Sois précis. &quot;Création logo + 3 corrections&quot; protège mieux que &quot;Logo&quot;.
                                                     </p>
                                                 </div>
@@ -675,7 +675,7 @@ export default function InvoiceBuilderPage() {
                                                         min={0}
                                                         value={line.quantity}
                                                         onChange={(e) => handleLineChange(index, "quantity", Number(e.target.value))}
-                                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                                     />
                                                 </div>
                                                 <div className="col-span-2">
@@ -685,7 +685,7 @@ export default function InvoiceBuilderPage() {
                                                         step="0.01"
                                                         value={line.unitPrice}
                                                         onChange={(e) => handleLineChange(index, "unitPrice", Number(e.target.value))}
-                                                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                                     />
                                                 </div>
                                                 {isTvaEnabled && (
@@ -696,7 +696,7 @@ export default function InvoiceBuilderPage() {
                                                             step="0.1"
                                                             value={line.tvaRate}
                                                             onChange={(e) => handleLineChange(index, "tvaRate", Number(e.target.value))}
-                                                            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                                         />
                                                     </div>
                                                 )}
@@ -712,7 +712,7 @@ export default function InvoiceBuilderPage() {
                                                     <button
                                                         type="button"
                                                         onClick={() => handleRemoveLine(index)}
-                                                        className="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                                        className="p-2 rounded-lg text-slate-500 dark:text-white hover:text-red-600 hover:bg-red-50 transition-colors"
                                                         aria-label="Supprimer la ligne"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
@@ -726,14 +726,14 @@ export default function InvoiceBuilderPage() {
                         </section>
 
                         {/* TVA & Totals */}
-                        <section className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-5">
+                        <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-5">
                             <div className="flex items-center justify-between flex-wrap gap-3">
                                 <div className="flex items-center gap-3">
                                     <div>
                                         <h2 className="text-lg font-semibold text-secondary">TVA &amp; Totaux</h2>
-                                        <p className="text-sm text-slate-500">Active la TVA si tu es assujetti.</p>
+                                    <p className="text-sm text-slate-500 dark:text-white">Active la TVA si tu es assujetti.</p>
                                     </div>
-                                    <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-xs text-slate-700 border border-slate-200">
+                                    <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-xs text-slate-700 dark:text-white border border-slate-200 dark:border-slate-800">
                                         <Info className="w-4 h-4 text-secondary" />
                                         <span>{isTvaEnabled ? "Assujetti : TVA 20% appliquée" : "Franchise : TVA non applicable"}</span>
                                     </div>
@@ -744,30 +744,30 @@ export default function InvoiceBuilderPage() {
                                         onClick={() => setIsTvaEnabled((v) => !v)}
                                         className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${isTvaEnabled
                                             ? "bg-secondary text-white border-secondary"
-                                            : "bg-white text-secondary border-slate-200"
+                                            : "bg-white dark:bg-slate-900 text-secondary dark:text-white border-slate-200 dark:border-slate-700"
                                             }`}
                                     >
                                         <ShieldCheck className="w-4 h-4" />
                                         {isTvaEnabled ? "TVA activée" : "TVA non facturée"}
                                     </button>
-                                    <span className="text-[11px] text-slate-500 sm:hidden">
+                                    <span className="text-[11px] text-slate-500 dark:text-white sm:hidden">
                                         {isTvaEnabled ? "Assujetti : TVA 20% appliquée" : "Franchise : TVA non applicable"}
                                     </span>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                                    <p className="text-sm text-slate-500">Total HT</p>
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                    <p className="text-sm text-slate-500 dark:text-white">Total HT</p>
                                     <p className="text-2xl font-bold text-secondary mt-1">{formatCurrency(totals.totalHT)}</p>
                                 </div>
-                                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                                    <p className="text-sm text-slate-500">Montant TVA</p>
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                    <p className="text-sm text-slate-500 dark:text-white">Montant TVA</p>
                                     <p className="text-2xl font-bold text-secondary mt-1">
                                         {isTvaEnabled ? formatCurrency(totals.totalTVA) : "0,00 €"}
                                     </p>
                                     {!isTvaEnabled && (
-                                        <p className="text-[11px] text-slate-500 mt-1">
+                                        <p className="text-[11px] text-slate-500 dark:text-white mt-1">
                                             TVA non applicable, art. 293 B du CGI
                                         </p>
                                     )}
@@ -780,7 +780,7 @@ export default function InvoiceBuilderPage() {
                         </section>
 
                         {/* Legal */}
-                        <section className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                        <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-semibold text-secondary">Mentions &amp; RIB</h2>
                                 <Info className="w-4 h-4 text-slate-400" /* title removed for TS error */ />
@@ -788,29 +788,29 @@ export default function InvoiceBuilderPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-700">Coordonnées bancaires (RIB)</label>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-white">Coordonnées bancaires (RIB)</label>
                                     <textarea
                                         value={bankDetails}
                                         onChange={(e) => setBankDetails(e.target.value)}
                                         placeholder="IBAN : FR76 ... / BIC : ..."
                                         rows={4}
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-700">Mentions légales de retard</label>
+                                    <label className="text-sm font-medium text-slate-700 dark:text-white">Mentions légales de retard</label>
                                     <textarea
                                         value={legalMention}
                                         onChange={(e) => setLegalMention(e.target.value)}
                                         rows={4}
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     />
                                 </div>
                             </div>
                         </section>
 
-                        <section className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                            <div className="flex items-center gap-3 text-slate-600">
+                        <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div className="flex items-center gap-3 text-slate-600 dark:text-white">
                                 <CheckCircle2 className="w-5 h-5 text-primary" />
                                 <span className="text-sm">
                                     Contrôle anti-erreur : adresse client obligatoire, SIRET automatique si en cours d'immatriculation, TVA gérée.
@@ -834,42 +834,42 @@ export default function InvoiceBuilderPage() {
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-                    <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 space-y-4">
+                    <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 p-6 space-y-4">
                         <div className="flex items-start gap-3">
                             <div className="w-10 h-10 rounded-full bg-primary/20 text-secondary flex items-center justify-center">
                                 <ShieldCheck className="w-5 h-5" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-semibold text-secondary">👮‍♂️ Contrôle de Sécurité PhoBee</h3>
-                                <p className="text-sm text-slate-600 mt-1">Coche les trois points avant d'exporter.</p>
+                                <p className="text-sm text-slate-600 dark:text-white mt-1">Coche les trois points avant d'exporter.</p>
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <label className="flex items-center gap-3 text-sm text-slate-700">
+                            <label className="flex items-center gap-3 text-sm text-slate-700 dark:text-white">
                                 <input
                                     type="checkbox"
                                     checked={checklist.clientAddress}
                                     onChange={(e) => setChecklist((prev) => ({ ...prev, clientAddress: e.target.checked }))}
-                                    className="rounded border-slate-300 text-primary focus:ring-primary"
+                                    className="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary"
                                 />
                                 L'adresse du client est correcte ?
                             </label>
-                            <label className="flex items-center gap-3 text-sm text-slate-700">
+                            <label className="flex items-center gap-3 text-sm text-slate-700 dark:text-white">
                                 <input
                                     type="checkbox"
                                     checked={checklist.rib}
                                     onChange={(e) => setChecklist((prev) => ({ ...prev, rib: e.target.checked }))}
-                                    className="rounded border-slate-300 text-primary focus:ring-primary"
+                                    className="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary"
                                 />
                                 Mon RIB est bien renseigné ?
                             </label>
-                            <label className="flex items-center gap-3 text-sm text-slate-700">
+                            <label className="flex items-center gap-3 text-sm text-slate-700 dark:text-white">
                                 <input
                                     type="checkbox"
                                     checked={checklist.amounts}
                                     onChange={(e) => setChecklist((prev) => ({ ...prev, amounts: e.target.checked }))}
-                                    className="rounded border-slate-300 text-primary focus:ring-primary"
+                                    className="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary"
                                 />
                                 J'ai relu les montants ?
                             </label>
@@ -879,7 +879,7 @@ export default function InvoiceBuilderPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowModal(false)}
-                                className="px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-50"
+                                className="px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
                             >
                                 Annuler
                             </button>
