@@ -47,19 +47,19 @@ export default function Hero() {
                         </p>
 
                         <div className="flex flex-wrap items-center gap-4 w-full justify-center lg:justify-start">
-                            <Link href="/audit" className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-primary-foreground transition-all duration-200 bg-primary rounded-full hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-1 focus:outline-none ring-offset-2 focus:ring-2 ring-primary">
+                            <Link href="/calculateur" className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-primary-foreground transition-all duration-200 bg-primary rounded-full hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-1 focus:outline-none ring-offset-2 focus:ring-2 ring-primary">
                                 Lancer mon audit
                                 <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                             </Link>
-                            <Link href="/demo" className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-slate-700 dark:text-slate-100 transition-colors bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-secondary dark:hover:text-primary-foreground">
-                                Voir la démo
+                            <Link href="/facture" className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-slate-700 dark:text-slate-100 transition-colors bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-secondary dark:hover:text-primary-foreground">
+                                Générer une facture
                             </Link>
                         </div>
 
                         <div className="pt-4 flex items-center gap-4 text-sm text-muted-foreground">
-                                <div className="flex -space-x-2">
+                            <div className="flex -space-x-2">
                                 {[1, 2, 3].map(i => (
-                                        <div key={i} className={`w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden`}>
+                                    <div key={i} className={`w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden`}>
                                         <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i * 123}`} alt="User" />
                                     </div>
                                 ))}
