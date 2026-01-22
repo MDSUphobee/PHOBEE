@@ -25,15 +25,15 @@ const testimonials = [
 
 export default function SocialProof() {
     return (
-        <section className="py-24 bg-background border-b border-slate-100 dark:border-slate-800">
+        <section className="py-32 bg-background border-b border-slate-100 dark:border-slate-800">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="text-center mb-16">
+                <div className="text-center mb-24">
                     <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                         Ils dorment mieux depuis qu'ils ont Phobee.
                     </h2>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-3 gap-12">
                     {testimonials.map((t, i) => (
                         <div key={i} className="bg-slate-50 dark:bg-slate-900 p-8 rounded-2xl hover:shadow-lg transition-shadow duration-300">
                             <div className="flex gap-1 mb-4">

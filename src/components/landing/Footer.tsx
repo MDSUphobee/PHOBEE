@@ -5,10 +5,10 @@ import { Twitter, Linkedin, Instagram } from "lucide-react";
 
 export default function Footer() {
     return (
-        <footer className="bg-secondary text-white pt-10 pb-10">
+        <footer className="bg-secondary text-white pt-20 pb-20">
 
 
-            <div className="container mx-auto px-4 md:px-6 grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 border-b border-white/10 pb-12">
+            <div className="container mx-auto px-4 md:px-6 grid grid-cols-2 md:grid-cols-4 gap-12 mb-12 border-b border-white/10 pb-12">
                 <div className="col-span-2 md:col-span-1">
                     <Link href="/" className="flex items-center gap-3 mb-4">
                         <img

@@ -22,9 +22,9 @@ const steps = [
 
 export default function HowItWorks() {
     return (
-        <section className="py-24 bg-background overflow-hidden">
+        <section className="py-32 bg-background overflow-hidden">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="text-center mb-16">
+                <div className="text-center mb-24">
                     <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                         Simple comme bonjour.
                     </h2>
@@ -34,7 +34,7 @@ export default function HowItWorks() {
                     {/* Connector Line (Desktop) */}
                     <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 border-t-2 border-dashed border-slate-300 dark:border-slate-700 -z-0" />
 
-                    <div className="grid md:grid-cols-3 gap-12">
+                    <div className="grid md:grid-cols-3 gap-20">
                         {steps.map((step, idx) => (
                             <motion.div
                                 key={idx}

@@ -77,9 +77,9 @@ export default function FAQ() {
     ];
 
     return (
-        <section className="py-24 bg-background text-foreground">
+        <section className="py-32 bg-background text-foreground">
             <div className="container mx-auto px-4 md:px-6 max-w-3xl">
-                <div className="text-center mb-12">
+                <div className="text-center mb-20">
                     <h2 className="text-3xl font-bold text-foreground">Questions Fréquentes</h2>
                 </div>
 

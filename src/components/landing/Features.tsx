@@ -67,9 +67,9 @@ const features = [
 
 export default function Features() {
     return (
-        <section id="features" className="py-20 bg-background text-foreground">
+        <section id="features" className="py-32 bg-background text-foreground">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="text-center mb-16">
+                <div className="text-center mb-24">
                     <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                         Tout ce dont tu as besoin pour te lancer.
                     </h2>
@@ -78,7 +78,7 @@ export default function Features() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
                     {features.map((feature, index) => (
                         <motion.div
                             key={feature.title}
