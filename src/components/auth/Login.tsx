@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -11,10 +11,15 @@ const AUTH_API = `${API_BASE}/api/auth`;
 
 export default function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    
+    // Récupérer les paramètres de redirection depuis l'URL
+    const redirectPath = searchParams.get("redirect");
+    const answersParam = searchParams.get("answers");
 
     const validate = () => {
         if (!email.trim() || !password) {
@@ -54,7 +59,13 @@ export default function LoginForm() {
             localStorage.setItem("token", data.token);
 
             toast.success("Connexion réussie !");
-            router.push("/profile");
+            
+            // Si on vient du questionnaire, rediriger vers les résultats
+            if (redirectPath === "resultats" && answersParam) {
+                router.push(`/resultats?answers=${answersParam}`);
+            } else {
+                router.push("/profile");
+            }
         } catch (err) {
             setError("Erreur réseau.");
             toast.error("Erreur réseau.");

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,11 +13,16 @@ const AUTH_API = `${API_BASE}/api/auth`;
 
 export default function SignupForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [formData, setFormData] = useState({
         email: "",
         password: "",
         username: "",
     });
+    
+    // Récupérer les paramètres de redirection depuis l'URL
+    const redirectPath = searchParams.get("redirect");
+    const answersParam = searchParams.get("answers");
 
 
 
@@ -77,16 +82,32 @@ export default function SignupForm() {
                     const loginData = await loginRes.json();
                     localStorage.setItem("token", loginData.token);
                     toast.success("Compte créé et connexion réussie !");
-                    router.push("/profile");
+                    
+                    // Si on vient du questionnaire, rediriger vers les résultats
+                    if (redirectPath === "resultats" && answersParam) {
+                        router.push(`/resultats?answers=${answersParam}`);
+                    } else {
+                        router.push("/profile");
+                    }
                 } else {
                     // Fallback si l'auto-login échoue
                     toast.success("Compte créé avec succès ! Connectez-vous.");
-                    router.push("/login"); // Redirection vers login pour qu'il tente manuellement
+                    // Conserver les paramètres pour la redirection après login
+                    if (redirectPath && answersParam) {
+                        router.push(`/login?redirect=${redirectPath}&answers=${encodeURIComponent(answersParam)}`);
+                    } else {
+                        router.push("/login");
+                    }
                 }
             } catch (e) {
                 // En cas d'erreur réseau sur le login, on redirige quand même vers le login car le compte est créé
                 toast.success("Compte créé avec succès ! Connectez-vous.");
-                router.push("/login");
+                // Conserver les paramètres pour la redirection après login
+                if (redirectPath && answersParam) {
+                    router.push(`/login?redirect=${redirectPath}&answers=${encodeURIComponent(answersParam)}`);
+                } else {
+                    router.push("/login");
+                }
             }
         } catch (err) {
             setError("Erreur réseau.");
@@ -116,7 +137,11 @@ export default function SignupForm() {
                             <span className="text-2xl font-bold text-slate-900">PhoBee</span>
                         </div>
                         <h1 className="text-3xl font-bold text-slate-900 mb-2">Créer un compte</h1>
-                        <p className="text-slate-500">Commencez à gérer votre exploitation apicole dès aujourd'hui.</p>
+                        {redirectPath === "resultats" ? (
+                            <p className="text-slate-500">Créez un compte pour voir vos aides éligibles personnalisées.</p>
+                        ) : (
+                            <p className="text-slate-500">Commencez à gérer votre exploitation apicole dès aujourd'hui.</p>
+                        )}
                     </div>
 
                     {error && (

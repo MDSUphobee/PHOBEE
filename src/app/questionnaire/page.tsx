@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, CheckCircle2, Sprout, Building2, Search, X } from "lucide-react";
@@ -18,6 +18,7 @@ export default function QuestionnairePage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
 
   // Filtrer les questions selon le statut choisi
   const filteredQuestions = useMemo(() => {
@@ -48,6 +49,17 @@ export default function QuestionnairePage() {
   const safeCurrentStep = Math.min(currentStep, filteredQuestions.length - 1);
   const progress = ((safeCurrentStep + 1) / filteredQuestions.length) * 100;
 
+  // Auto-avancer après sélection du statut
+  useEffect(() => {
+    if (shouldAutoAdvance && filteredQuestions.length > 1 && currentStep === 0) {
+      setShouldAutoAdvance(false);
+      // Passer à la première question après le statut (index 1)
+      setTimeout(() => {
+        setCurrentStep(1);
+      }, 400); // Délai pour permettre l'animation de transition
+    }
+  }, [filteredQuestions.length, shouldAutoAdvance, currentStep]);
+
   const handleAnswer = (value: string) => {
     const currentQuestion = filteredQuestions[safeCurrentStep];
     const newAnswer: Answer = {
@@ -66,18 +78,13 @@ export default function QuestionnairePage() {
       updatedAnswers.push(newAnswer);
     }
 
-    setAnswers(updatedAnswers);
-
-    // Si c'est la question de statut, réinitialiser les autres réponses et passer à la question suivante
+    // Si c'est la question de statut, réinitialiser les autres réponses
     if (currentQuestion.id === "statut") {
       setAnswers([newAnswer]);
       setSearchQuery(""); // Réinitialiser la recherche
-      // Passer automatiquement à la question suivante après un court délai pour l'animation
-      setTimeout(() => {
-        if (safeCurrentStep < filteredQuestions.length - 1) {
-          setCurrentStep(1); // Passer à la question suivante (index 1 car statut est à l'index 0)
-        }
-      }, 300);
+      setShouldAutoAdvance(true); // Déclencher l'auto-avancement
+    } else {
+      setAnswers(updatedAnswers);
     }
   };
 
@@ -85,9 +92,17 @@ export default function QuestionnairePage() {
     if (safeCurrentStep < filteredQuestions.length - 1) {
       setCurrentStep(safeCurrentStep + 1);
     } else {
-      // Rediriger vers la page de résultats avec les réponses
-      const answersString = encodeURIComponent(JSON.stringify(answers));
-      router.push(`/resultats?answers=${answersString}`);
+      // Vérifier si l'utilisateur est connecté
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // Si non connecté, rediriger vers la page de création de compte avec les réponses
+        const answersString = encodeURIComponent(JSON.stringify(answers));
+        router.push(`/signup?redirect=resultats&answers=${answersString}`);
+      } else {
+        // Si connecté, rediriger vers la page de résultats avec les réponses
+        const answersString = encodeURIComponent(JSON.stringify(answers));
+        router.push(`/resultats?answers=${answersString}`);
+      }
     }
   };
 
@@ -206,24 +221,6 @@ export default function QuestionnairePage() {
                 </div>
               )}
 
-              {/* Affichage des infos du statut si sélectionné */}
-              {currentQuestion.id === "statut" && statutInfo && (
-                <div className="mb-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                  <p className="text-sm font-semibold text-foreground mb-2">
-                    {statutInfo.nom}
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-1">
-                    <span className="font-medium">Catégorie :</span> {statutInfo.categorie}
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-1">
-                    <span className="font-medium">Nombre d'associés :</span> {statutInfo.nombreAssocies}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {statutInfo.caracteristiques}
-                  </p>
-                </div>
-              )}
-
               {/* Options */}
               <div className="space-y-4">
                 {(currentQuestion.id === "statut" ? filteredStatutOptions : currentQuestion.options).map((option) => {
@@ -249,17 +246,17 @@ export default function QuestionnairePage() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1 text-left">
-                          <span className="text-lg font-medium text-foreground block">
+                          <span className="text-lg font-medium text-foreground block mb-2">
                             {option.label}
                           </span>
                           {optionStatut && (
-                            <div className="mt-2 space-y-1">
+                            <div className="space-y-1.5">
                               <p className="text-xs text-muted-foreground">
                                 <span className="font-medium">{optionStatut.categorie}</span>
                                 {" • "}
                                 {optionStatut.nombreAssocies} associé{optionStatut.nombreAssocies !== "1" ? "s" : ""}
                               </p>
-                              <p className="text-xs text-muted-foreground line-clamp-2">
+                              <p className="text-xs text-muted-foreground leading-relaxed">
                                 {optionStatut.caracteristiques}
                               </p>
                             </div>
@@ -276,33 +273,35 @@ export default function QuestionnairePage() {
             </div>
 
             {/* Boutons de navigation */}
-            <div className="flex justify-between gap-4">
-              <button
-                onClick={handlePrevious}
-                disabled={safeCurrentStep === 0}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all ${
-                  safeCurrentStep === 0
-                    ? "opacity-50 cursor-not-allowed"
-                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
-                }`}
-              >
-                <ArrowLeft className="w-5 h-5" />
-                Précédent
-              </button>
+            {currentQuestion.id !== "statut" && (
+              <div className="flex justify-between gap-4">
+                <button
+                  onClick={handlePrevious}
+                  disabled={safeCurrentStep === 0}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all ${
+                    safeCurrentStep === 0
+                      ? "opacity-50 cursor-not-allowed"
+                      : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  Précédent
+                </button>
 
-              <button
-                onClick={handleNext}
-                disabled={!canProceed}
-                className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all ${
-                  canProceed
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-                    : "opacity-50 cursor-not-allowed bg-slate-300 dark:bg-slate-700"
-                }`}
-              >
-                {safeCurrentStep === filteredQuestions.length - 1 ? "Voir mes résultats" : "Suivant"}
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
+                <button
+                  onClick={handleNext}
+                  disabled={!canProceed}
+                  className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all ${
+                    canProceed
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                      : "opacity-50 cursor-not-allowed bg-slate-300 dark:bg-slate-700"
+                  }`}
+                >
+                  {safeCurrentStep === filteredQuestions.length - 1 ? "Voir mes résultats" : "Suivant"}
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
