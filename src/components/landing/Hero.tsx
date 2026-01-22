@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Bell, Calendar, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Bell, Calendar, CheckCircle2, Sprout, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 export default function Hero() {
@@ -33,26 +33,32 @@ export default function Hero() {
                         </motion.div>
 
                         <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-[1.1]">
-                            Fini la{" "}
+                            Optimisez vos{" "}
                             <span className="relative inline-block text-foreground">
-                                phobie
+                                aides PAC
                                 <span className="absolute bottom-1 left-0 w-full h-3 md:h-4 bg-primary/40 -z-10 rounded-sm -rotate-1"></span>
                             </span>{" "}
-                            administrative.
+                            et investissements 2026
                         </h1>
 
                         <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                            L'assistant qui notifie tes échéances URSSAF et détecte tes aides oubliées.
-                            Dors tranquille, on veille au grain.
+                            Découvrez en quelques questions les aides auxquelles vous avez droit. 
+                            Simple, rapide et adapté à votre situation.
                         </p>
 
                         <div className="flex flex-wrap items-center gap-4 w-full justify-center lg:justify-start">
-                            <Link href="/calculateur" className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-primary-foreground transition-all duration-200 bg-primary rounded-full hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-1 focus:outline-none ring-offset-2 focus:ring-2 ring-primary">
-                                Lancer mon audit
+                            <Link
+                                href="/questionnaire"
+                                className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-primary-foreground transition-all duration-200 bg-primary rounded-full hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-1 focus:outline-none ring-offset-2 focus:ring-2 ring-primary"
+                            >
+                                Découvrir mes aides éligibles
                                 <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                             </Link>
-                            <Link href="/facture" className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-slate-700 dark:text-slate-100 transition-colors bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-secondary dark:hover:text-primary-foreground">
-                                Générer une facture
+                            <Link
+                                href="/calculateur"
+                                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-slate-700 dark:text-slate-100 transition-colors bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800"
+                            >
+                                Lancer mon audit
                             </Link>
                         </div>
 
@@ -152,12 +158,28 @@ export default function Hero() {
                                 transition={{ delay: 1.4, duration: 0.4 }}
                                 className="absolute bottom-[20%] left-0 md:-left-8 z-20 bg-white dark:bg-slate-900 p-3 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 flex items-center gap-3"
                             >
-                                <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
                                     <CheckCircle2 className="w-5 h-5" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-foreground">ACRE validée</p>
-                                    <p className="text-xs text-green-600 font-medium">+3000€ économisés</p>
+                                    <p className="text-xs text-primary font-medium">+3000€ économisés</p>
+                                </div>
+                            </motion.div>
+
+                            {/* Floating Growth Icon */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 1.8, duration: 0.5 }}
+                                className="absolute top-[10%] left-0 md:-left-12 z-20 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 flex flex-col items-center gap-2"
+                            >
+                                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <Sprout className="w-6 h-6 text-primary" />
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs font-bold text-foreground">Croissance</p>
+                                    <p className="text-xs text-muted-foreground">& Clarté</p>
                                 </div>
                             </motion.div>
                         </div>

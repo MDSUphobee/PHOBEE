@@ -109,7 +109,7 @@ const categories = [
         title: "L'Argent",
         subtitle: "Factures & Urssaf",
         icon: Landmark,
-        color: "text-green-500 bg-green-50",
+        color: "text-primary bg-primary/10",
         content: [
             {
                 title: "🚨 J'ai gagné 0€ ce mois-ci, je fais quoi ?",
