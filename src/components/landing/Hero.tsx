@@ -6,16 +6,16 @@ import Link from "next/link";
 
 export default function Hero() {
     return (
-        <section className="relative pt-32 pb-20 lg:pt-32 lg:pb-32 overflow-hidden bg-gradient-to-b from-secondary/5 to-white/0 dark:from-slate-800/60 dark:to-slate-950">
+        <section className="relative pt-20 pb-32 lg:pt-28 lg:pb-40 overflow-hidden bg-gradient-to-b from-secondary/5 to-white/0 dark:from-slate-800/60 dark:to-slate-950">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
 
                     {/* Text Content */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8"
+                        className="flex flex-col items-center text-center space-y-10"
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
@@ -42,23 +42,20 @@ export default function Hero() {
                         </h1>
 
                         <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                            Découvrez en quelques questions les aides auxquelles vous avez droit. 
+                            Découvrez en quelques questions les aides auxquelles vous avez droit.
                             Simple, rapide et adapté à votre situation.
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-4 w-full justify-center lg:justify-start">
+                        <div className="flex flex-wrap items-center gap-4 w-full justify-center">
                             <Link
                                 href="/questionnaire"
-                                className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-primary-foreground transition-all duration-200 bg-primary rounded-full hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-1 focus:outline-none ring-offset-2 focus:ring-2 ring-primary"
+                                className="group relative inline-flex items-center justify-center px-10 py-5 text-lg md:text-xl font-bold text-slate-900 transition-all duration-300 bg-gradient-to-r from-primary to-amber-400 rounded-full shadow-xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/50 hover:-translate-y-1 hover:scale-105 active:scale-95 focus:outline-none ring-offset-2 focus:ring-2 ring-primary"
                             >
-                                Découvrir mes aides éligibles
-                                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-                            </Link>
-                            <Link
-                                href="/calculateur"
-                                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium text-slate-700 dark:text-slate-100 transition-colors bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800"
-                            >
-                                Lancer mon audit
+                                <span className="absolute inset-0 rounded-full bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                                <span className="relative flex items-center gap-3">
+                                    Découvrir mes aides éligibles
+                                    <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-2" />
+                                </span>
                             </Link>
                         </div>
 
