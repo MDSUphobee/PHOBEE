@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/db';
-import { RowDataPacket } from 'mysql2';
 
 export async function GET() {
     try {
-        const [rows] = await db.execute<RowDataPacket[]>('SELECT id, name FROM nature_income ORDER BY name ASC');
-        return NextResponse.json(rows);
+        const apiResponse = await fetch(`${process.env.API_BASE}/nature-income`);
+        const data = await apiResponse.json();
+
+        if (!apiResponse.ok) {
+            return NextResponse.json(data, { status: apiResponse.status });
+        }
+
+        return NextResponse.json(data);
     } catch (err: any) {
-        console.error('Erreur lors de la récupération des natures de revenu:', err);
+        console.error('Erreur proxy nature-income:', err);
         return NextResponse.json(
-            { message: 'Échec de la récupération des natures de revenu', error: err.message },
+            { message: 'Erreur serveur', error: err.message },
             { status: 500 }
         );
     }

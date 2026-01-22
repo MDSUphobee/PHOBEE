@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/db';
-import { RowDataPacket } from 'mysql2';
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
@@ -8,29 +6,24 @@ export async function GET(req: Request) {
 
     if (!email) {
         return NextResponse.json(
-            { message: 'Le paramètre de requête email est requis' },
+            { message: 'Email requis' },
             { status: 400 }
         );
     }
 
     try {
-        const [rows] = await db.execute<RowDataPacket[]>(
-            'SELECT id, username, email FROM users WHERE email = ? AND deleted = 0 LIMIT 1',
-            [email]
-        );
+        const apiResponse = await fetch(`${process.env.API_BASE}/users?email=${encodeURIComponent(email)}`);
+        const data = await apiResponse.json();
 
-        if (!rows.length) {
-            return NextResponse.json(
-                { message: 'Utilisateur non trouvé' },
-                { status: 404 }
-            );
+        if (!apiResponse.ok) {
+            return NextResponse.json(data, { status: apiResponse.status });
         }
 
-        return NextResponse.json(rows[0]);
+        return NextResponse.json(data);
     } catch (err: any) {
-        console.error("Erreur lors de la récupération de l'utilisateur par email:", err);
+        console.error("Erreur proxy user:", err);
         return NextResponse.json(
-            { message: "Échec de la récupération de l'utilisateur", error: err.message },
+            { message: "Erreur serveur", error: err.message },
             { status: 500 }
         );
     }
