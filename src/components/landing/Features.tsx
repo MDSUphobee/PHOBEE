@@ -45,7 +45,7 @@ const features = [
         className: "md:col-span-1 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800",
         visual: (
             <div className="mt-4 flex items-center justify-center">
-                <div className="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-200 rounded-full text-xs font-bold">
+                <div className="px-3 py-1 bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary rounded-full text-xs font-bold">
                     "Simplifié"
                 </div>
             </div>
@@ -58,8 +58,8 @@ const features = [
         className: "md:col-span-2 bg-slate-50 dark:bg-slate-900",
         visual: (
             <div className="mt-4 flex items-center gap-2 text-slate-400 text-xs">
-                <span className="flex items-center gap-1"><div className="w-2 h-2 bg-green-400 dark:bg-green-300 rounded-full" /> AES-256</span>
-                <span className="flex items-center gap-1"><div className="w-2 h-2 bg-green-400 dark:bg-green-300 rounded-full" /> GDPR Compliant</span>
+                <span className="flex items-center gap-1"><div className="w-2 h-2 bg-primary dark:bg-primary rounded-full" /> AES-256</span>
+                <span className="flex items-center gap-1"><div className="w-2 h-2 bg-primary dark:bg-primary rounded-full" /> GDPR Compliant</span>
             </div>
         )
     },

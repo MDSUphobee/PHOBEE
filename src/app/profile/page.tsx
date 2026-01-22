@@ -519,7 +519,7 @@ export default function ProfilePage() {
                             {/* Legend / Info */}
                             <div className="px-8 pb-8 flex gap-6 text-sm text-slate-500 dark:text-slate-400">
                                 {deadlines.cfe?.exempt && (
-                                    <div className="flex items-center gap-2 text-green-600 dark:text-green-300 bg-green-50 dark:bg-green-900/30 px-3 py-1.5 rounded-lg border border-green-100 dark:border-green-800">
+                                    <div className="flex items-center gap-2 text-primary dark:text-primary bg-primary/10 dark:bg-primary/20 px-3 py-1.5 rounded-lg border border-primary/20 dark:border-primary/30">
                                         <CheckCircle2 className="w-4 h-4" />
                                         <span>{deadlines.cfe.message}</span>
                                     </div>

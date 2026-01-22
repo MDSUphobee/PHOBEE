@@ -1,0 +1,407 @@
+{
+  "statuts": [
+    {
+      "id": "ei",
+      "nom": "Entreprise Individuelle (EI)",
+      "categorie": "Individuel",
+      "nombreAssocies": "1",
+      "caracteristiques": "Statut par défaut. Patrimoines personnel et professionnel séparés automatiquement depuis 2022.",
+      "responsabilite": "Limitée aux biens professionnels"
+    },
+    {
+      "id": "earl",
+      "nom": "EARL (Exploitation Agricole à Responsabilité Limitée)",
+      "categorie": "Société Civile",
+      "nombreAssocies": "1 à 10",
+      "caracteristiques": "Permet d'être seul ou à plusieurs. Capital social minimum : 7 500 €.",
+      "responsabilite": "Limitée aux apports"
+    },
+    {
+      "id": "gaec",
+      "nom": "GAEC (Groupement Agricole d'Exploitation en Commun)",
+      "categorie": "Société Civile",
+      "nombreAssocies": "2 à 10",
+      "caracteristiques": "Travail en commun. Permet de conserver les avantages du statut \"individuel\" (transparence fiscale).",
+      "responsabilite": "Solidaire (souvent limitée)"
+    },
+    {
+      "id": "scea",
+      "nom": "SCEA (Société Civile d'Exploitation Agricole)",
+      "categorie": "Société Civile",
+      "nombreAssocies": "2 ou +",
+      "caracteristiques": "Très souple. Pas de capital minimum. Idéal pour intégrer des associés non-exploitants (investisseurs).",
+      "responsabilite": "Illimitée (proportionnelle)"
+    },
+    {
+      "id": "gfa",
+      "nom": "GFA (Groupement Foncier Agricole)",
+      "categorie": "Société Civile",
+      "nombreAssocies": "2 ou +",
+      "caracteristiques": "Créé pour détenir et gérer du foncier (terres) plutôt que l'exploitation elle-même.",
+      "responsabilite": "Illimitée (proportionnelle)"
+    },
+    {
+      "id": "sarl-sas",
+      "nom": "SARL / SAS",
+      "categorie": "Société Commerciale",
+      "nombreAssocies": "1 ou +",
+      "caracteristiques": "Rare en production pure, mais utilisé pour la transformation ou la vente d'énergie (méthanisation, solaire).",
+      "responsabilite": "Limitée aux apports"
+    },
+    {
+      "id": "cuma",
+      "nom": "CUMA (Coopérative d'Utilisation de Matériel Agricole)",
+      "categorie": "Coopérative",
+      "nombreAssocies": "4 ou +",
+      "caracteristiques": "Société coopérative permettant l'achat et l'utilisation commune de matériel.",
+      "responsabilite": "Selon les statuts"
+    }
+  ],
+  "aides": [
+    {
+      "id": "pac",
+      "nom": "Aides PAC (1er Pilier)",
+      "montant": "Sur devis",
+      "description": "Aides de la Politique Agricole Commune incluant les paiements de base et les aides couplées.",
+      "criteres": {
+        "cotisantMSA": true,
+        "detientDPB": true
+      },
+      "statutsApplicables": ["ei", "earl", "gaec", "scea", "gfa", "sarl-sas"],
+      "documents": [
+        "Télédéclaration sur Telepac",
+        "Surfaces exploitées (RPG)",
+        "Effectifs animaux pour les aides couplées"
+      ],
+      "conditions": "Être \"Agriculteur Actif\" (cotisant MSA), détenir des DPB (Droits à Paiement de Base)."
+    },
+    {
+      "id": "dja",
+      "nom": "DJA (Dotation Jeune Agriculteur)",
+      "montant": "Jusqu'à 50 000€",
+      "description": "Aide à l'installation pour les jeunes agriculteurs.",
+      "criteres": {
+        "age18_40": true,
+        "capaciteProfessionnelle": true
+      },
+      "statutsApplicables": ["ei", "earl", "gaec"],
+      "documents": [
+        "Plan d'entreprise sur 4-5 ans",
+        "Budget prévisionnel",
+        "Diplômes (Capacité Professionnelle Agricole niveau 4 minimum)"
+      ],
+      "conditions": "Avoir entre 18 et 40 ans, posséder la Capacité Professionnelle Agricole (Diplôme niveau 4 min.)."
+    },
+    {
+      "id": "pcoe",
+      "nom": "PCAE (Plan de Compétitivité et d'Adaptation des Exploitations)",
+      "montant": "Sur devis",
+      "description": "Aides aux investissements dans le matériel et les bâtiments agricoles.",
+      "criteres": {
+        "projetInvestissement": true
+      },
+      "statutsApplicables": ["ei", "earl", "gaec", "scea", "sarl-sas"],
+      "documents": [
+        "Devis détaillés",
+        "Descriptif technique du projet",
+        "Business plan simplifié"
+      ],
+      "conditions": "Projet non commencé avant dépôt, répondre à un appel à projets régional en cours."
+    },
+    {
+      "id": "ichn",
+      "nom": "ICHN (Indemnité Compensatoire de Handicaps Naturels)",
+      "montant": "Sur devis",
+      "description": "Compensation pour les handicaps naturels en zone de montagne ou défavorisée.",
+      "criteres": {
+        "zoneMontagneOuDefavorisee": true
+      },
+      "statutsApplicables": ["ei", "earl", "gaec", "scea", "gfa"],
+      "documents": [
+        "Localisation exacte des parcelles",
+        "Respect du cahier des charges (ex: chargement d'animaux)"
+      ],
+      "conditions": "Exploitation située en zone classée (montagne ou défavorisée) ou engagement sur 5 ans."
+    },
+    {
+      "id": "ecoregime",
+      "nom": "Écorégime (Agriculture Biologique ou HVE)",
+      "montant": "Sur devis",
+      "description": "Aides pour les pratiques agricoles respectueuses de l'environnement.",
+      "criteres": {
+        "bioOuHVE": true
+      },
+      "statutsApplicables": ["ei", "earl", "gaec", "scea", "gfa", "sarl-sas"],
+      "documents": [
+        "Certificat d'engagement par un organisme certificateur",
+        "Historique des parcelles"
+      ],
+      "conditions": "Être engagé en Agriculture Biologique (conversion ou maintien) ou HVE."
+    },
+    {
+      "id": "aides-animales",
+      "nom": "Aides Animales (Bovins/Ovins)",
+      "montant": "Sur devis",
+      "description": "Aides couplées pour les éleveurs de bovins et ovins.",
+      "criteres": {
+        "cotisantMSA": true,
+        "effectifAnimaux": true
+      },
+      "statutsApplicables": ["ei", "earl", "gaec", "scea"],
+      "documents": [
+        "Déclaration de l'effectif",
+        "Tenue à jour du registre d'élevage",
+        "BDNI (Base de Données Nationale d'Identification)"
+      ],
+      "conditions": "Respecter la Période de Détention Obligatoire (souvent 100 jours) et les ratios de productivité."
+    },
+    {
+      "id": "aide-cuma",
+      "nom": "Aides CUMA (Matériel en Commun)",
+      "montant": "Jusqu'à 40% du coût",
+      "description": "Aides spécifiques pour l'achat de matériel agricole en commun via une CUMA.",
+      "criteres": {
+        "statutCuma": true,
+        "projetInvestissement": true
+      },
+      "statutsApplicables": ["cuma"],
+      "documents": [
+        "Statuts de la CUMA",
+        "Procès-verbal d'assemblée générale",
+        "Devis du matériel",
+        "Plan de financement"
+      ],
+      "conditions": "Être membre d'une CUMA active, projet d'achat de matériel agricole."
+    },
+    {
+      "id": "aide-transformation",
+      "nom": "Aides à la Transformation (SARL/SAS)",
+      "montant": "Sur devis",
+      "description": "Aides spécifiques pour les projets de transformation ou de méthanisation.",
+      "criteres": {
+        "statutCommercial": true,
+        "projetTransformation": true
+      },
+      "statutsApplicables": ["sarl-sas"],
+      "documents": [
+        "Business plan détaillé",
+        "Autorisations administratives",
+        "Étude d'impact environnemental",
+        "Contrats de vente d'énergie"
+      ],
+      "conditions": "Être en SARL ou SAS, avoir un projet de transformation ou de production d'énergie."
+    },
+    {
+      "id": "aide-associes",
+      "nom": "Aides pour Associés Non-Exploitants (SCEA)",
+      "montant": "Sur devis",
+      "description": "Aides spécifiques pour intégrer des investisseurs dans une SCEA.",
+      "criteres": {
+        "statutScea": true,
+        "associesNonExploitants": true
+      },
+      "statutsApplicables": ["scea"],
+      "documents": [
+        "Statuts de la SCEA",
+        "Contrats d'association",
+        "Plan de développement",
+        "Engagements des associés"
+      ],
+      "conditions": "Être en SCEA, intégrer des associés non-exploitants (investisseurs)."
+    },
+    {
+      "id": "aide-foncier",
+      "nom": "Aides GFA (Gestion Foncière)",
+      "montant": "Sur devis",
+      "description": "Aides spécifiques pour la gestion et l'amélioration du foncier agricole.",
+      "criteres": {
+        "statutGfa": true,
+        "projetFoncier": true
+      },
+      "statutsApplicables": ["gfa"],
+      "documents": [
+        "Statuts du GFA",
+        "Plan de gestion foncière",
+        "Contrats de location",
+        "Projets d'amélioration"
+      ],
+      "conditions": "Être en GFA, avoir un projet de gestion ou d'amélioration du foncier."
+    },
+    {
+      "id": "aide-gaec",
+      "nom": "Aides GAEC (Travail en Commun)",
+      "montant": "Sur devis",
+      "description": "Aides spécifiques pour les GAEC, notamment pour l'installation de nouveaux associés.",
+      "criteres": {
+        "statutGaec": true,
+        "nouvelAssocie": true
+      },
+      "statutsApplicables": ["gaec"],
+      "documents": [
+        "Statuts du GAEC",
+        "Plan d'installation du nouvel associé",
+        "Budget prévisionnel",
+        "Engagements mutuels"
+      ],
+      "conditions": "Être en GAEC, intégrer un nouvel associé exploitant."
+    }
+  ],
+  "questions": [
+    {
+      "id": "statut",
+      "question": "Quel est votre statut juridique ?",
+      "type": "select",
+      "options": [
+        { "value": "ei", "label": "Entreprise Individuelle (EI)" },
+        { "value": "earl", "label": "EARL" },
+        { "value": "gaec", "label": "GAEC" },
+        { "value": "scea", "label": "SCEA" },
+        { "value": "gfa", "label": "GFA" },
+        { "value": "sarl-sas", "label": "SARL / SAS" },
+        { "value": "cuma", "label": "CUMA" }
+      ],
+      "condition": null,
+      "showIf": null
+    },
+    {
+      "id": "age",
+      "question": "Avez-vous entre 18 et 40 ans ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "dja",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["ei", "earl", "gaec"]
+      }
+    },
+    {
+      "id": "cotisantMSA",
+      "question": "Êtes-vous cotisant MSA (Agriculteur Actif) ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideIds": ["pac", "aides-animales"],
+      "condition": "oui",
+      "showIf": {
+        "statut": ["ei", "earl", "gaec", "scea", "gfa", "sarl-sas"]
+      }
+    },
+    {
+      "id": "zoneMontagne",
+      "question": "Votre exploitation est-elle en zone de montagne ou zone défavorisée ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "ichn",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["ei", "earl", "gaec", "scea", "gfa"]
+      }
+    },
+    {
+      "id": "bioHVE",
+      "question": "Êtes-vous en Agriculture Biologique ou HVE ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "ecoregime",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["ei", "earl", "gaec", "scea", "gfa", "sarl-sas"]
+      }
+    },
+    {
+      "id": "projetInvestissement",
+      "question": "Souhaitez-vous investir dans du matériel ou des bâtiments cette année ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "pcoe",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["ei", "earl", "gaec", "scea", "sarl-sas"]
+      }
+    },
+    {
+      "id": "projetInvestissementCuma",
+      "question": "Souhaitez-vous investir dans du matériel agricole en commun cette année ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "aide-cuma",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["cuma"]
+      }
+    },
+    {
+      "id": "projetTransformation",
+      "question": "Avez-vous un projet de transformation ou de production d'énergie (méthanisation, solaire) ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "aide-transformation",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["sarl-sas"]
+      }
+    },
+    {
+      "id": "associesNonExploitants",
+      "question": "Souhaitez-vous intégrer des associés non-exploitants (investisseurs) dans votre SCEA ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "aide-associes",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["scea"]
+      }
+    },
+    {
+      "id": "projetFoncier",
+      "question": "Avez-vous un projet de gestion ou d'amélioration de votre foncier agricole ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "aide-foncier",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["gfa"]
+      }
+    },
+    {
+      "id": "nouvelAssocie",
+      "question": "Souhaitez-vous intégrer un nouvel associé exploitant dans votre GAEC ?",
+      "type": "radio",
+      "options": [
+        { "value": "oui", "label": "Oui" },
+        { "value": "non", "label": "Non" }
+      ],
+      "aideId": "aide-gaec",
+      "condition": "oui",
+      "showIf": {
+        "statut": ["gaec"]
+      }
+    }
+  ]
+}
