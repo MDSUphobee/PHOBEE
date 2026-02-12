@@ -26,10 +26,9 @@ export default function App() {
         return false; // Laisse l'app se fermer si pas d'historique
       };
 
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
     }
   }, [canGoBack]);
 
