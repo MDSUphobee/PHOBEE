@@ -1,4 +1,10 @@
 /** @type {import('next').NextConfig} */
+import path from 'path';
+import dotenv from 'dotenv';
+
+// Load .env from parent directory
+dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
+
 const nextConfig = {
     output: "standalone",
     eslint: {
