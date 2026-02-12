@@ -19,15 +19,10 @@ export default function Navbar() {
 
     // Future proper links, anchors for now as requested
     const navLinks = [
-        // { name: "Fonctionnalités", href: "#features" },
-
-        { name: "Dictionnaire", href: "/dictionary" },
-        { name: "Guide de Survie", href: "/guide" },
-        { name: "Calculateur", href: "/calculateur" },
-        { name: "Générateur de facture", href: "/facture" },
-        // { name: "Guide Aides", href: "/guide" },
+        { name: "L'abonnement", href: "/abonnements" },
+        { name: "Le dictionnaire de l'entrepreneur", href: "/dictionary" },
+        { name: "FAQ", href: "/faq" },
         { name: "Contact", href: "/contact" },
-        // { name: "La Ruche", href: "#community" },
     ];
 
     return (
@@ -70,8 +65,8 @@ export default function Navbar() {
                         </button>
                         {isLoggedIn ? (
                             <Link
-                                href="/profile"
-                                className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-105 transition-all duration-300"
+                                href="/dashboard"
+                                className="px-5 py-2.5 bg-[#FFD700] text-slate-900 text-sm font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
                             >
                                 Mon Espace
                             </Link>
@@ -79,15 +74,15 @@ export default function Navbar() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2 text-sm font-medium text-secondary hover:text-primary transition-colors"
+                                    className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-white hover:text-[#FFD700] transition-colors"
                                 >
                                     Se connecter
                                 </Link>
                                 <Link
                                     href="/signup"
-                                    className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-105 transition-all duration-300"
+                                    className="px-6 py-2.5 bg-[#FFD700] text-slate-900 text-sm font-bold rounded-full shadow-md hover:shadow-lg hover:bg-[#FFC000] transition-all duration-300"
                                 >
-                                    S'enregistrer
+                                    S'inscrire
                                 </Link>
                             </>
                         )}
