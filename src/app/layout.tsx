@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google"; // Using Inter as requested
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,18 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
     title: "Phobee - Fini la phobie administrative",
     description: "L'assistant qui notifie tes échéances URSSAF et détecte tes aides oubliées.",
+};
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    // Also good to have for iOS PWA/WebClip feel, though not strictly required for WebView
+    themeColor: [
+        { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+        { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+    ],
 };
 
 export default function RootLayout({
