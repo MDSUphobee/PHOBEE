@@ -91,50 +91,43 @@ export default function Hero() {
                             />
                         </div>
 
-                        {/* Floating Notification - URSSAF */}
+                        {/* Floating Notification - ACRE Validée - Top Center/Right */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ delay: 0.8, duration: 0.5 }}
+                            className="absolute -top-12 right-4 md:right-12 z-30"
+                        >
+                            <div className="bg-[#1e293b] text-white p-3 md:p-4 rounded-2xl shadow-xl shadow-slate-900/20 flex items-center gap-3">
+                                <div className="bg-green-100/10 p-2 rounded-full">
+                                    <CheckCircle2 className="w-6 h-6 text-green-400" />
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-sm md:text-base">ACRE validée</p>
+                                    <p className="text-green-400 text-xs md:text-sm font-medium">+3000€ économisés</p>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Floating Notification - Rappel URSSAF - Left Side */}
                         <motion.div
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 1, duration: 0.5 }}
-                            className="hidden md:block absolute bottom-[15%] -left-8 z-30 bg-white dark:bg-slate-900 p-3 rounded-xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/60 border border-slate-100 dark:border-slate-800 max-w-[220px]"
+                            className="absolute top-[20%] -left-4 md:-left-12 z-30 max-w-[260px]"
                         >
-                            <div className="flex items-start gap-3">
-                                <div className="p-2 bg-green-100 text-green-600 rounded-full shrink-0">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 dark:border-slate-700">
+                                <div className="flex items-start gap-4">
+                                    <div className="bg-amber-100/80 dark:bg-amber-900/30 p-2.5 rounded-full shrink-0">
+                                        <Bell className="w-5 h-5 text-amber-600 dark:text-amber-400 fill-amber-600/20" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">Rappel URSSAF</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                            Déclare ton chiffre d'affaires avant demain (J-1). 🚨
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="space-y-1">
-                                    <div className="h-2 w-16 bg-slate-200 rounded" />
-                                    <div className="h-2 w-24 bg-slate-100 rounded" />
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Floating Notification - Warning */}
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 1.2, duration: 0.5 }}
-                            className="absolute -top-6 left-12 z-30 bg-white dark:bg-slate-900 p-3 rounded-xl shadow-lg border border-slate-100 flex items-center gap-3"
-                        >
-                            <div className="text-xl">⚠️</div>
-                            <div className="text-xs font-medium">
-                                <span className="block text-slate-400">Attention !</span>
-                                <span className="block text-slate-800 font-bold">TVA à déclarer</span>
-                            </div>
-                        </motion.div>
-
-                        {/* Floating Notification - ACRE */}
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.5 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 1.4, duration: 0.4 }}
-                            className="absolute top-[-30px] right-10 z-30 bg-white p-2 rounded-lg shadow-lg flex items-center gap-2"
-                        >
-                            <div className="bg-orange-100 p-1 rounded">
-                                <span className="text-lg">📄</span>
-                            </div>
-                            <div className="text-[10px] leading-tight text-slate-500">
-                                Document<br />validé
                             </div>
                         </motion.div>
                     </div>

@@ -1,154 +1,304 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { CheckCircle2, Bell, Shield, ArrowRight } from "lucide-react";
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
+import { CheckCircle2, Zap, Bell, Check, FileText, Shield, Calendar, AlertCircle } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 
 export default function HowItWorks() {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
+
+    const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
+    const currentStepIndex = useTransform(smoothProgress, [0, 0.45, 0.9], [1, 2, 3]);
+    const [activeStep, setActiveStep] = useState(1);
+
+    // Bee Movement: Horizontal X from 0% to ~90% of the timeline width
+    const beeX = useTransform(smoothProgress, [0, 1], ["0%", "90%"]);
+    // Simple bobbing Y or Zig Zag can be purely CSS animation on the bee itself, or transform
+    const beeY = useTransform(smoothProgress,
+        [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+        [0, -10, 0, 10, 0, -10, 0, 10, 0, -5, 0]
+    );
+
+    useEffect(() => {
+        const unsubscribe = currentStepIndex.on("change", (v) => {
+            setActiveStep(Math.round(v));
+        });
+        return () => unsubscribe();
+    }, [currentStepIndex]);
+
+    const scrollToStep = (step: number) => {
+        if (!containerRef.current) return;
+        const sectionHeight = containerRef.current.offsetHeight;
+        const sectionTop = containerRef.current.offsetTop;
+        const windowHeight = window.innerHeight;
+
+        let scrollTarget = sectionTop;
+        if (step === 2) scrollTarget = sectionTop + (sectionHeight - windowHeight) * 0.45;
+        if (step === 3) scrollTarget = sectionTop + (sectionHeight - windowHeight) * 0.9;
+
+        window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+    };
+
     return (
-        <section id="how-it-works" className="py-24 bg-white dark:bg-slate-950 overflow-hidden">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="mb-20">
-                    <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6">
-                        Une plateforme qui vous guide, <br />
-                        <span className="relative inline-block">
-                            étape par étape
-                            <span className="absolute bottom-2 left-0 w-full h-3 bg-[#FFD700] -z-10 transform -rotate-1 opacity-80"></span>
-                        </span>
-                    </h2>
-                </div>
+        <section ref={containerRef} id="how-it-works" className="relative h-[250vh] bg-white dark:bg-slate-950">
+            <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden">
+                <div className="container mx-auto px-4 md:px-6">
 
-                {/* Steps Container */}
-                <div className="relative grid grid-cols-1 md:grid-cols-4 gap-8 mb-20 items-start">
-                    {/* Dotted Line (Desktop only) */}
-                    <div className="hidden md:block absolute top-8 left-[10%] w-[80%] h-0.5 border-t-2 border-dashed border-slate-300 dark:border-slate-700 -z-0" />
+                    {/* Header */}
+                    <div className="text-left mb-8 max-w-4xl pt-4">
+                        <h2 className="text-3xl md:text-5xl font-extrabold text-[#0F172A] dark:text-white mb-2 leading-tight">
+                            Une plateforme qui vous guide, <br />
+                            <span className="relative inline-block">
+                                étape par étape
+                                <span className="absolute bottom-3 left-0 w-full h-4 bg-[#FFD700] -z-10 transform -rotate-1 opacity-100"></span>
+                            </span>
+                        </h2>
+                    </div>
 
-                    {/* Bee Icon Flying Animation */}
-                    <motion.div
-                        className="hidden md:block absolute top-[28%] z-20 w-16 pointer-events-none"
-                        initial={{ left: "10%" }}
-                        animate={{
-                            left: ["10%", "36%", "62%", "88%"],
-                            y: [0, -20, 0, -10],
-                            rotate: [0, 5, -5, 10]
-                        }}
-                        transition={{
-                            duration: 10,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            repeatDelay: 1
-                        }}
-                    >
-                        <img src="/images/abeille.png" alt="Abeille Phobee" className="w-full h-auto drop-shadow-lg" />
-                    </motion.div>
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
 
-                    {[
-                        { num: 1, title: "Vous indiquez votre situation", desc: "Répondez à quelques questions simples sur votre activité. (30s chrono, promis)." },
-                        { num: 2, title: "PhoBee liste vos obligations", desc: "Nous détectons vos échéances, vos aides potentielles et vos plafonds." },
-                        { num: 3, title: "Rappel avant chaque date importante", desc: "Seulement l'essentiel, sans vous déranger inutilement." },
-                        { num: 4, title: "On remplit et envoie vos documents officiels", desc: "D'un simple clic, générez vos factures et déclarations." },
-                    ].map((step, idx) => (
-                        <div key={idx} className="relative flex flex-col items-center text-center z-10 group">
-                            <div className="w-16 h-16 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-xl font-bold text-slate-400 group-hover:border-[#FFD700] group-hover:text-[#FFD700] transition-colors duration-300 md:mb-6 mb-4 shadow-sm">
-                                {step.num}
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{step.title}</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-[200px] mx-auto">
-                                {step.desc}
-                            </p>
-                        </div>
-                    ))}
-                </div>
+                        {/* LEFT: Steps Timeline */}
+                        <div className="w-full lg:w-3/5 relative">
+                            {/* Dotted Line */}
+                            <div className="absolute top-[2.5rem] left-[10%] right-[10%] h-0.5 border-t-2 border-dotted border-slate-300 dark:border-slate-700 -z-10 translate-y-[-1px]" />
 
-                {/* Phone Mockup Feature */}
-                <div className="relative max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-16">
-                    {/* Phone Image */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="relative w-full lg:w-1/2 flex justify-center perspective-1000"
-                    >
-                        {/* Decorative Background for Phone */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-[#FFD700]/20 to-purple-500/20 blur-[60px] rounded-full opacity-50" />
+                            {/* Bee Animation */}
+                            <motion.div
+                                className="absolute top-[0.5rem] z-30 pointer-events-none drop-shadow-xl"
+                                style={{
+                                    left: beeX,
+                                    y: beeY,
+                                    x: "-50%"
+                                }}
+                            >
+                                <img src="/images/abeille.png" alt="Abeille" className="w-12 md:w-16 h-auto transform rotate-12" />
+                            </motion.div>
 
-                        <div className="relative w-[300px] h-[600px] bg-slate-900 rounded-[40px] border-[8px] border-slate-800 shadow-2xl overflow-hidden transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
-                            {/* Mockup Screen Content */}
-                            <div className="w-full h-full bg-slate-950 p-6 flex flex-col relative">
-                                <div className="absolute top-0 inset-x-0 h-6 bg-slate-900 z-20 flex justify-center">
-                                    <div className="w-32 h-4 bg-slate-800 rounded-b-xl" />
-                                </div>
+                            {/* Steps Row */}
+                            <div className="grid grid-cols-3 gap-8">
+                                {[
+                                    { num: 1, title: "Vous indiquez votre situation", desc: "Répondez à quelques questions simples sur votre activité. (30s chrono, promis)." },
+                                    { num: 2, title: "PhoBee liste vos obligations", desc: "Nous détectons vos échéances, vos aides potentielles et vos plafonds." },
+                                    { num: 3, title: "Rappel avant chaque date importante", desc: "Seulement l'essentiel, sans vous déranger inutilement." }
+                                ].map((step, idx) => {
+                                    const stepNum = idx + 1;
+                                    const isCurrent = activeStep === stepNum;
 
-                                <div className="mt-8 mb-6">
-                                    <div className="w-12 h-12 bg-slate-800 rounded-xl mb-4 flex items-center justify-center">
-                                        <div className="w-6 h-6 rounded-full border-2 border-white/50" />
-                                    </div>
-                                    <h4 className="text-white text-xl font-bold">Radar à Aides</h4>
-                                    <p className="text-slate-400 text-sm">Notre algo scanne votre profil...</p>
-                                </div>
-
-                                <div className="flex-1 flex items-center justify-center">
-                                    <div className="w-40 h-40 rounded-full border-4 border-[#FFD700] flex items-center justify-center relative">
-                                        <RadarIcon className="w-16 h-16 text-[#FFD700] animate-pulse" />
-                                        <div className="absolute inset-0 border-4 border-[#FFD700]/30 rounded-full animate-ping" />
-                                    </div>
-                                </div>
-
-                                {/* Floating Card on Phone */}
-                                <div className="absolute bottom-10 left-4 right-4 bg-white rounded-xl p-4 shadow-lg">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <Shield className="w-5 h-5 text-green-500" />
-                                        <span className="font-bold text-slate-900 text-sm">Sécurité Maximale</span>
-                                    </div>
-                                    <p className="text-xs text-slate-500">Vos données restent cryptées sur votre téléphone.</p>
-                                </div>
+                                    return (
+                                        <div
+                                            key={idx}
+                                            onClick={() => scrollToStep(stepNum)}
+                                            className="relative flex flex-col items-center text-center group cursor-pointer"
+                                        >
+                                            <motion.div
+                                                animate={{
+                                                    scale: isCurrent ? 1.1 : 1,
+                                                    borderColor: isCurrent ? '#FFD700' : '#E2E8F0',
+                                                    backgroundColor: isCurrent ? '#ffffff' : '#ffffff'
+                                                }}
+                                                className={`w-20 h-20 rounded-full border-[3px] flex items-center justify-center text-3xl font-normal bg-white dark:bg-slate-900 transition-colors duration-300 mb-6 z-20 shadow-lg ${isCurrent ? 'text-slate-900 border-[#FFD700]' : 'text-slate-400 border-slate-200'}`}
+                                            >
+                                                {step.num}
+                                            </motion.div>
+                                            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white mb-3 leading-tight min-h-[3.5rem]">
+                                                {step.title}
+                                            </h3>
+                                            <p className="text-sm text-slate-500 leading-relaxed max-w-[200px] mx-auto hidden md:block">
+                                                {step.desc}
+                                            </p>
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
-                    </motion.div>
 
-                    {/* Side Text */}
-                    <div className="w-full lg:w-1/2 space-y-6 lg:pl-10">
-                        <div className="w-16 h-16 bg-[#FFD700]/10 rounded-2xl flex items-center justify-center mb-6">
-                            <span className="text-3xl">🐝</span>
-                        </div>
-                        <h3 className="text-3xl font-bold text-slate-900 dark:text-white">
-                            Tout est centralisé.
-                        </h3>
-                        <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-                            Plus besoin de jongler entre le site de l'URSSAF, vos fichiers Excel et vos notes.
-                            PhoBee regroupe tout ce qui compte pour votre activité dans une interface pensée pour les humains.
-                        </p>
-                        <ul className="space-y-4 pt-4">
-                            {[
-                                "Synchronisation automatique URSSAF",
-                                "Génération de factures conformes",
-                                "Veille juridique personnalisée"
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-center gap-3">
-                                    <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 flex items-center justify-center">
-                                        <CheckCircle2 className="w-4 h-4" />
+                        {/* RIGHT: Phone Mockup */}
+                        <div className="w-full lg:w-2/5 flex justify-center relative perspective-1000">
+                            {/* The Phone */}
+                            <motion.div
+                                className="relative w-[300px] h-[600px] bg-[#0F172A] rounded-[3rem] border-[10px] border-slate-800 shadow-2xl overflow-hidden ring-1 ring-white/10 z-10"
+                                initial={{ rotateY: -10, rotateX: 5 }}
+                                animate={{ rotateY: -10, rotateX: 5 }}
+                            >
+                                {/* Screen Content */}
+                                <div className="w-full h-full bg-[#0F172A] relative flex flex-col overflow-hidden">
+
+                                    {/* Top Bar (Notch area) */}
+                                    <div className="absolute top-0 w-full h-8 z-30 flex justify-center">
+                                        <div className="w-32 h-6 bg-slate-900 rounded-b-xl" />
                                     </div>
-                                    <span className="text-slate-700 dark:text-slate-200 font-medium">{item}</span>
-                                </li>
-                            ))}
-                        </ul>
+
+                                    {/* Swappable Content Area */}
+                                    <div className="flex-1 pt-12 px-6 pb-6 relative">
+                                        <AnimatePresence mode="wait">
+
+                                            {/* SCREEN 1: FORM */}
+                                            {activeStep === 1 && (
+                                                <motion.div
+                                                    key="screen-1"
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: -20 }}
+                                                    transition={{ duration: 0.3 }}
+                                                    className="flex flex-col h-full"
+                                                >
+                                                    <div className="flex items-center gap-3 mb-8">
+                                                        <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
+                                                            <div className="w-6 h-6 rounded-full bg-[#FFD700]" />
+                                                        </div>
+                                                        <div>
+                                                            <div className="h-2 w-20 bg-slate-700 rounded mb-1" />
+                                                            <div className="h-2 w-12 bg-slate-800 rounded" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-4">
+                                                        <div className="bg-slate-800 p-4 rounded-2xl rounded-tl-none max-w-[85%]">
+                                                            <p className="text-slate-200 text-sm">Bonjour ! Quel est votre statut ?</p>
+                                                        </div>
+                                                        <div className="bg-[#FFD700] p-4 rounded-2xl rounded-tr-none max-w-[85%] self-end">
+                                                            <p className="text-slate-900 font-medium text-sm">Je suis Auto-entrepreneur 🛠️</p>
+                                                        </div>
+                                                        <div className="bg-slate-800 p-4 rounded-2xl rounded-tl-none max-w-[85%]">
+                                                            <p className="text-slate-200 text-sm">Super. Vous faites de la vente ou du service ?</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-auto">
+                                                        <div className="w-full h-12 bg-slate-800 rounded-full border border-slate-700 flex items-center px-4">
+                                                            <span className="text-slate-500 text-sm">Écrivez votre réponse...</span>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {/* SCREEN 2: LIST / RADAR */}
+                                            {activeStep === 2 && (
+                                                <motion.div
+                                                    key="screen-2"
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: -20 }}
+                                                    transition={{ duration: 0.3 }}
+                                                    className="flex flex-col h-full"
+                                                >
+                                                    <div className="text-center mb-6">
+                                                        <div className="w-16 h-16 bg-slate-800 rounded-full mx-auto mb-3 flex items-center justify-center border-2 border-[#FFD700] animate-pulse">
+                                                            <Zap className="text-[#FFD700] w-8 h-8" />
+                                                        </div>
+                                                        <h4 className="text-white font-bold text-lg">Analyse Terminée</h4>
+                                                        <p className="text-slate-400 text-xs">2 obligations détectées</p>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex items-center gap-3">
+                                                            <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                                                <FileText className="w-4 h-4 text-purple-400" />
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <div className="h-2 w-24 bg-slate-600 rounded mb-1" />
+                                                                <div className="h-2 w-16 bg-slate-700 rounded" />
+                                                            </div>
+                                                            <CheckCircle2 className="text-green-500 w-5 h-5" />
+                                                        </div>
+
+                                                        <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex items-center gap-3">
+                                                            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                                <Shield className="w-4 h-4 text-blue-400" />
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <div className="h-2 w-20 bg-slate-600 rounded mb-1" />
+                                                                <div className="h-2 w-32 bg-slate-700 rounded" />
+                                                            </div>
+                                                            <AlertCircle className="text-orange-500 w-5 h-5" />
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {/* SCREEN 3: NOTIFICATION / CALENDAR */}
+                                            {activeStep === 3 && (
+                                                <motion.div
+                                                    key="screen-3"
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: -20 }}
+                                                    transition={{ duration: 0.3 }}
+                                                    className="flex flex-col h-full"
+                                                >
+                                                    <div className="mt-8 mb-6">
+                                                        <h4 className="text-white font-bold text-xl mb-1">Octobre</h4>
+                                                        <p className="text-slate-400 text-sm">Vos prochaines échéances</p>
+                                                    </div>
+
+                                                    {/* Calendar Widget */}
+                                                    <div className="bg-slate-800 p-4 rounded-2xl mb-6">
+                                                        <div className="grid grid-cols-7 gap-2 mb-2">
+                                                            {[12, 13, 14, 15, 16, 17, 18].map(d => (
+                                                                <div key={d} className={`text-center py-2 rounded-lg text-xs ${d === 15 ? 'bg-[#FFD700] text-slate-900 font-bold' : 'text-slate-400'}`}>
+                                                                    {d}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Notification Card */}
+                                                    <div className="bg-white rounded-xl p-4 shadow-lg flex items-start gap-4 transform rotate-1">
+                                                        <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center text-red-500 shrink-0">
+                                                            <Bell className="w-5 h-5" />
+                                                        </div>
+                                                        <div>
+                                                            <h5 className="font-bold text-slate-900 text-sm">Déclaration URSSAF</h5>
+                                                            <p className="text-xs text-slate-500 mt-1">N'oubliez pas ! Échéance demain à 12:00.</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <motion.div
+                                                        initial={{ scale: 0 }}
+                                                        animate={{ scale: 1 }}
+                                                        transition={{ delay: 0.5 }}
+                                                        className="mx-auto mt-8 w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.4)]"
+                                                    >
+                                                        <Check className="text-white w-8 h-8" />
+                                                    </motion.div>
+
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
+                                    {/* Bottom Blur Effect */}
+                                    <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#0F172A] to-transparent pointer-events-none" />
+                                </div>
+                            </motion.div>
+
+                            {/* Floating "Sécurité Maximale" Card - Outside Phone */}
+                            <motion.div
+                                initial={{ opacity: 0, x: -20, y: 20 }}
+                                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="absolute bottom-[10%] -left-12 z-20 bg-white rounded-2xl p-4 shadow-2xl max-w-[260px] flex items-start gap-4"
+                            >
+                                <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                                    <Shield className="w-5 h-5 text-slate-900" />
+                                </div>
+                                <div>
+                                    <h5 className="font-extrabold text-slate-900 text-base">Sécurité Maximale</h5>
+                                    <p className="text-xs text-slate-500 mt-1 leading-tight">
+                                        Vos données restent cryptées sur votre téléphone. On ne vend rien.
+                                    </p>
+                                </div>
+                            </motion.div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </section>
     );
-}
-
-function RadarIcon({ className }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34" />
-            <path d="M4 6h.01" />
-            <path d="M2.29 9.62A10 10 0 1 0 21.31 8.35" />
-            <path d="M16.24 7.76A6 6 0 1 0 8.23 16.67" />
-            <path d="M12 18h.01" />
-            <path d="M17.99 11.66A6 6 0 0 1 15.77 16.67" />
-            <circle cx="12" cy="12" r="2" />
-            <path d="m13.41 10.59 5.66-5.66" />
-        </svg>
-    )
 }
