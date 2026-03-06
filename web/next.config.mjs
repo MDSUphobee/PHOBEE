@@ -7,9 +7,6 @@ dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
 const nextConfig = {
     output: "standalone",
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
     images: {
         unoptimized: true,
     },

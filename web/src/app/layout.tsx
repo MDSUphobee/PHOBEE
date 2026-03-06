@@ -31,7 +31,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="fr" className="scroll-smooth">
+        <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
             <head>
                 <script
                     dangerouslySetInnerHTML={{
@@ -39,7 +39,7 @@ export default function RootLayout({
                     }}
                 />
             </head>
-            <body className={cn("min-h-screen bg-background antialiased overflow-x-hidden", inter.variable)}>
+            <body className={cn("min-h-screen bg-background antialiased overflow-x-hidden", inter.variable)} suppressHydrationWarning>
                 <ThemeProvider>
                     {children}
                     <Toaster richColors position="top-center" />
