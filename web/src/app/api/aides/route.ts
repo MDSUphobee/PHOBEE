@@ -46,104 +46,82 @@ async function getValidToken(): Promise<string> {
 }
 
 // --- RELEVANCE ENGINE ---
-// Blacklist Stricte (Social, Public, Patrimoine)
-const EXCLUDED_KEYWORDS = [
-    "logement locatif", "ménages", "particuliers", "habitants", "accession sociale",
-    "commune", "mairie", "intercommunalité", "agent public", "collectivité territoriale",
-    "église", "monument historique", "musée", "bibliothèque", "sport scolaire",
-    "lavoir", "éclairage public"
+
+// Blacklist Sémantique ciblée sur le TITRE (name)
+const TITLE_BLACKLIST = [
+    "archives", "bibliothèque", "musée", "école", "sport scolaire", "église",
+    "chapelle", "voirie", "pont", "éclairage public", "station d'épuration",
+    "cimetière", "mairie"
 ];
 
-// Whitelist Stricte (Marqueurs Agricoles) : L'aide doit contenir au moins un de ces termes
-const REQUIRED_AGRICULTURAL_MARKERS = [
-    "dja", "dotation jeune agriculteur", "installation", "transmission", "reprise",
-    "élevage", "culture", "maraîchage", "viticulture", "arboriculture", "apiculture",
-    "matériel agricole", "bâtiment agricole", "stockage", "irrigation",
-    "agriculture biologique", "bio", "hve", "conversion", "agroécologie",
-    "msa", "trésorerie agricole", "calamité agricole", "exploitation agricole", "agricole", "agriculteurs"
+// Whitelist de pertinence (Priorité Agricole)
+const RELEVANCE_MARKERS = [
+    "exploitation", "dja", "msa", "bio", "hve", "troupeau", "élevage",
+    "culture", "maraîchage", "viticulture", "calamités", "irrigation",
+    "stockage agricole"
 ];
-
-// Mots-clés de boost
-const BOOST_KEYWORDS = ["dja", "pac", "bio", "hve"];
 
 function calculateRelevanceAndThemes(aid: any) {
+    const titleToAnalyze = `${aid.name || ""}`.toLowerCase();
     const textToAnalyze = `${aid.name || ""} ${aid.description || ""}`.toLowerCase();
 
-    // 1. Exclusion Stricte (Blacklist)
-    for (const word of EXCLUDED_KEYWORDS) {
-        if (textToAnalyze.includes(word)) {
+    // 1. Filtre de Public Cible (Indispensable)
+    // Ne conserve l'aide QUE si targeted_audiences contient "Agriculteur" ou "Entreprise".
+    // Si uniquement "Commune" ou "EPCI", on rejette.
+    const audiencesStr = JSON.stringify(aid.targeted_audiences || []).toLowerCase();
+    const hasAgriOrEntreprise = audiencesStr.includes("agriculteur") || audiencesStr.includes("entreprise");
+
+    if (!hasAgriOrEntreprise) {
+        return { isExcluded: true, score: 0, themes: [], filieres: [] };
+    }
+
+    // 2. Blacklist Sémantique (Nettoyage du bruit sur le TITRE)
+    for (const word of TITLE_BLACKLIST) {
+        if (titleToAnalyze.includes(word.toLowerCase())) {
             return { isExcluded: true, score: 0, themes: [], filieres: [] };
         }
     }
 
-    // 2. Inclusion Stricte (Whitelist)
-    let hasAgriculturalMarker = false;
-    for (const word of REQUIRED_AGRICULTURAL_MARKERS) {
-        if (textToAnalyze.includes(word)) {
-            hasAgriculturalMarker = true;
-            break;
-        }
-    }
-
-    if (!hasAgriculturalMarker) {
-        return { isExcluded: true, score: 0, themes: [], filieres: [] };
-    }
-
     let score = 0;
-    const themes: string[] = [];
-    const filieres: string[] = [];
 
-    // 3. Inclusion Préférentielle (Score)
-    for (const word of BOOST_KEYWORDS) {
-        if (textToAnalyze.includes(word)) {
+    // 3. Whitelist de pertinence (Priorité Agricole)
+    for (const word of RELEVANCE_MARKERS) {
+        if (textToAnalyze.includes(word.toLowerCase())) {
             score += 10;
         }
     }
 
-    // 4. Tagging Filières
-    if (textToAnalyze.includes("élevage") || textToAnalyze.includes("bovin") || textToAnalyze.includes("ovin") || textToAnalyze.includes("porcin") || textToAnalyze.includes("volaille")) filieres.push("Élevage");
+    const themes: string[] = [];
+    const filieres: string[] = [];
+
+    // Tagging Filières
+    if (textToAnalyze.includes("élevage") || textToAnalyze.includes("bovin") || textToAnalyze.includes("ovin") || textToAnalyze.includes("porcin") || textToAnalyze.includes("volaille") || textToAnalyze.includes("troupeau")) filieres.push("Élevage");
     if (textToAnalyze.includes("culture") || textToAnalyze.includes("céréale") || textToAnalyze.includes("semence")) filieres.push("Cultures");
     if (textToAnalyze.includes("maraîchage") || textToAnalyze.includes("légumes")) filieres.push("Maraîchage");
     if (textToAnalyze.includes("viticulture") || textToAnalyze.includes("vigne") || textToAnalyze.includes("vin")) filieres.push("Viticulture");
-    if (textToAnalyze.includes("arboriculture") || textToAnalyze.includes("verger") || textToAnalyze.includes("fruits")) filieres.push("Arboriculture");
-    if (textToAnalyze.includes("apiculture") || textToAnalyze.includes("miel") || textToAnalyze.includes("abeille")) filieres.push("Apiculture");
 
-    // 5. Tagging Thématique
-    if (textToAnalyze.includes("crise") || textToAnalyze.includes("sècheresse") || textToAnalyze.includes("prêt") || textToAnalyze.includes("trésorerie") || textToAnalyze.includes("calamité")) {
-        themes.push("Urgence / Trésorerie");
-    }
-    if (textToAnalyze.includes("jeune agriculteur") || textToAnalyze.includes("dja") || textToAnalyze.includes("cession") || textToAnalyze.includes("installation") || textToAnalyze.includes("reprise")) {
-        themes.push("Installation / Transmission");
-    }
-    if (textToAnalyze.includes("hve") || textToAnalyze.includes("bio") || textToAnalyze.includes("carbone") || textToAnalyze.includes("haies") || textToAnalyze.includes("environnement") || textToAnalyze.includes("agroécologie")) {
-        themes.push("Transition Écologique");
-    }
-    if (textToAnalyze.includes("matériel") || textToAnalyze.includes("bâtiment") || textToAnalyze.includes("irrigation") || textToAnalyze.includes("stockage")) {
-        themes.push("Investissement");
-    }
+    // Tagging Thématique
+    if (textToAnalyze.includes("urgence") || textToAnalyze.includes("crise") || textToAnalyze.includes("trésorerie") || textToAnalyze.includes("calamité")) themes.push("Urgence / Trésorerie");
+    if (textToAnalyze.includes("installation") || textToAnalyze.includes("dja") || textToAnalyze.includes("transmission")) themes.push("Installation / Transmission");
+    if (textToAnalyze.includes("bio") || textToAnalyze.includes("hve") || textToAnalyze.includes("agroécologie") || textToAnalyze.includes("environnement")) themes.push("Transition Écologique");
+    if (textToAnalyze.includes("matériel") || textToAnalyze.includes("bâtiment") || textToAnalyze.includes("irrigation") || textToAnalyze.includes("stockage")) themes.push("Investissement");
 
-    // Fallback theme si aucun
-    if (themes.length === 0) {
-        themes.push("Aide Générale");
-    }
+    if (themes.length === 0) themes.push("Aide Générale");
 
     return { isExcluded: false, score, themes, filieres };
 }
-
 
 // --- MAIN ROUTE ---
 export async function GET() {
     try {
         const token = await getValidToken();
 
-        // 2. Data Collection Engine: using definitive numeric identifiers instead of slugs
-        // organization_type_ids=31 (Agriculteur / Exploitation Agricole)
-        // category_ids=47 (Agriculture et Agroalimentaire)
-        let results: any[] = [];
+        let cleanedResults: any[] = [];
         let url = 'https://aides-territoires.beta.gouv.fr/api/aids/all/?organization_type_ids=31&category_ids=47&status=open';
         let pagesCount = 0;
 
-        while (url && results.length < 30 && pagesCount < 10) {
+        // Logique de Fallback: continuer tant qu'on n'a pas 10 résultats pertinents OU qu'on n'a pas épuisé l'API (limite à 20 pages max pour éviter timeout)
+        while (url && cleanedResults.length < 10 && pagesCount < 20) {
             const dataRes = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${token || ""}`
@@ -157,37 +135,34 @@ export async function GET() {
 
             const data = await dataRes.json();
             const fetched = data.results || [];
-            results = [...results, ...fetched];
+
+            for (const aid of fetched) {
+                const analysis = calculateRelevanceAndThemes(aid);
+
+                if (!analysis.isExcluded) {
+                    // Sécurité des Liens
+                    const safeApplicationUrl = aid.application_url || `https://aides-territoires.beta.gouv.fr/aides/${aid.slug}/`;
+
+                    cleanedResults.push({
+                        ...aid,
+                        application_url: safeApplicationUrl,
+                        relevanceScore: analysis.score,
+                        agriThemes: analysis.themes,
+                        agriFilieres: analysis.filieres
+                    });
+                }
+            }
 
             url = data.next;
             pagesCount++;
         }
 
-        console.log(`[Aides-Agri Engine] Raw Results: ${results.length}`);
-
-        // 3. Application du Moteur de Pertinence
-        let cleanedResults: any[] = [];
-        for (const aid of results) {
-            const analysis = calculateRelevanceAndThemes(aid);
-
-            // On ne garde pas ce qui est pollué par les fausses cibles rurales
-            if (!analysis.isExcluded) {
-                // On attache les datas calculées à l'objet pour le Frontend
-                cleanedResults.push({
-                    ...aid,
-                    relevanceScore: analysis.score,
-                    agriThemes: analysis.themes,
-                    agriFilieres: analysis.filieres
-                });
-            }
-        }
+        console.log(`[Aides-Agri Engine] Cleaned Results: ${cleanedResults.length}`);
 
         // Tri decroissant par pertinence (Boostés en premier)
         cleanedResults.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-        console.log(`[Aides-Agri Engine] Cleaned Results: ${cleanedResults.length}`);
-
-        return NextResponse.json({ results: cleanedResults });
+        return NextResponse.json({ results: cleanedResults, count: cleanedResults.length });
 
     } catch (error: any) {
         console.error("[Aides-Agri Engine] Fatal Error:", error);

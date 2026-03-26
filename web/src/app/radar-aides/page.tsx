@@ -118,7 +118,7 @@ export default function RadarAides() {
 
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-xl font-bold text-gray-900 border-l-4 border-amber-500 pl-3">
-                        <span className="text-amber-500">{loading ? '...' : filteredAids.length}</span> aides trouvées pour votre exploitation
+                        <span className="text-amber-500">{loading ? '...' : filteredAids.length}</span> aides agricoles trouvées
                     </h2>
                 </div>
 
