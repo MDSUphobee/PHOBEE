@@ -19,27 +19,22 @@ export default function Navbar() {
 
     // Future proper links, anchors for now as requested
     const navLinks = [
-        // { name: "Fonctionnalités", href: "#features" },
-
-        { name: "Dictionnaire", href: "/dictionary" },
-        { name: "Guide de Survie", href: "/guide" },
-        { name: "Calculateur", href: "/calculateur" },
-        { name: "Générateur de facture", href: "/facture" },
-        // { name: "Guide Aides", href: "/guide" },
+        { name: "L'abonnement", href: "/abonnements" },
+        { name: "Le dictionnaire de l'entrepreneur", href: "/dictionary" },
+        { name: "FAQ", href: "/faq" },
         { name: "Contact", href: "/contact" },
-        // { name: "La Ruche", href: "#community" },
     ];
 
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-                <div className="absolute inset-0 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-white/20 dark:border-slate-800/60 shadow-sm" />
+            <header suppressHydrationWarning={true} className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+                <div suppressHydrationWarning={true} className="absolute inset-0 bg-[#0F172A] border-b border-white/10 shadow-sm" />
 
-                <div className="relative container mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
+                <div suppressHydrationWarning={true} className="relative container mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center gap-10">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-3 group">
+                    <Link href="/" className="flex items-center gap-2 group">
                         <img
-                            src={theme === "dark" ? "/Logo PhoBee/Logo PhoBee/Logo-Phobee-ToutBlanc.svg" : "/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Blanc.svg"}
+                            src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-ToutBlanc.svg"
                             alt="Logo Phobee"
                             className="h-48 w-auto transition-transform duration-300 group-hover:scale-105"
                         />
@@ -47,31 +42,31 @@ export default function Navbar() {
                     </Link>
 
                     {/* Desktop Nav */}
-                    <nav className="hidden md:flex items-center gap-8">
+                    <nav className="hidden md:flex flex-1 items-center justify-center gap-8">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-sm font-medium text-slate-600 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full"
+                                className="text-sm font-medium text-slate-300 hover:text-white transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-[#FFD700] after:transition-all hover:after:w-full"
                             >
                                 {link.name}
                             </Link>
                         ))}
                     </nav>
 
-                    {/* Desktop GTA */}
-                    <div className="hidden md:flex items-center gap-4">
+                    {/* Desktop CTA */}
+                    <div className="hidden md:flex items-center gap-4 ml-auto">
                         <button
                             onClick={toggleTheme}
                             aria-label="Basculer le thème"
-                            className="p-2 rounded-full border border-border/80 bg-white/60 dark:bg-slate-800/80 dark:border-slate-700 text-slate-700 dark:text-slate-100 shadow-sm hover:shadow-md transition-all"
+                            className="p-2 rounded-full border border-slate-700 bg-slate-800 text-slate-300 hover:text-white transition-all shadow-sm"
                         >
                             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                         </button>
                         {isLoggedIn ? (
                             <Link
-                                href="/profile"
-                                className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-105 transition-all duration-300"
+                                href="/dashboard"
+                                className="px-5 py-2.5 bg-[#FFD700] text-slate-900 text-sm font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
                             >
                                 Mon Espace
                             </Link>
@@ -79,15 +74,15 @@ export default function Navbar() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2 text-sm font-medium text-secondary hover:text-primary transition-colors"
+                                    className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
                                 >
                                     Se connecter
                                 </Link>
                                 <Link
                                     href="/signup"
-                                    className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-105 transition-all duration-300"
+                                    className="px-6 py-2.5 bg-[#FFD700] text-slate-900 text-sm font-bold rounded-full shadow-md hover:shadow-lg hover:bg-[#FFC000] transition-all duration-300 hover:-translate-y-0.5"
                                 >
-                                    S'enregistrer
+                                    S'inscrire
                                 </Link>
                             </>
                         )}
@@ -96,7 +91,7 @@ export default function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsOpen(true)}
-                        className="md:hidden p-2 text-secondary dark:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                        className="md:hidden p-2 text-white hover:bg-slate-800 rounded-full transition-colors"
                     >
                         <Menu className="w-6 h-6" />
                     </button>

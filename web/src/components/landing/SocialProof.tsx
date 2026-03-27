@@ -1,63 +1,22 @@
 "use client";
 
-import { Star } from "lucide-react";
-
-const testimonials = [
-    {
-        name: "Thomas D.",
-        role: "Freelance Dev",
-        content: "Avant je paniquais à chaque courrier de l'URSSAF. Maintenant je reçois une notif la veille, je clique, c'est payé.",
-        stars: 5
-    },
-    {
-        name: "Sarah L.",
-        role: "Graphiste",
-        content: "Phobee m'a trouvé une aide régionale dont j'ignorais l'existence. L'abo est rentabilisé pour 10 ans. 😅",
-        stars: 5
-    },
-    {
-        name: "Marc R.",
-        role: "Consultant Marketing",
-        content: "L'interface est dingue. C'est la première fois que je prends du plaisir à faire de l'admin.",
-        stars: 5
-    }
-];
-
 export default function SocialProof() {
     return (
-        <section className="py-32 bg-background border-b border-slate-100 dark:border-slate-800">
+        <section className="py-16 bg-[#FFD700] text-slate-900 border-y border-amber-400">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="text-center mb-24">
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                        Ils dorment mieux depuis qu'ils ont Phobee.
-                    </h2>
-                </div>
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="text-center md:text-left">
+                        <p className="text-xl md:text-2xl font-extrabold font-heading">
+                            Ils nous ont fait <span className="bg-white px-2 py-1 rounded-sm inline-block transform -rotate-2 shadow-sm border border-slate-900">confiance</span>
+                        </p>
+                    </div>
 
-                <div className="grid md:grid-cols-3 gap-12">
-                    {testimonials.map((t, i) => (
-                        <div key={i} className="bg-slate-50 dark:bg-slate-900 p-8 rounded-2xl hover:shadow-lg transition-shadow duration-300">
-                            <div className="flex gap-1 mb-4">
-                                {[...Array(t.stars)].map((_, idx) => (
-                                    <Star key={idx} className="w-5 h-5 fill-primary text-primary" />
-                                ))}
-                            </div>
-                            <p className="text-foreground/80 italic mb-6">"{t.content}"</p>
-                            <div>
-                                <p className="font-bold text-foreground">{t.name}</p>
-                                <p className="text-sm text-muted-foreground">{t.role}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800">
-                    <p className="text-center text-sm font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-6">Vu sur</p>
-                    <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                        {/* Fake Logos */}
-                        <div className="text-xl font-bold font-serif">TechCrunch</div>
-                        <div className="text-xl font-bold font-sans tracking-tighter">Station F</div>
-                        <div className="text-xl font-bold font-mono">MaddyNess</div>
-                        <div className="text-xl font-bold italic">Les Echos</div>
+                    <div className="flex flex-wrap justify-center md:justify-end gap-x-12 gap-y-8 opacity-90 mix-blend-multiply">
+                        {/* Placeholder Logos with text for now as we don't have SVG assets */}
+                        <div className="text-2xl font-black font-serif opacity-80 uppercase tracking-widest text-slate-900">La Ferme des Granges</div>
+                        <div className="text-2xl font-black font-mono tracking-tighter opacity-80 text-slate-900">LE MAIL</div>
+                        <div className="text-2xl font-black font-sans italic opacity-80 text-slate-900">Anthony Coiffure</div>
+                        <div className="text-2xl font-black font-serif uppercase tracking-widest opacity-80 text-slate-900">Ferme du Domaine</div>
                     </div>
                 </div>
             </div>

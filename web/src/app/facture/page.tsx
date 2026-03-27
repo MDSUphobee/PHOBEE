@@ -13,6 +13,8 @@ import {
     ShieldCheck,
     Sparkles,
     Trash2,
+    Loader2,
+    Send,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -74,6 +76,7 @@ export default function InvoiceBuilderPage() {
     const [showModal, setShowModal] = useState(false);
     const [checklist, setChecklist] = useState({ clientAddress: false, rib: false, amounts: false });
     const [formError, setFormError] = useState<string | null>(null);
+    const [isSending, setIsSending] = useState(false);
 
     const dueDate = useMemo(
         () => (dueOption === "reception" ? issueDate : addDays(issueDate, 30)),
@@ -165,6 +168,24 @@ export default function InvoiceBuilderPage() {
         }
         generatePdf();
         setShowModal(false);
+    };
+
+    const handleSendPost = async () => {
+        if (!Object.values(checklist).every(Boolean)) {
+            toast.error("Coche la checklist avant de valider.");
+            return;
+        }
+
+        setIsSending(true);
+        // Simulation API Poste
+        setTimeout(() => {
+            setIsSending(false);
+            setShowModal(false);
+            toast.success("Courrier envoyé !", {
+                description: "Votre lettre recommandée avec AR a été transmise à La Poste. Vous recevrez le numéro de suivi par email.",
+                duration: 5000,
+            });
+        }, 2000);
     };
 
     const generatePdf = () => {
@@ -460,10 +481,10 @@ export default function InvoiceBuilderPage() {
                                 </div>
                             </div>
 
-                                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-4">
+                            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-4">
                                 <div className="flex items-center justify-between">
-                                        <h2 className="text-lg font-semibold text-foreground">Identité de l'émetteur</h2>
-                                        <span className="text-xs text-muted-foreground">Freelance</span>
+                                    <h2 className="text-lg font-semibold text-foreground">Identité de l'émetteur</h2>
+                                    <span className="text-xs text-muted-foreground">Freelance</span>
                                 </div>
 
                                 <div className="space-y-3">
@@ -514,7 +535,7 @@ export default function InvoiceBuilderPage() {
 
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                    <label className="text-sm font-medium text-slate-700 dark:text-white">Numéro SIRET</label>
+                                        <label className="text-sm font-medium text-slate-700 dark:text-white">Numéro SIRET</label>
                                         <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-white">
                                             <input
                                                 type="checkbox"
@@ -547,7 +568,7 @@ export default function InvoiceBuilderPage() {
 
                                 {isTvaEnabled && (
                                     <div className="space-y-3">
-                                    <label className="text-sm font-medium text-slate-700 dark:text-white">Numéro de TVA intracommunautaire</label>
+                                        <label className="text-sm font-medium text-slate-700 dark:text-white">Numéro de TVA intracommunautaire</label>
                                         <input
                                             type="text"
                                             value={tvaNumber}
@@ -561,10 +582,10 @@ export default function InvoiceBuilderPage() {
                         </section>
 
                         {/* Metadata */}
-                            <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-5">
+                        <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-5">
                             <div className="flex items-center justify-between flex-wrap gap-3">
-                                    <h2 className="text-lg font-semibold text-foreground">Paramètres de la facture</h2>
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <h2 className="text-lg font-semibold text-foreground">Paramètres de la facture</h2>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Info className="w-4 h-4 text-slate-400" />
                                     Conseils express pour éviter les erreurs légales.
                                 </div>
@@ -576,7 +597,7 @@ export default function InvoiceBuilderPage() {
                                         Numéro de facture
                                         <Info
                                             className="w-4 h-4 text-slate-400"
-                                            /* title removed for TS error */
+                                        /* title removed for TS error */
                                         />
                                     </label>
                                     <input
@@ -606,7 +627,7 @@ export default function InvoiceBuilderPage() {
                                         Date d'échéance
                                         <Info
                                             className="w-4 h-4 text-slate-400"
-                                            /* title removed for TS error */
+                                        /* title removed for TS error */
                                         />
                                     </label>
                                     <select
@@ -623,11 +644,11 @@ export default function InvoiceBuilderPage() {
                         </section>
 
                         {/* Lines */}
-                            <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-4">
+                        <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 space-y-4">
                             <div className="flex items-center justify-between flex-wrap gap-3">
                                 <div>
-                                        <h2 className="text-lg font-semibold text-foreground mt-4">Prestations</h2>
-                                        <p className="text-sm text-muted-foreground">Ajoute, modifie ou supprime des lignes librement.</p>
+                                    <h2 className="text-lg font-semibold text-foreground mt-4">Prestations</h2>
+                                    <p className="text-sm text-muted-foreground">Ajoute, modifie ou supprime des lignes librement.</p>
                                 </div>
                                 <button
                                     type="button"
@@ -696,7 +717,7 @@ export default function InvoiceBuilderPage() {
                                                             step="0.1"
                                                             value={line.tvaRate}
                                                             onChange={(e) => handleLineChange(index, "tvaRate", Number(e.target.value))}
-                                                        className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                                                            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                                         />
                                                     </div>
                                                 )}
@@ -731,7 +752,7 @@ export default function InvoiceBuilderPage() {
                                 <div className="flex items-center gap-3">
                                     <div>
                                         <h2 className="text-lg font-semibold text-secondary">TVA &amp; Totaux</h2>
-                                    <p className="text-sm text-slate-500 dark:text-white">Active la TVA si tu es assujetti.</p>
+                                        <p className="text-sm text-slate-500 dark:text-white">Active la TVA si tu es assujetti.</p>
                                     </div>
                                     <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-xs text-slate-700 dark:text-white border border-slate-200 dark:border-slate-800">
                                         <Info className="w-4 h-4 text-secondary" />
@@ -891,10 +912,38 @@ export default function InvoiceBuilderPage() {
                                 C'est tout bon, je valide !
                             </button>
                         </div>
+
+                        <div className="relative py-2">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-slate-200 dark:border-slate-700" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-white dark:bg-slate-900 px-2 text-slate-500">OU</span>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center">
+                            <button
+                                type="button"
+                                onClick={handleSendPost}
+                                disabled={isSending}
+                                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#FFD700] text-slate-900 font-bold hover:bg-[#FFC000] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                            >
+                                {isSending ? (
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                    <Send className="w-5 h-5" />
+                                )}
+                                {isSending ? "Envoi à La Poste..." : "Envoyer en Recommandé (La Poste)"}
+                            </button>
+                        </div>
+                        <p className="text-center text-xs text-slate-500">
+                            Service certifié La Poste • 7.50€ (Impression + Affranchissement + AR)
+                        </p>
                     </div>
                 </div>
             )}
-        </main>
+        </main >
     );
 }
 

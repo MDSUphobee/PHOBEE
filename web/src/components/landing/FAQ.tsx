@@ -1,12 +1,12 @@
 "use client";
 
-// Imports removed
 import { Plus } from "lucide-react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { cn } from "@/lib/utils";
 import React from "react";
+import Link from 'next/link';
+import { Button } from "@/components/ui/button";
 
-// Inline simple Accordion Component because I didn't run the shadcn init command fully
 const AccordionRoot = AccordionPrimitive.Root;
 
 const AccordionItemWrapper = React.forwardRef<
@@ -29,13 +29,13 @@ const AccordionTriggerWrapper = React.forwardRef<
         <AccordionPrimitive.Trigger
             ref={ref}
             className={cn(
-                "flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
+                "flex flex-1 items-center justify-between py-6 font-medium transition-all [&[data-state=open]>svg]:rotate-180",
                 className
             )}
             {...props}
         >
             {children}
-            <Plus className="h-4 w-4 shrink-0 transition-transform duration-200" />
+            <Plus className="h-5 w-5 shrink-0 transition-transform duration-200 text-slate-400 group-hover:text-primary" />
         </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
 ));
@@ -50,7 +50,7 @@ const AccordionContentWrapper = React.forwardRef<
         className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
         {...props}
     >
-        <div className={cn("pb-4 pt-0", className)}>{children}</div>
+        <div className={cn("pb-6 pt-0", className)}>{children}</div>
     </AccordionPrimitive.Content>
 ));
 AccordionContentWrapper.displayName = "AccordionContent";
@@ -59,42 +59,53 @@ AccordionContentWrapper.displayName = "AccordionContent";
 export default function FAQ() {
     const faqs = [
         {
-            q: "Est-ce vraiment gratuit ?",
-            a: "Nous avons une offre Freemium qui permet de suivre 2 échéances par mois. L'offre illimitée avec Radar à Aides est à 9€/mois."
+            q: "La plateforme prend-elle en compte ma situation spécifique ?",
+            a: "Oui, Phobee s'adapte à votre code APE et votre régime fiscal. Le radar à aides scanne uniquement ce qui est pertinent pour vous."
         },
         {
             q: "Mes données sont-elles partagées ?",
-            a: "Jamais. Vos données sont chiffrées sur votre téléphone. Nous n'avons pas accès à vos comptes bancaires, uniquement en lecture seule via l'API sécurisée si vous la connectez."
+            a: "Jamais. Vos données sont chiffrées sur votre téléphone et nos serveurs sécurisés. Nous ne vendons aucune donnée à des tiers."
         },
         {
-            q: "Ça marche pour les artisans ?",
-            a: "Absolument. Phobee est optimisé pour tous les micro-entrepreneurs : artisans, libéraux, commerçants."
+            q: "Les documents sont-ils conformes et officiels ?",
+            a: "Tous nos modèles (factures, devis, contrats) sont mis à jour régulièrement par des juristes pour garantir leur conformité légale."
         },
         {
             q: "Puis-je résilier quand je veux ?",
-            a: "Oui, en un clic depuis l'application. Pas de lettre recommandée, pas de frais cachés."
+            a: "Oui, sans aucun frais ni délai. L'abonnement est sans engagement."
         }
     ];
 
     return (
-        <section className="py-32 bg-background text-foreground">
+        <section className="py-32 bg-slate-50/50 dark:bg-slate-900/30">
             <div className="container mx-auto px-4 md:px-6 max-w-3xl">
-                <div className="text-center mb-20">
-                    <h2 className="text-3xl font-bold text-foreground">Questions Fréquentes</h2>
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Questions Fréquentes</h2>
+                    <div className="h-1 w-20 bg-[#FFD700] mx-auto rounded-full" />
                 </div>
 
-                <AccordionRoot type="single" collapsible className="w-full">
-                    {faqs.map((faq, i) => (
-                        <AccordionItemWrapper key={i} value={`item-${i}`} className="border-b border-slate-100 dark:border-slate-800">
-                            <AccordionTriggerWrapper className="text-left text-lg font-medium text-foreground py-6 hover:no-underline hover:text-primary transition-colors">
-                                {faq.q}
-                            </AccordionTriggerWrapper>
-                            <AccordionContentWrapper className="text-muted-foreground text-base leading-relaxed pb-6">
-                                {faq.a}
-                            </AccordionContentWrapper>
-                        </AccordionItemWrapper>
-                    ))}
-                </AccordionRoot>
+                <div className="bg-white dark:bg-slate-950 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 mb-12">
+                    <AccordionRoot type="single" collapsible className="w-full">
+                        {faqs.map((faq, i) => (
+                            <AccordionItemWrapper key={i} value={`item-${i}`} className="border-slate-100 dark:border-slate-800 group">
+                                <AccordionTriggerWrapper className="text-left text-lg font-bold text-slate-800 dark:text-slate-200 hover:text-[#FFD700] transition-colors">
+                                    {faq.q}
+                                </AccordionTriggerWrapper>
+                                <AccordionContentWrapper className="text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+                                    {faq.a}
+                                </AccordionContentWrapper>
+                            </AccordionItemWrapper>
+                        ))}
+                    </AccordionRoot>
+                </div>
+
+                <div className="text-center">
+                    <Link href="/faq">
+                        <Button className="rounded-full px-8 py-6 text-lg bg-[#FFD700] text-slate-900 font-bold hover:bg-[#FFC000] shadow-lg hover:shadow-xl transition-all">
+                            Consulter toute la FAQ
+                        </Button>
+                    </Link>
+                </div>
             </div>
         </section>
     );
