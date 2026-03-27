@@ -143,10 +143,19 @@ function FormContent() {
                 
                 const data = await res.json();
                 if (data && data.length > 0 && data[0].json_questions) {
+                    let parsedContent = data[0].json_questions;
+                    if (typeof parsedContent === 'string') {
+                        try {
+                            parsedContent = JSON.parse(parsedContent);
+                        } catch (e) {
+                            console.error("Erreur de parsing json_questions:", e);
+                        }
+                    }
+
                     // Save both the full structure and the ID
                     setFormDef({
                         id: data[0].id,
-                        content: data[0].json_questions
+                        content: parsedContent
                     });
                 } else {
                     throw new Error("Formulaire introuvable pour ce document.");

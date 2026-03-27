@@ -16,15 +16,21 @@ export default function RadarAides() {
     useEffect(() => {
         async function fetchPdfs() {
             try {
-                const res = await fetch("/api/pdfs");
+                const res = await fetch("/api/aides");
                 if (!res.ok) {
                     throw new Error("Erreur lors de la récupération des documents.");
                 }
                 const json = await res.json();
-                if (!json.success || json.error) {
-                    throw new Error(json.error || "Erreur inconnue");
+                
+                // Mettre à jour l'état avec un tableau de strings "aide_name"
+                if (Array.isArray(json)) {
+                    const names = json.map((item: any) => item.aide_name).filter(Boolean);
+                    setPdfs(names);
+                } else if (json.data && Array.isArray(json.data)) {
+                    setPdfs(json.data.map((item: any) => item.aide_name || item).filter(Boolean));
+                } else {
+                    setPdfs([]);
                 }
-                setPdfs(json.data || []);
             } catch (err: any) {
                 setError(err.message);
             } finally {
