@@ -11,7 +11,7 @@ import Link from "next/link";
 // const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
-const AUTH_API = `${API_BASE}/api/auth`;
+const AUTH_API = `${API_BASE}/api`;
 
 // Helper to decode JWT
 function parseJwt(token: string) {
@@ -111,39 +111,47 @@ export default function ProfilePage() {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) {
+        const userStorage = localStorage.getItem("user");
+
+        // Si pas de token ou pas d'user, on dégage au login
+        if (!token || !userStorage) {
             router.push("/login");
             return;
         }
 
-        const decoded = parseJwt(token);
-        if (!decoded || (!decoded.id && !decoded.sub)) {
-            localStorage.removeItem("token");
-            router.push("/login");
-            return;
-        }
-        setUser(decoded);
+        try {
+            const userData = JSON.parse(userStorage);
+            setUser(userData); // On remplit les infos de base (nom, email) tout de suite
 
-        const id = Number(decoded.id || decoded.sub);
+            const id = userData.id;
 
-        // Fetch user additional info
-        fetch(`${API_BASE}/api/user-info/${id}`)
-            .then(async (res) => {
-                if (res.ok) {
-                    const data = await res.json();
-                    setUserInfo(data);
-                    // Calculate deadlines
-                    const d = getNextDeadlines(data);
-                    setDeadlines(d);
-                } else if (res.status === 404) {
-                    // Data not defined yet, handle gracefully
-                    setUserInfo(null);
-                    setDeadlines({});
+            // On appelle l'API pour les infos spécifiques (échéances, etc.)
+            fetch(`${API_BASE}/api/user-info/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Indispensable pour Sanctum
+                    'Accept': 'application/json'
                 }
             })
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
+                .then(async (res) => {
+                    if (res.ok) {
+                        const data = await res.json();
+                        setUserInfo(data);
+                        // Calcul des deadlines basé sur les infos reçues
+                        const d = getNextDeadlines(data);
+                        setDeadlines(d);
+                    } else if (res.status === 401) {
+                        // Si le token est expiré ou invalide côté serveur
+                        localStorage.clear();
+                        router.push("/login");
+                    }
+                })
+                .catch(err => console.error("Erreur fetch profile:", err))
+                .finally(() => setLoading(false));
 
+        } catch (e) {
+            console.error("Erreur de parsing userStorage", e);
+            router.push("/login");
+        }
     }, [router]);
 
     // Calendar logic
@@ -223,6 +231,7 @@ export default function ProfilePage() {
     const [editForm, setEditForm] = useState({
         username: "",
         email: "",
+        phone: "",
         password: "",
         confirmPassword: ""
     });
@@ -230,7 +239,12 @@ export default function ProfilePage() {
 
     useEffect(() => {
         if (user) {
-            setEditForm(prev => ({ ...prev, username: user.username || "", email: user.email || "" }));
+            setEditForm(prev => ({
+                ...prev,
+                username: user.username || "",
+                email: user.email || "",
+                phone: user.phone || ""
+            }));
         }
     }, [user]);
 
@@ -249,12 +263,17 @@ export default function ProfilePage() {
         setIsSaving(true);
         try {
             const id = Number(user.id || user.sub);
-            const res = await fetch(`${AUTH_API}/user/${id}`, {
+            const res = await fetch(`${AUTH_API}/users/${id}x`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json", // Crucial pour recevoir du JSON et pas du HTML
+                    "Authorization": `Bearer ${localStorage.getItem("token")}` // Ajoute le token !
+                },
                 body: JSON.stringify({
                     username: editForm.username,
                     email: editForm.email,
+                    phone: editForm.phone,
                     password: editForm.password || undefined
                 })
             });
@@ -272,7 +291,7 @@ export default function ProfilePage() {
 
             // Update local user state if username/email changed
             // Ideally we should update the token or re-fetch profile, but for now let's just update UI
-            setUser((prev: any) => ({ ...prev, username: data.username || prev.username, email: data.email || prev.email }));
+            setUser((prev: any) => ({ ...prev, username: data.username || prev.username, email: data.email || prev.email, phone: data.phone || prev.phone }));
 
         } catch (error) {
             console.error(error);
@@ -308,6 +327,7 @@ export default function ProfilePage() {
                                         <>
                                             <h2 className="text-xl font-bold text-slate-900 dark:text-white truncate">{user?.username}</h2>
                                             <p className="text-slate-500 dark:text-slate-300 text-sm truncate">{user?.email}</p>
+                                            <p className="text-slate-500 dark:text-slate-300 text-sm truncate">{user?.phone}</p>
                                         </>
                                     ) : (
                                         <div className="text-sm font-medium text-slate-900 dark:text-white">Modification du profil</div>
@@ -337,6 +357,20 @@ export default function ProfilePage() {
                                                 onChange={handleEditChange}
                                                 className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
                                                 placeholder="Username"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-300 mb-1 block">Téléphone</label>
+                                        <div className="relative">
+                                            <User className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                                            <input
+                                                type="text"
+                                                name="phone"
+                                                value={editForm.phone}
+                                                onChange={handleEditChange}
+                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
+                                                placeholder="06 12 34 56 78"
                                             />
                                         </div>
                                     </div>

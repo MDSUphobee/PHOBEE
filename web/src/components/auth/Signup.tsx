@@ -7,7 +7,7 @@ import { ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
-const AUTH_API = `${API_BASE}/api/auth`;
+const AUTH_API = `${API_BASE}/api`;
 
 
 
@@ -17,7 +17,8 @@ export default function SignupForm() {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
-        username: "",
+        name: "",
+        phone: "",
     });
     
     // Récupérer les paramètres de redirection depuis l'URL
@@ -35,7 +36,7 @@ export default function SignupForm() {
     };
 
     const validate = () => {
-        if (!formData.email || !formData.password || !formData.username) return false;
+        if (!formData.email || !formData.password || !formData.name || !formData.phone) return false;
         return true;
     };
 
@@ -49,9 +50,9 @@ export default function SignupForm() {
 
         setLoading(true);
         try {
-            const res = await fetch(`${AUTH_API}/signup`, {
+            const res = await fetch(`${AUTH_API}/register`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json","Accept": "application/json" },
                 body: JSON.stringify({
                     ...formData,
                     // nature_income_id: Number(formData.nature_income_id)
@@ -163,11 +164,27 @@ export default function SignupForm() {
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                     <input
                                         type="text"
-                                        name="username"
-                                        value={formData.username}
+                                        name="name"
+                                        value={formData.name}
                                         onChange={handleChange}
                                         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
                                         placeholder="Pseudo"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-700">Téléphone</label>
+                                <div className="relative">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
+                                        placeholder="0600000000"
                                         required
                                     />
                                 </div>

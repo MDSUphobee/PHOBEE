@@ -5,10 +5,13 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import Navbar from "@/components/landing/Navbar";
 
 export default function FAQPage() {
     return (
+
         <div className="container mx-auto py-12 max-w-3xl">
+            <Navbar/>
             <h1 className="text-3xl font-bold mb-8 text-center">Questions Fréquentes</h1>
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">

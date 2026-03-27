@@ -4,13 +4,15 @@ import { motion } from "framer-motion";
 
 export default function ProblemSection() {
     return (
-        <section className="py-32 bg-[#E0F2FE] dark:bg-slate-900/50 overflow-hidden">
+        /*<section className="py-32 bg-[#E0F2FE] dark:bg-slate-900/50 overflow-hidden">*/
+        <section className="py-32 bg-[#F9FAFB] dark:bg-slate-900/50 overflow-hidden">
+
             <div className="container mx-auto px-4 md:px-6">
                 <div className="grid lg:grid-cols-2 gap-20 items-center">
 
                     {/* Visual - Messy Desk */}
                     <div className="relative order-2 lg:order-1">
-                        <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl transform rotate-[-3deg] border-[6px] border-white z-0">
+                        <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl transform rotate-[-3deg] border-[6px] border-white dark:border-slate-800 z-0">
                             <img
                                 src="/images/image2.png"
                                 alt="Bureau en désordre"

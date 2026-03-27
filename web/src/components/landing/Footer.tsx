@@ -15,7 +15,7 @@ export default function Footer() {
                             <img
                                 src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-ToutBlanc.svg"
                                 alt="Logo Phobee"
-                                className="h-12 w-auto"
+                                className="h-36 w-36 object-contain"
                             />
                         </Link>
                         <p className="text-slate-400 text-sm leading-relaxed max-w-xs">

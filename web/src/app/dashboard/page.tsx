@@ -3,10 +3,13 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Calendar, User, FileCheck } from 'lucide-react';
+import Navbar from "@/components/landing/Navbar";
 
 export default function DashboardPage() {
     return (
+
         <div className="container mx-auto py-10">
+            <Navbar/>
             <h1 className="text-3xl font-bold mb-8">Tableau de Bord</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -77,9 +80,12 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         {/* Link to a future documents page, using /facture for now as placeholder or creating new */}
-                        <Link href="/facture">
+                        {/*<Link href="/facture">
                             <Button variant="outline" className="w-full">Générer un document</Button>
-                        </Link>
+                        </Link>*/}
+                        <Button variant="outline" className="w-full" disabled>
+                            À venir
+                        </Button>
                     </CardContent>
                 </Card>
             </div>

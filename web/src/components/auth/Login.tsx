@@ -6,8 +6,8 @@ import Link from "next/link";
 import { ArrowLeft, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
-const AUTH_API = `${API_BASE}/api/auth`;
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8000";
+const AUTH_API = `${API_BASE}/api`;
 
 export default function LoginForm() {
     const router = useRouter();
@@ -56,16 +56,35 @@ export default function LoginForm() {
             }
 
             const data = await res.json();
+            //console.log(data);
             localStorage.setItem("token", data.token);
 
             toast.success("Connexion réussie !");
             
             // Si on vient du questionnaire, rediriger vers les résultats
-            if (redirectPath === "resultats" && answersParam) {
-                router.push(`/resultats?answers=${answersParam}`);
-            } else {
+            //if (redirectPath === "resultats" && answersParam) {
+            //    router.push(`/resultats?answers=${answersParam}`);
+            //} else {
+            //    console.log('test');
+            //    router.push("/profile");
+            //}
+
+            if (data.token && data.user) {
+                // 1. On stocke le token Sanctum
+                localStorage.setItem("token", data.token);
+
+                // 2. On stocke l'objet user (id, email, username) en JSON
+                localStorage.setItem("user", JSON.stringify(data.user));
+
+                toast.success("Connexion réussie !");
+
+                // 3. Redirection vers le profil
                 router.push("/profile");
+                router.refresh();
+            } else {
+                setError("Données de connexion incomplètes.");
             }
+
         } catch (err) {
             setError("Erreur réseau.");
             toast.error("Erreur réseau.");
