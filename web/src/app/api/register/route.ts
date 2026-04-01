@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { email, password } = body;
 
         const apiBaseRaw = process.env.API_BASE;
         if (!apiBaseRaw) {
@@ -14,7 +13,7 @@ export async function POST(req: Request) {
         }
 
         const apiBase = apiBaseRaw.replace(/\/+$/, '');
-        const backendUrl = `${apiBase}/login`;
+        const backendUrl = `${apiBase}/register`;
 
         const apiResponse = await fetch(backendUrl, {
             method: 'POST',
@@ -22,7 +21,7 @@ export async function POST(req: Request) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify(body),
         });
 
         const rawText = await apiResponse.text();
@@ -42,38 +41,11 @@ export async function POST(req: Request) {
         if (!apiResponse.ok) {
             return NextResponse.json(data, { status: apiResponse.status });
         }
-
-        // Laravel peut renvoyer uniquement { token }. Le front a besoin aussi de { user }
-        // pour pouvoir accéder aux pages qui utilisent localStorage.user (ex: /profile).
-        if (data?.token && !data?.user && email) {
-            try {
-                const userRes = await fetch(
-                    `${process.env.API_BASE}/users?email=${encodeURIComponent(email)}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': `Bearer ${data.token}`,
-                        },
-                    }
-                );
-
-                if (userRes.ok) {
-                    const userData = await userRes.json();
-                    const user = Array.isArray(userData)
-                        ? userData[0]
-                        : (Array.isArray(userData?.data) ? userData.data[0] : userData);
-
-                    return NextResponse.json({ ...data, user });
-                }
-            } catch (e) {
-                // Best-effort only: si ça échoue, on renvoie au moins le token.
-            }
-        }
-
-        return NextResponse.json(data);
+        
+        return NextResponse.json(data, { status: 201 });
     } catch (err: any) {
-        console.error("Erreur proxy login:", err);
+        console.error("Erreur proxy signup:", err);
+        // console.log('API_BASE:', process.env.API_BASE);
         return NextResponse.json(
             { message: "Erreur serveur", error: err.message },
             { status: 500 }

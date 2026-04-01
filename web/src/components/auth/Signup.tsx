@@ -6,9 +6,6 @@ import Link from "next/link";
 import { ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
-const AUTH_API = API_BASE;
-
 
 
 export default function SignupForm() {
@@ -50,7 +47,7 @@ export default function SignupForm() {
 
         setLoading(true);
         try {
-            const res = await fetch(`${AUTH_API}register`, {
+            const res = await fetch(`/api/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json","Accept": "application/json" },
                 body: JSON.stringify({
@@ -70,7 +67,7 @@ export default function SignupForm() {
 
             // succès : tentative de connexion automatique avec les éléments du register
             try {
-                const loginRes = await fetch(`${AUTH_API}login`, {
+                const loginRes = await fetch(`/api/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -81,7 +78,37 @@ export default function SignupForm() {
 
                 if (loginRes.ok) {
                     const loginData = await loginRes.json();
-                    localStorage.setItem("token", loginData.token);
+
+                    if (loginData?.token) {
+                        localStorage.setItem("token", loginData.token);
+                    }
+
+                    let user = loginData?.user;
+                    if (!user && loginData?.token) {
+                        try {
+                            const userRes = await fetch(`/api/user?email=${encodeURIComponent(formData.email)}`, {
+                                method: "GET",
+                                headers: {
+                                    "Accept": "application/json",
+                                    "Authorization": `Bearer ${loginData.token}`,
+                                },
+                            });
+
+                            if (userRes.ok) {
+                                const userData = await userRes.json();
+                                user = Array.isArray(userData)
+                                    ? userData[0]
+                                    : (Array.isArray((userData as any)?.data) ? (userData as any).data[0] : userData);
+                            }
+                        } catch {
+                            // best-effort
+                        }
+                    }
+
+                    if (user) {
+                        localStorage.setItem("user", JSON.stringify(user));
+                    }
+
                     toast.success("Compte créé et connexion réussie !");
                     
                     // Si on vient du questionnaire, rediriger vers les résultats
@@ -113,6 +140,7 @@ export default function SignupForm() {
         } catch (err) {
             setError("Erreur réseau.");
             toast.error("Erreur réseau.");
+        } finally {
             setLoading(false);
         }
     };
@@ -127,7 +155,7 @@ export default function SignupForm() {
                         className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 transition-colors mb-8"
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
-                        Retour à l'accueil
+                        <p className="text-slate-500 dark:text-slate-400">Retour à l'accueil</p>
                     </Link>
 
                     <div className="mb-8">
@@ -135,13 +163,13 @@ export default function SignupForm() {
                             <div className="w-10 h-10 rounded-xl bg-[#FFCC00] flex items-center justify-center shadow-lg shadow-yellow-500/20">
                                 <span className="text-slate-900 font-bold text-xl">P</span>
                             </div>
-                            <span className="text-2xl font-bold text-slate-900">PhoBee</span>
+                            <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">PhoBee</span>
                         </div>
-                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Créer un compte</h1>
+                        <h1 className="text-3xl font-bold text-slate-900 mb-2 dark:text-slate-100">Créer un compte</h1>
                         {redirectPath === "resultats" ? (
-                            <p className="text-slate-500">Créez un compte pour voir vos aides éligibles personnalisées.</p>
+                            <p className="text-slate-500 dark:text-slate-400">Créez un compte pour voir vos aides éligibles personnalisées.</p>
                         ) : (
-                            <p className="text-slate-500">Commencez à gérer votre exploitation apicole dès aujourd'hui.</p>
+                            <p className="text-slate-500 dark:text-slate-400">Commencez à gérer votre exploitation apicole dès aujourd'hui.</p>
                         )}
                     </div>
 
@@ -155,11 +183,11 @@ export default function SignupForm() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* Identifiants */}
                             <div className="md:col-span-2">
-                                <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider">Identifiants</h3>
+                                <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider dark:text-slate-100">Identifiants</h3>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">Nom d'utilisateur</label>
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Nom d'utilisateur</label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                     <input
@@ -175,7 +203,7 @@ export default function SignupForm() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">Téléphone</label>
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Téléphone</label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                     <input
@@ -191,7 +219,7 @@ export default function SignupForm() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700">Email</label>
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                     <input
@@ -207,7 +235,7 @@ export default function SignupForm() {
                             </div>
 
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-sm font-medium text-slate-700">Mot de passe</label>
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Mot de passe</label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                     <input
@@ -241,9 +269,9 @@ export default function SignupForm() {
                         </button>
                     </form>
 
-                    <p className="mt-8 text-center text-sm text-slate-500">
+                    <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
                         Déjà un compte ?{" "}
-                        <Link href="/login" className="text-[#0F172A] font-semibold hover:underline">
+                        <Link href="/login" className="text-[#0F172A] font-semibold hover:underline dark:text-slate-100">
                             Se connecter
                         </Link>
                     </p>

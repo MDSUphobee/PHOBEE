@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
+    const authHeader = req.headers.get('authorization');
 
     if (!email) {
         return NextResponse.json(
@@ -12,7 +13,12 @@ export async function GET(req: Request) {
     }
 
     try {
-        const apiResponse = await fetch(`${process.env.API_BASE}/users?email=${encodeURIComponent(email)}`);
+        const apiResponse = await fetch(`${process.env.API_BASE}/users?email=${encodeURIComponent(email)}`, {
+            headers: {
+                ...(authHeader ? { Authorization: authHeader } : {}),
+                'Accept': 'application/json',
+            },
+        });
         const data = await apiResponse.json();
 
         if (!apiResponse.ok) {

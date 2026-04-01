@@ -90,7 +90,7 @@ export default function ContactContent() {
                                 >
                                     contact@phobee.fr
                                 </Link>
-                                <p className="text-slate-600 text-xs">Réponse sous 24h ouvrées</p>
+                                <p className="text-slate-600 text-xs dark:text-slate-400">Réponse sous 24h ouvrées</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-md">
@@ -103,7 +103,7 @@ export default function ContactContent() {
                                 >
                                     Contacter le support
                                 </Link>
-                                <p className="text-slate-600 text-xs">Pour tout problème technique ou de compte</p>
+                                <p className="text-slate-600 text-xs dark:text-slate-400">Pour tout problème technique ou de compte</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 shadow-md">
@@ -118,7 +118,7 @@ export default function ContactContent() {
                                 >
                                     @phobee.fr
                                 </Link>
-                                <p className="text-slate-600 text-xs">Suivez-nous pour ne rien manquer !</p>
+                                <p className="text-slate-600 text-xs dark:text-slate-400">Suivez-nous pour ne rien manquer !</p>
                             </div>
                         </div>
                     </div>

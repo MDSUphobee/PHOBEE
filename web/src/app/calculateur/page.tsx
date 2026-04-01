@@ -9,14 +9,6 @@ import { Calculator, Calendar, CreditCard, CheckCircle2, Loader2, Save } from "l
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
 
-function parseJwt(token: string) {
-    try {
-        return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-        return null;
-    }
-}
-
 export default function CalculateurPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
@@ -31,29 +23,35 @@ export default function CalculateurPage() {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) {
+        const userStorage = localStorage.getItem("user");
+        if (!token || !userStorage) {
             router.push("/login");
             return;
         }
 
-        const decoded = parseJwt(token);
-        if (!decoded || (!decoded.id && !decoded.sub)) {
-            localStorage.removeItem("token");
+        let id: number | null = null;
+        try {
+            const userData = JSON.parse(userStorage);
+            id = Number(userData?.id);
+        } catch {
+            id = null;
+        }
+
+        if (!id || Number.isNaN(id)) {
+            localStorage.clear();
             router.push("/login");
             return;
         }
 
-        const id = Number(decoded.id || decoded.sub);
-        if (isNaN(id)) {
-            // Handle case where ID is not a number if needed, but assuming number for now
-            console.error("Invalid ID in token");
-            // router.push("/login");
-            // return;
-        }
         setUserId(id);
 
         // Fetch existing info
-        fetch(`${API_BASE}/user-info/${id}`)
+        fetch(`${API_BASE}/user-info/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        })
             .then(async (res) => {
                 if (res.ok) {
                     const data = await res.json();
@@ -63,6 +61,9 @@ export default function CalculateurPage() {
                     if (data.has_acre !== undefined) setHasAcre(!!data.has_acre);
                 } else if (res.status === 404) {
                     setMode("create");
+                } else if (res.status === 401) {
+                    localStorage.clear();
+                    router.push("/login");
                 }
             })
             .catch((err) => {
@@ -76,6 +77,12 @@ export default function CalculateurPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!userId) return;
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push("/login");
+            return;
+        }
 
         setSubmitting(true);
         try {
@@ -98,7 +105,11 @@ export default function CalculateurPage() {
 
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
                 body: JSON.stringify(body),
             });
 
