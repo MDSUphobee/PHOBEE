@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { saveUserQuestionnaireInfo } from "@/lib/user";
 
 
 
@@ -17,7 +18,7 @@ export default function SignupForm() {
         name: "",
         phone: "",
     });
-    
+
     // Récupérer les paramètres de redirection depuis l'URL
     const redirectPath = searchParams.get("redirect");
     const answersParam = searchParams.get("answers");
@@ -47,9 +48,9 @@ export default function SignupForm() {
 
         setLoading(true);
         try {
-            const res = await fetch(`/api/register`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/register`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json","Accept": "application/json" },
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify({
                     ...formData,
                     // nature_income_id: Number(formData.nature_income_id)
@@ -67,7 +68,7 @@ export default function SignupForm() {
 
             // succès : tentative de connexion automatique avec les éléments du register
             try {
-                const loginRes = await fetch(`/api/login`, {
+                const loginRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -86,7 +87,7 @@ export default function SignupForm() {
                     let user = loginData?.user;
                     if (!user && loginData?.token) {
                         try {
-                            const userRes = await fetch(`/api/user?email=${encodeURIComponent(formData.email)}`, {
+                            const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/user?email=${encodeURIComponent(formData.email)}`, {
                                 method: "GET",
                                 headers: {
                                     "Accept": "application/json",
@@ -107,10 +108,20 @@ export default function SignupForm() {
 
                     if (user) {
                         localStorage.setItem("user", JSON.stringify(user));
+
+                        // Sauvegarder les réponses si présentes
+                        if (answersParam && loginData.token) {
+                            try {
+                                const answers = JSON.parse(decodeURIComponent(answersParam));
+                                await saveUserQuestionnaireInfo(user.id, loginData.token, answers);
+                            } catch (e) {
+                                console.error("Erreur sauvegarde réponses post-signup:", e);
+                            }
+                        }
                     }
 
                     toast.success("Compte créé et connexion réussie !");
-                    
+
                     // Si on vient du questionnaire, rediriger vers les résultats
                     if (redirectPath === "resultats" && answersParam) {
                         router.push(`/resultats?answers=${answersParam}`);

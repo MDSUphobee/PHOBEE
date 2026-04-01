@@ -7,6 +7,7 @@ import { ArrowRight, ArrowLeft, CheckCircle2, Sprout, Building2, Search, X } fro
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import aidesData from "@/data/aides-agricoles.json";
+import { saveUserQuestionnaireInfo, getUserInfo, mapBackendToAnswers } from "@/lib/user";
 
 interface Answer {
   questionId: string;
@@ -19,6 +20,48 @@ export default function QuestionnairePage() {
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Vérifier si l'utilisateur a déjà des réponses au chargement
+  useEffect(() => {
+    const checkExistingAnswers = async () => {
+      // Vérifier le mode edit dans l'URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get("mode");
+      const isEdit = mode === "edit" || mode === "refill";
+      
+      const token = localStorage.getItem("token");
+      const userStr = localStorage.getItem("user");
+      
+      if (token && userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          const fullUser = await getUserInfo(user.id, token);
+          
+          if (fullUser && fullUser.legal_form_id) {
+            const existingAnswers = mapBackendToAnswers(fullUser);
+            
+            if (isEdit) {
+              // Mode modification : on pré-remplit les réponses mais on reste sur le questionnaire
+              setAnswers(existingAnswers);
+            } else {
+              // Mode standard : on redirige vers les résultats
+              const answersString = encodeURIComponent(JSON.stringify(existingAnswers));
+              router.push(`/resultats?answers=${answersString}`);
+              return;
+            }
+          }
+        } catch (e) {
+          console.error("Erreur lors de la vérification des réponses existantes:", e);
+        }
+      }
+      
+      // Petit délai pour éviter un flash de chargement trop court
+      setTimeout(() => setIsLoading(false), 800);
+    };
+
+    checkExistingAnswers();
+  }, [router]);
 
   // Filtrer les questions selon le statut choisi
   const filteredQuestions = useMemo(() => {
@@ -99,6 +142,16 @@ export default function QuestionnairePage() {
         const answersString = encodeURIComponent(JSON.stringify(answers));
         router.push(`/signup?redirect=resultats&answers=${answersString}`);
       } else {
+        // Tentative de sauvegarde si connecté
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            saveUserQuestionnaireInfo(user.id, token, answers);
+          } catch (e) {
+            console.error("Erreur parsing user for save:", e);
+          }
+        }
         // Si connecté, rediriger vers la page de résultats avec les réponses
         const answersString = encodeURIComponent(JSON.stringify(answers));
         router.push(`/resultats?answers=${answersString}`);
@@ -140,6 +193,33 @@ export default function QuestionnairePage() {
       );
     });
   }, [currentQuestion, searchQuery]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-slate-50 dark:bg-black text-foreground flex flex-col items-center justify-center">
+        <Navbar />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-6 text-center px-4"
+        >
+          <div className="relative">
+            <div className="w-20 h-20 border-4 border-primary/20 rounded-full"></div>
+            <div className="absolute top-0 w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <Sprout className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold bg-gradient-to-r from-primary to-green-600 bg-clip-text text-transparent">
+              {window.location.search.includes('edit') ? 'Préparation de vos réponses...' : 'Analyse de votre profil...'}
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-[250px]">
+              Nous personnalisons le formulaire pour votre projet agricole.
+            </p>
+          </div>
+        </motion.div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background text-foreground">

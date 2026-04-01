@@ -28,7 +28,7 @@ export default function Footer() {
                     <div className="md:col-span-2 md:col-start-6">
                         <h4 className="font-bold mb-6 text-[#FFD700]">Nos services</h4>
                         <ul className="space-y-4 text-sm text-slate-400">
-                            <li><Link href="/calculateur" className="hover:text-white transition-colors">Calculateur</Link></li>
+                            {/* <li><Link href="/calculateur" className="hover:text-white transition-colors">Calculateur</Link></li> */}
                             <li><Link href="/facture" className="hover:text-white transition-colors">Générer une facture</Link></li>
                             <li><Link href="/profile" className="hover:text-white transition-colors">Profil</Link></li>
                         </ul>

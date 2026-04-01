@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { saveUserQuestionnaireInfo } from "@/lib/user";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -13,7 +14,7 @@ export default function LoginForm() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    
+
     // Récupérer les paramètres de redirection depuis l'URL
     const redirectPath = searchParams.get("redirect");
     const answersParam = searchParams.get("answers");
@@ -38,7 +39,7 @@ export default function LoginForm() {
 
         setLoading(true);
         try {
-            const res = await fetch(`/api/login`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -64,7 +65,7 @@ export default function LoginForm() {
             let user = data.user;
             if (!user) {
                 try {
-                    const userRes = await fetch(`/api/user?email=${encodeURIComponent(email)}`, {
+                    const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/user?email=${encodeURIComponent(email)}`, {
                         method: "GET",
                         headers: {
                             "Accept": "application/json",
@@ -84,6 +85,16 @@ export default function LoginForm() {
 
             if (user) {
                 localStorage.setItem("user", JSON.stringify(user));
+
+                // Sauvegarder les réponses si présentes
+                if (answersParam && data.token) {
+                    try {
+                        const answers = JSON.parse(decodeURIComponent(answersParam));
+                        await saveUserQuestionnaireInfo(user.id, data.token, answers);
+                    } catch (e) {
+                        console.error("Erreur sauvegarde réponses post-login:", e);
+                    }
+                }
             }
 
             toast.success("Connexion réussie !");

@@ -320,9 +320,9 @@ export default function SurvivalManualPage() {
                                 <button className="px-6 py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors border border-white/10">
                                     📥 Télécharger ce modèle
                                 </button>
-                                <Link href="/calculateur" className="px-6 py-3 rounded-xl bg-[#FFCC00] text-slate-900 font-bold hover:bg-[#F0B400] transition-colors shadow-lg shadow-yellow-500/20 text-center">
+                                {/* <Link href="/calculateur" className="px-6 py-3 rounded-xl bg-[#FFCC00] text-slate-900 font-bold hover:bg-[#F0B400] transition-colors shadow-lg shadow-yellow-500/20 text-center">
                                     🧮 Lancer le simulateur
-                                </Link>
+                                </Link> */}
                             </div>
                         </div>
 

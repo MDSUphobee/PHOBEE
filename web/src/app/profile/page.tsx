@@ -5,10 +5,8 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, AlertCircle, CheckCircle2, DollarSign, Edit2, Save, X, Lock, Mail, User } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, AlertCircle, CheckCircle2, DollarSign, Edit2, Save, X, Lock, Mail, User, Phone, Loader2 } from "lucide-react";
 import Link from "next/link";
-
-// const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
 const AUTH_API = API_BASE;
@@ -44,27 +42,13 @@ function getNextDeadlines(profile: UserInfo, today = new Date()) {
 
     // URSSAF
     if (paymentFreq === 'monthly') {
-        // Mensuel : fin du mois suivant
-        // Pour chaque mois de l'année, on génère la deadline. 
-        // L'échéance de Janvier est le 28/29 Fevrier.
-        // L'échéance de Fevrier est le 31 Mars.
-        // etc.
         years.forEach(year => {
             for (let month = 0; month < 12; month++) {
-                // Deadline is end of next month
-                // Period: month `month` of `year`.
-                // Deadline: Last day of month `month + 1`.
                 const d = new Date(year, month + 2, 0);
                 urssafDates.push(d);
             }
         });
     } else if (paymentFreq === 'quarterly') {
-        // Trimestriel
-        // Q1 (Jan-Mar) -> 30 Avril
-        // Q2 (Apr-Jun) -> 31 Juillet
-        // Q3 (Jul-Sep) -> 31 Octobre
-        // Q4 (Oct-Dec) -> 31 Janvier (Année N+1)
-
         years.forEach(year => {
             urssafDates.push(new Date(year, 3, 30)); // 30 Apr
             urssafDates.push(new Date(year, 6, 31)); // 31 July
@@ -72,16 +56,9 @@ function getNextDeadlines(profile: UserInfo, today = new Date()) {
             urssafDates.push(new Date(year + 1, 0, 31)); // 31 Jan next year
         });
     } else if (paymentFreq === 'annually') {
-        // Annuel (Exemple hypothétique ou user-defined. User mentionne 31/01/2026 pour début 2025).
-        // On suppose une deadline annuelle récurrente. Disons le 31 Janvier de l'année suivante.
         years.forEach(year => {
             urssafDates.push(new Date(year + 1, 0, 31)); // 31 Jan N+1
         });
-
-        // Ou peut-être 31 Décembre ? 
-        // Si l'utilisateur a vu 31/01/2026, c'est que mon ancien code (qui utilisait la logique trimestrielle par défaut) avait calculé Q4 -> 31 Jan.
-        // Donc "Annuel" semble suivre la logique Trimestrielle Q4 ?? 
-        // Pour l'instant je mets 31 Janvier N+1 comme deadline annuelle.
     }
 
     deadlines.urssaf = urssafDates;
@@ -113,7 +90,6 @@ export default function ProfilePage() {
         const token = localStorage.getItem("token");
         const userStorage = localStorage.getItem("user");
 
-        // Si pas de token ou pas d'user, on dégage au login
         if (!token || !userStorage) {
             router.push("/login");
             return;
@@ -121,14 +97,14 @@ export default function ProfilePage() {
 
         try {
             const userData = JSON.parse(userStorage);
-            setUser(userData); // On remplit les infos de base (nom, email) tout de suite
+            setUser(userData);
 
             const id = userData.id;
 
-            // On appelle l'API pour les infos spécifiques (échéances, etc.)
-            fetch(`${API_BASE}/user-info/${id}`, {
+            // Correction de la route pour éviter le 404 (on utilise /users/{id})
+            fetch(`${API_BASE}/users/${id}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`, // Indispensable pour Sanctum
+                    'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json'
                 }
             })
@@ -136,11 +112,9 @@ export default function ProfilePage() {
                     if (res.ok) {
                         const data = await res.json();
                         setUserInfo(data);
-                        // Calcul des deadlines basé sur les infos reçues
                         const d = getNextDeadlines(data);
                         setDeadlines(d);
                     } else if (res.status === 401) {
-                        // Si le token est expiré ou invalide côté serveur
                         localStorage.clear();
                         router.push("/login");
                     }
@@ -157,9 +131,6 @@ export default function ProfilePage() {
     // Calendar logic
     const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
     const getFirstDayOfMonth = (year: number, month: number) => {
-        // 0 = Sunday, 1 = Monday. We want Monday = 0, Sunday = 6 for our grid usually.
-        // Let's stick to standard 0=Sun for now to keep it simple, or adjust.
-        // Let's use Monday start.
         const day = new Date(year, month, 1).getDay();
         return day === 0 ? 6 : day - 1;
     };
@@ -200,19 +171,16 @@ export default function ProfilePage() {
         return events;
     };
 
-    // Find next upcoming deadline
     const getNextUpcomingDeadline = () => {
         if (!deadlines.urssaf) return null;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        // Sort dates and find first one >= today
         const sorted = [...deadlines.urssaf].sort((a, b) => a.getTime() - b.getTime());
         return sorted.find(d => d >= today);
     };
 
     const nextUrssaf = getNextUpcomingDeadline();
 
-    // Modal state
     const [selectedDateEvents, setSelectedDateEvents] = useState<{ date: Date; events: any[] } | null>(null);
 
     const goToToday = () => {
@@ -226,7 +194,6 @@ export default function ProfilePage() {
         }
     };
 
-    // Edit Profile State
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState({
         username: "",
@@ -254,48 +221,51 @@ export default function ProfilePage() {
 
     const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (editForm.password && editForm.password !== editForm.confirmPassword) {
-            toast.error("Les mots de passe ne correspondent pas.");
+            toast.error("Les mots de passe ne correspondent pas");
             return;
         }
 
         setIsSaving(true);
+        const token = localStorage.getItem("token");
         try {
-            const id = Number(user.id || user.sub);
-            const res = await fetch(`${AUTH_API}/users/${id}`, {
-                method: "PUT",
+            const body: any = {
+                name: editForm.username,
+                email: editForm.email,
+                phone: editForm.phone,
+            };
+            if (editForm.password) body.password = editForm.password;
+
+            const res = await fetch(`${API_BASE}/users/${user.id}`, {
+                method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json", // Crucial pour recevoir du JSON et pas du HTML
-                    "Authorization": `Bearer ${localStorage.getItem("token")}` // Ajoute le token !
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    username: editForm.username,
-                    email: editForm.email,
-                    phone: editForm.phone,
-                    password: editForm.password || undefined
-                })
+                body: JSON.stringify(body)
             });
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                toast.error(data.message || "Erreur lors de la mise à jour.");
-                setIsSaving(false);
-                return;
+            if (res.ok) {
+                const updatedUser = await res.json();
+                // Update local storage and state
+                const newUserObj = {
+                    ...user,
+                    username: updatedUser.name,
+                    email: updatedUser.email,
+                    phone: updatedUser.phone
+                };
+                localStorage.setItem("user", JSON.stringify(newUserObj));
+                setUser(newUserObj);
+                setIsEditing(false);
+                toast.success("Profil mis à jour avec succès !");
+            } else {
+                const errorData = await res.json();
+                toast.error(errorData.message || "Erreur lors de la mise à jour");
             }
-
-            toast.success("Profil mis à jour avec succès !");
-            setIsEditing(false);
-
-            // Update local user state if username/email changed
-            // Ideally we should update the token or re-fetch profile, but for now let's just update UI
-            setUser((prev: any) => ({ ...prev, username: data.username || prev.username, email: data.email || prev.email, phone: data.phone || prev.phone }));
-
         } catch (error) {
-            console.error(error);
-            toast.error("Erreur réseau.");
+            console.error("Update error:", error);
+            toast.error("Erreur réseau");
         } finally {
             setIsSaving(false);
         }
@@ -312,9 +282,7 @@ export default function ProfilePage() {
             <Navbar />
 
             <div className="flex-grow container mx-auto px-4 py-8 md:py-12 mt-16">
-
                 <div className="flex flex-col md:flex-row gap-8 items-start">
-
                     {/* Sidebar / Info Card */}
                     <div className="w-full md:w-1/3 space-y-6">
                         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
@@ -345,123 +313,119 @@ export default function ProfilePage() {
                             </div>
 
                             {isEditing && (
-                                <form onSubmit={handleEditSubmit} className="space-y-3 mb-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    <div>
-                                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-300 mb-1 block">Nom d'utilisateur</label>
+                                <form onSubmit={handleEditSubmit} className="space-y-4 mb-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="space-y-3">
                                         <div className="relative">
-                                            <User className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                             <input
                                                 type="text"
                                                 name="username"
                                                 value={editForm.username}
                                                 onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
-                                                placeholder="Username"
+                                                placeholder="Nom d'utilisateur"
+                                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
+                                                required
                                             />
                                         </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-300 mb-1 block">Téléphone</label>
                                         <div className="relative">
-                                            <User className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-                                            <input
-                                                type="text"
-                                                name="phone"
-                                                value={editForm.phone}
-                                                onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
-                                                placeholder="06 12 34 56 78"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-300 mb-1 block">Email</label>
-                                        <div className="relative">
-                                            <Mail className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                             <input
                                                 type="email"
                                                 name="email"
                                                 value={editForm.email}
                                                 onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
                                                 placeholder="Email"
+                                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
+                                                required
                                             />
                                         </div>
-                                    </div>
-                                    <div className="pt-2 border-t border-slate-200 dark:border-slate-800 mt-2">
-                                        <label className="text-xs font-semibold text-slate-500 dark:text-slate-300 mb-1 block">Nouveau mot de passe (optionnel)</label>
-                                        <div className="relative mb-2">
-                                            <Lock className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                                        <div className="relative">
+                                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                            <input
+                                                type="text"
+                                                name="phone"
+                                                value={editForm.phone}
+                                                onChange={handleEditChange}
+                                                placeholder="Téléphone"
+                                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                             <input
                                                 type="password"
                                                 name="password"
                                                 value={editForm.password}
                                                 onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
                                                 placeholder="Nouveau mot de passe"
+                                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
                                             />
                                         </div>
-                                        <div className="relative">
-                                            <Lock className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-                                            <input
-                                                type="password"
-                                                name="confirmPassword"
-                                                value={editForm.confirmPassword}
-                                                onChange={handleEditChange}
-                                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm text-slate-900 dark:text-white focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/10 outline-none"
-                                                placeholder="Confirmer le mot de passe"
-                                            />
-                                        </div>
+                                        {editForm.password && (
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                <input
+                                                    type="password"
+                                                    name="confirmPassword"
+                                                    value={editForm.confirmPassword}
+                                                    onChange={handleEditChange}
+                                                    placeholder="Confirmer le mot de passe"
+                                                    className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
+                                                    required
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex gap-2 pt-2">
                                         <button
-                                            type="button"
-                                            onClick={() => setIsEditing(false)}
-                                            className="flex-1 py-1.5 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                                        >
-                                            Annuler
-                                        </button>
-                                        <button
                                             type="submit"
                                             disabled={isSaving}
-                                            className="flex-1 py-1.5 px-3 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors disabled:opacity-70 flex items-center justify-center gap-1"
+                                            className="flex-1 py-2 bg-[#FFCC00] text-slate-900 rounded-xl font-bold text-xs hover:bg-[#F0B400] transition-colors flex items-center justify-center gap-2"
                                         >
-                                            {isSaving ? '...' : <><Save className="w-3 h-3" /> Enregistrer</>}
+                                            {isSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                                            Enregistrer
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsEditing(false)}
+                                            className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
+                                        >
+                                            <X className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </form>
                             )}
 
+                            {/* Section masquée temporairement sur demande utilisateur */}
+                            {/* 
                             <div className="space-y-4">
                                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
                                     <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Fréquence de paiement</h3>
                                     <p className="text-slate-900 dark:text-white font-medium capitalize">
-                                        {userInfo?.payment_frequency ?
-                                            (userInfo.payment_frequency === 'monthly' ? 'Mensuel' :
-                                                userInfo.payment_frequency === 'quarterly' ? 'Trimestriel' :
-                                                    userInfo.payment_frequency === 'annually' ? 'Annuel' : userInfo.payment_frequency)
-                                            : 'Non défini'}
+                                        {userInfo?.payment_frequency || 'Non défini'}
                                     </p>
                                 </div>
                                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
                                     <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Date de début</h3>
                                     <p className="text-slate-900 dark:text-white font-medium">
-                                        {userInfo?.start_date ? new Date(userInfo.start_date).toLocaleDateString() : 'Non définie'}
+                                        {userInfo?.start_date || 'Non définie'}
                                     </p>
                                 </div>
                                 <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
                                     <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Prochaine Échéance URSSAF</h3>
                                     <p className="text-slate-900 dark:text-white font-medium flex items-center gap-2">
                                         {nextUrssaf ? nextUrssaf.toLocaleDateString() : 'Aucune'}
-                                        {nextUrssaf && <AlertCircle className="w-4 h-4 text-orange-500" />}
                                     </p>
                                 </div>
                             </div>
+                            */}
 
                             <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+                                {/* Lien calculateur masqué
                                 <Link href="/calculateur" className="block w-full py-3 text-center bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 transition-colors">
                                     Mettre à jour mes infos
                                 </Link>
+                                */}
                                 <button
                                     onClick={() => {
                                         localStorage.removeItem("token");
@@ -478,7 +442,6 @@ export default function ProfilePage() {
                     {/* Calendar Section */}
                     <div className="w-full md:w-2/3">
                         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-lg shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 overflow-hidden relative">
-
                             {/* Header */}
                             <div className="p-4 md:p-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80">
                                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
@@ -559,10 +522,8 @@ export default function ProfilePage() {
                                     </div>
                                 )}
                             </div>
-
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -575,7 +536,7 @@ export default function ProfilePage() {
                                 {selectedDateEvents.date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                             </h3>
                             <button onClick={() => setSelectedDateEvents(null)} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
-                                <ChevronLeft className="w-5 h-5 rotate-180" /> {/* Close icon workaround or just X */}
+                                <ChevronLeft className="w-5 h-5 rotate-180" />
                             </button>
                         </div>
                         <div className="p-6 space-y-4">
