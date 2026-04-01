@@ -11,7 +11,7 @@ import Link from "next/link";
 // const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
-const AUTH_API = `${API_BASE}/api`;
+const AUTH_API = API_BASE;
 
 // Helper to decode JWT
 function parseJwt(token: string) {
