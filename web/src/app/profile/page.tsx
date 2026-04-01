@@ -263,7 +263,7 @@ export default function ProfilePage() {
         setIsSaving(true);
         try {
             const id = Number(user.id || user.sub);
-            const res = await fetch(`${AUTH_API}/users/${id}x`, {
+            const res = await fetch(`${AUTH_API}/users/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,8 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: Request, { params }: { params: { userId: string } }) {
+// On définit le type pour Next.js 16 (params est une Promise)
+type RouteContext = {
+    params: Promise<{ userId: string }>
+};
+
+export async function GET(req: NextRequest, { params }: RouteContext) {
     try {
-        const userId = params.userId;
+        // CRUCIAL : On attend que les paramètres soient résolus
+        const resolvedParams = await params;
+        const userId = resolvedParams.userId;
+
         const apiResponse = await fetch(`${process.env.API_BASE}/user-info/${userId}`);
         const data = await apiResponse.json();
 
@@ -20,10 +28,13 @@ export async function GET(req: Request, { params }: { params: { userId: string }
     }
 }
 
-export async function PUT(req: Request, { params }: { params: { userId: string } }) {
+export async function PUT(req: NextRequest, { params }: RouteContext) {
     try {
         const body = await req.json();
-        const userId = params.userId;
+        
+        // CRUCIAL : On attend aussi ici
+        const resolvedParams = await params;
+        const userId = resolvedParams.userId;
 
         const apiResponse = await fetch(`${process.env.API_BASE}/user-info/${userId}`, {
             method: 'PUT',
