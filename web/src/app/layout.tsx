@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google"; // Using Inter as requested
+import { Suspense } from "react";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
@@ -62,7 +63,9 @@ export default function RootLayout({
             </head>
             <body className={cn("min-h-screen bg-background antialiased overflow-x-hidden", inter.variable)} suppressHydrationWarning>
                 <ThemeProvider>
-                    <GaPageView />
+                    <Suspense fallback={null}>
+                        <GaPageView />
+                    </Suspense>
                     {children}
                     <Toaster richColors position="top-center" />
                     <CookieBanner />
