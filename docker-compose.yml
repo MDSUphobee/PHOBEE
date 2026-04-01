@@ -1,0 +1,21 @@
+services:
+  nextjs:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        # On injecte la variable au moment du build pour le JS client
+        - NEXT_PUBLIC_API_BASE=https://phobee.net/api/
+    container_name: phobee_nextjs
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    # Charge le reste des variables (JWT, secrets, etc.)
+    env_file:
+      - ./web/.env
+    networks:
+      - phobee_shared_net
+
+networks:
+  phobee_shared_net:
+    external: true
