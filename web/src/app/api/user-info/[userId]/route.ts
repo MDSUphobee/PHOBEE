@@ -6,10 +6,10 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 export async function PUT(
     req: NextRequest,
-    { params }: { params: { userId: string } }
+    { params }: { params: Promise<{ userId: string }> }
 ) {
     try {
-        const userId = params.userId;
+        const { userId } = await params;
         const body = await req.json();
         const authHeader = req.headers.get('Authorization');
 
@@ -48,10 +48,10 @@ export async function PUT(
  */
 export async function GET(
     req: NextRequest,
-    { params }: { params: { userId: string } }
+    { params }: { params: Promise<{ userId: string }> }
 ) {
     try {
-        const userId = params.userId;
+        const { userId } = await params;
         const authHeader = req.headers.get('Authorization');
 
         if (!authHeader) {
