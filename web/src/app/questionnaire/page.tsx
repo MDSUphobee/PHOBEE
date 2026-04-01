@@ -21,6 +21,7 @@ export default function QuestionnairePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // Vérifier si l'utilisateur a déjà des réponses au chargement
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function QuestionnairePage() {
       const urlParams = new URLSearchParams(window.location.search);
       const mode = urlParams.get("mode");
       const isEdit = mode === "edit" || mode === "refill";
+      setIsEditMode(isEdit);
       
       const token = localStorage.getItem("token");
       const userStr = localStorage.getItem("user");
@@ -210,7 +212,7 @@ export default function QuestionnairePage() {
           </div>
           <div className="space-y-2">
             <h3 className="text-xl font-semibold bg-gradient-to-r from-primary to-green-600 bg-clip-text text-transparent">
-              {window.location.search.includes('edit') ? 'Préparation de vos réponses...' : 'Analyse de votre profil...'}
+              {isEditMode ? 'Préparation de vos réponses...' : 'Analyse de votre profil...'}
             </h3>
             <p className="text-sm text-muted-foreground max-w-[250px]">
               Nous personnalisons le formulaire pour votre projet agricole.
