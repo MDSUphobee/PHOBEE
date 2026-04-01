@@ -50,7 +50,7 @@ export default function SignupForm() {
 
         setLoading(true);
         try {
-            const res = await fetch(`${AUTH_API}/register`, {
+            const res = await fetch(`${AUTH_API}register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json","Accept": "application/json" },
                 body: JSON.stringify({
@@ -70,7 +70,7 @@ export default function SignupForm() {
 
             // succès : tentative de connexion automatique avec les éléments du register
             try {
-                const loginRes = await fetch(`${AUTH_API}/login`, {
+                const loginRes = await fetch(`${AUTH_API}login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
