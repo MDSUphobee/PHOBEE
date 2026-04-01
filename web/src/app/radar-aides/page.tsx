@@ -16,7 +16,7 @@ export default function RadarAides() {
     useEffect(() => {
         async function fetchPdfs() {
             try {
-                const res = await fetch("/api/aides");
+                const res = await fetch("/aides");
                 if (!res.ok) {
                     throw new Error("Erreur lors de la récupération des documents.");
                 }

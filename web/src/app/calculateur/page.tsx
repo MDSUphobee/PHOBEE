@@ -53,7 +53,7 @@ export default function CalculateurPage() {
         setUserId(id);
 
         // Fetch existing info
-        fetch(`${API_BASE}/api/user-info/${id}`)
+        fetch(`${API_BASE}/user-info/${id}`)
             .then(async (res) => {
                 if (res.ok) {
                     const data = await res.json();
@@ -79,7 +79,7 @@ export default function CalculateurPage() {
 
         setSubmitting(true);
         try {
-            const url = mode === "create" ? `${API_BASE}/api/user-info` : `${API_BASE}/api/user-info/${userId}`;
+            const url = mode === "create" ? `${API_BASE}/user-info` : `${API_BASE}/user-info/${userId}`;
             const method = mode === "create" ? "POST" : "PUT";
 
             const body = {

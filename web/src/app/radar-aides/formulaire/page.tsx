@@ -133,7 +133,7 @@ function FormContent() {
 
         async function fetchForm() {
             try {
-                const res = await fetch("/api/aides", {
+                const res = await fetch("/aides", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ filters: { aide_name: aideName } })
@@ -185,7 +185,7 @@ function FormContent() {
             // Utilisateur connecté -> Enregistrement en base de données via notre nouvelle API (et pas de génération de PDF simulée frontend)
             setSubmitting(true);
             try {
-                const res = await fetch("/api/user-data", {
+                const res = await fetch("/user-data", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({

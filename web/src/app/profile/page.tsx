@@ -126,7 +126,7 @@ export default function ProfilePage() {
             const id = userData.id;
 
             // On appelle l'API pour les infos spécifiques (échéances, etc.)
-            fetch(`${API_BASE}/api/user-info/${id}`, {
+            fetch(`${API_BASE}/user-info/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`, // Indispensable pour Sanctum
                     'Accept': 'application/json'
