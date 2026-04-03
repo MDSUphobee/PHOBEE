@@ -1,18 +1,19 @@
 services:
-  nextjs:
+  nextjs_dev: # Nom de service unique
     build:
       context: ./web
       dockerfile: Dockerfile
       args:
-        # On injecte la variable au moment du build pour le JS client
-        - NEXT_PUBLIC_API_BASE=https://phobee.net/api/
-    container_name: phobee_nextjs
+        # Crucial : On pointe vers l'URL de l'API de dev !
+        - NEXT_PUBLIC_API_BASE=https://dev.phobee.net/api
+    container_name: phobee_nextjs_dev # Nom de conteneur unique
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-    # Charge le reste des variables (JWT, secrets, etc.)
+      # Tu peux ajouter une variable pour afficher un bandeau "STAGING" sur ton site
+      - NEXT_PUBLIC_APP_ENV=staging
     env_file:
-      - ./web/.env
+      - ./web/.env # Utilise un fichier env spécifique à la dev
     networks:
       - phobee_shared_net
 
