@@ -1,11 +1,11 @@
 services:
-  nextjs_dev: # Nom de service unique
+  nextjs: # Nom de service unique
     build:
       context: ./web
       dockerfile: Dockerfile
       args:
         # Crucial : On pointe vers l'URL de l'API de dev !
-        - NEXT_PUBLIC_API_BASE=https://dev.phobee.net/api
+        - NEXT_PUBLIC_API_BASE=https://phobee.net/api
     container_name: phobee_nextjs_dev # Nom de conteneur unique
     restart: unless-stopped
     environment:
