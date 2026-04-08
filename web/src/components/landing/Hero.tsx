@@ -6,19 +6,19 @@ import Link from "next/link";
 
 export default function Hero() {
     return (
-        <section className="relative pt-[120px] pb-32 lg:pb-40 overflow-hidden bg-[#F9FAFB]">
+        <section className="relative pt-[120px] pb-32 lg:pb-40 overflow-hidden bg-[#F9FAFB] dark:bg-slate-900/50">
             {/* Radial gradient fading from #FEF3C7 to transparent towards bottom-right */}
             <div className="absolute bottom-0 right-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_bottom_right,_#FEF3C7_0%,_transparent_60%)] -z-20 pointer-events-none" />
 
             {/* Truncated block bottom left - moved under z-10 container */}
-            <motion.div
-                initial={{ opacity: 0, x: -50, y: 50 }}
-                animate={{ opacity: 1, x: 0, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-                className="absolute -bottom-24 -left-24 w-[320px] h-[320px] md:w-[460px] md:h-[460px] rounded-[2rem] overflow-hidden shadow-2xl z-0 hidden sm:block pointer-events-none"
-            >
-                <img src="/images/image2.png" alt="Fournitures de bureau" className="w-full h-full object-cover" />
-            </motion.div>
+            {/*<motion.div
+                {/*    initial={{ opacity: 0, x: -50, y: 50 }}*/}
+                {/*}    animate={{ opacity: 1, x: 0, y: 0 }}*/}
+                {/*}    transition={{ delay: 0.5, duration: 0.8 }}*/}
+                {/*}    className="absolute -bottom-24 -left-24 w-[320px] h-[320px] md:w-[460px] md:h-[460px] rounded-[2rem] overflow-hidden shadow-2xl z-0 hidden sm:block pointer-events-none"*/}
+                {/*}>*/}
+                {/*}    <img src="/images/image2.png" alt="Fournitures de bureau" className="w-full h-full object-cover" />*/}
+                {/*}</motion.div>*/}
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="grid lg:grid-cols-[55%_45%] gap-16 lg:gap-8 items-center">
@@ -30,9 +30,9 @@ export default function Hero() {
                         transition={{ duration: 0.5 }}
                         className="flex flex-col items-start text-left"
                     >
-                        <h1 className="text-[3.5rem] md:text-[4rem] lg:text-[64px] font-[800] tracking-tight text-[#111827] leading-[1.05]">
+                        <h1 className="text-[3.5rem] md:text-[4rem] lg:text-[64px] font-[800] tracking-tight text-[#111827] dark:text-white leading-[1.05]">
                             L'administratif,<br />
-                            enfin <span className="relative inline-block text-[#111827]">
+                            enfin <span className="relative inline-block text-[#111827] dark:text-white">
                                 simple.
                                 {/* Thick drawn-like underline #FFCC00 */}
                                 <span className="absolute bottom-[6px] md:bottom-2 left-0 w-full h-[8px] md:h-[12px] bg-[#FFCC00] -z-10 rounded-full"></span>
@@ -55,7 +55,7 @@ export default function Hero() {
                             </Link>
                             <Link
                                 href="#how-it-works"
-                                className="inline-flex items-center justify-center px-8 py-4 text-[16px] font-medium text-[#4B5563] bg-transparent border border-[#D1D5DB] rounded-full hover:bg-slate-50 transition-colors"
+                                className="inline-flex items-center justify-center px-8 py-4 text-[16px] font-medium text-[#4B5563] dark:text-white bg-transparent border border-[#D1D5DB] rounded-full hover:bg-slate-50  transition-colors"
                             >
                                 Comment ça marche
                             </Link>
@@ -103,9 +103,9 @@ export default function Hero() {
                         >
                             <div className="bg-white/95 backdrop-blur-md border border-white/60 shadow-xl px-5 py-2 md:px-6 md:py-2.5 rounded-full flex items-center gap-3">
                                 <span className="relative inline-flex rounded-full h-[8px] w-[8px] bg-[#eab308] shadow-[0_0_8px_rgba(234,179,8,0.6)]"></span>
-                                <span className="font-light text-[13px] md:text-[14px] text-[#4B5563]">
-                                    Nouveau : Le radar à aides est disponible
-                                </span>
+                                {/*<span className="font-light text-[13px] md:text-[14px] text-[#4B5563]">*/}
+                                {/*    Nouveau : Le radar à aides est disponible*/}
+                                {/*}</span>*/}
                             </div>
                         </motion.div>
 

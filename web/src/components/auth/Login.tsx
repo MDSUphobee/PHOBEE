@@ -5,9 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
-const AUTH_API = `${API_BASE}/api/auth`;
+import { saveUserQuestionnaireInfo } from "@/lib/user";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -16,7 +14,7 @@ export default function LoginForm() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    
+
     // Récupérer les paramètres de redirection depuis l'URL
     const redirectPath = searchParams.get("redirect");
     const answersParam = searchParams.get("answers");
@@ -41,7 +39,7 @@ export default function LoginForm() {
 
         setLoading(true);
         try {
-            const res = await fetch(`${AUTH_API}/login`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -51,24 +49,69 @@ export default function LoginForm() {
                 const data = await res.json().catch(() => ({}));
                 setError(data?.message || "Échec de la connexion.");
                 toast.error(data?.message || "Échec de la connexion.");
-                setLoading(false);
                 return;
             }
 
             const data = await res.json();
+            if (!data?.token) {
+                setError("Données de connexion incomplètes.");
+                toast.error("Données de connexion incomplètes.");
+                return;
+            }
+
             localStorage.setItem("token", data.token);
 
+            // Le backend peut ne renvoyer que { token }. On essaye donc de récupérer le user.
+            let user = data.user;
+            if (!user) {
+                try {
+                    const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/user?email=${encodeURIComponent(email)}`, {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/json",
+                            "Authorization": `Bearer ${data.token}`,
+                        },
+                    });
+                    if (userRes.ok) {
+                        const userData = await userRes.json();
+                        user = Array.isArray(userData)
+                            ? userData[0]
+                            : (Array.isArray((userData as any)?.data) ? (userData as any).data[0] : userData);
+                    }
+                } catch {
+                    // best-effort
+                }
+            }
+
+            if (user) {
+                localStorage.setItem("user", JSON.stringify(user));
+
+                // Sauvegarder les réponses si présentes
+                if (answersParam && data.token) {
+                    try {
+                        const answers = JSON.parse(decodeURIComponent(answersParam));
+                        await saveUserQuestionnaireInfo(user.id, data.token, answers);
+                    } catch (e) {
+                        console.error("Erreur sauvegarde réponses post-login:", e);
+                    }
+                }
+            }
+
             toast.success("Connexion réussie !");
-            
+
             // Si on vient du questionnaire, rediriger vers les résultats
             if (redirectPath === "resultats" && answersParam) {
                 router.push(`/resultats?answers=${answersParam}`);
             } else {
                 router.push("/profile");
             }
+
+            router.refresh();
+
         } catch (err) {
             setError("Erreur réseau.");
             toast.error("Erreur réseau.");
+        } finally {
             setLoading(false);
         }
     };

@@ -55,7 +55,8 @@ export default function HowItWorks() {
                             Une plateforme qui vous guide, <br />
                             <span className="relative inline-block">
                                 étape par étape
-                                <span className="absolute bottom-3 left-0 w-full h-4 bg-[#FFD700] -z-10 transform -rotate-1 opacity-100"></span>
+                                {/* Le trait jaune disparait en mode sombre grâce à dark:hidden */}
+                                <span className="absolute bottom-3 left-0 w-full h-4 bg-[#FFD700] -z-10 transform -rotate-1 opacity-100 dark:hidden"></span>
                             </span>
                         </h2>
                     </div>

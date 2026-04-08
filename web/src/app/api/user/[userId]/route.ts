@@ -1,9 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function PUT(req: Request, { params }: { params: { userId: string } }) {
+// Type pour Next.js 16
+type RouteContext = {
+    params: Promise<{ userId: string }>
+};
+
+export async function PUT(req: NextRequest, { params }: RouteContext) {
     try {
         const body = await req.json();
-        const userId = params.userId;
+        
+        // CRUCIAL : On attend la résolution des paramètres
+        const { userId } = await params;
 
         const apiResponse = await fetch(`${process.env.API_BASE}/users/${userId}`, {
             method: 'PUT',
@@ -27,20 +34,19 @@ export async function PUT(req: Request, { params }: { params: { userId: string }
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { userId: string } }) {
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
     try {
-        const userId = params.userId;
+        // CRUCIAL : On attend la résolution des paramètres
+        const { userId } = await params;
 
         const apiResponse = await fetch(`${process.env.API_BASE}/users/${userId}`, {
             method: 'DELETE',
         });
 
-        // 204 No Content typically has no body
         if (apiResponse.status === 204) {
             return new NextResponse(null, { status: 204 });
         }
 
-        // If there's a body (error or otherwise)
         let data;
         try {
             data = await apiResponse.json();

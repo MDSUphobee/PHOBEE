@@ -296,7 +296,7 @@ function ResultatsContent() {
         {eligibleAides.length > 0 && (
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
             <Link
-              href="/questionnaire"
+              href="/questionnaire?mode=edit"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
