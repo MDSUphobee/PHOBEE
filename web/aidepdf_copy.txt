@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\FillAidePdfRequest;
+use App\Models\Aide;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
+use mikehaertl\pdftk\Pdf;
+
+class AidePdfController extends Controller
+{
+    /**
+     * Remplit un PDF d'aide avec les données fournies.
+     * Retourne le PDF généré encodé en Base64 pour prévisualisation immédiate côté client.
+     */
+    public function fill(FillAidePdfRequest $request): JsonResponse
+    {
+        $aideId  = $request->input('aides_id');
+        $jsonData = $request->input('json_data', []);
+
+        /** @var Aide $aide */
+        $aide = Aide::find($aideId);
+
+        if (! $aide || ! $aide->pdf_path) {
+            return response()->json(['success' => false, 'message' => 'Aide ou PDF introuvable.'], 404);
+        }
+
+        // Récupération depuis le disque SFTP (le fichier n'est jamais stocké localement de façon permanente)
+        $remoteFilename = basename($aide->pdf_path);
+
+        if (! Storage::disk('sftp')->exists('/' . $remoteFilename)) {
+            return response()->json(['success' => false, 'message' => 'Fichier PDF introuvable sur le serveur distant.'], 404);
+        }
+
+        // Téléchargement temporaire pour permettre à pdftk de travailler sur un fichier local
+        $tmpDir = storage_path('app/tmp');
+        if (! file_exists($tmpDir)) {
+            mkdir($tmpDir, 0755, true);
+        }
+
+        $localTempOriginal = $tmpDir . '/original_' . uniqid() . '.pdf';
+        file_put_contents($localTempOriginal, Storage::disk('sftp')->get('/' . $remoteFilename));
+
+        try {
+            // Remplissage et verrouillage (flatten) des champs AcroForm — sans toucher à l'original
+            $pdf = new Pdf($localTempOriginal);
+
+            $result = $pdf
+                ->fillForm($jsonData)
+                ->flatten()
+                ->tempFile($tmpDir)
+                ->execute();
+
+            if ($result === false) {
+                @unlink($localTempOriginal);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur pdftk lors du remplissage du PDF.',
+                    'error'   => $pdf->getError(),
+                ], 500);
+            }
+
+            $tmpFile = $pdf->getTmpFile();
+
+            if (! $tmpFile || ! file_exists($tmpFile)) {
+                @unlink($localTempOriginal);
+                return response()->json(['success' => false, 'message' => 'Fichier temporaire généré introuvable.'], 500);
+            }
+
+            // Encodage Base64 pour envoi JSON — le frontend crée un Blob URL en mémoire
+            $base64 = base64_encode(file_get_contents($tmpFile));
+            $outputFilename = 'aide_' . $aideId . '.pdf';
+
+            // Nettoyage des fichiers temporaires
+            @unlink($tmpFile);
+            @unlink($localTempOriginal);
+
+            return response()->json([
+                'success'    => true,
+                'pdf_base64' => $base64,
+                'filename'   => $outputFilename,
+            ], 200);
+
+        } catch (\Throwable $e) {
+            @unlink($localTempOriginal);
+            return response()->json([
+                'success' => false,
+                'message' => 'Exception lors du traitement PDF.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+}
+

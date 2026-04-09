@@ -105,7 +105,7 @@ export default function RadarAides() {
                         Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
                     ) : filteredPdfs.length > 0 ? (
                         filteredPdfs.map((pdf, idx) => (
-                            <Link key={idx} href={`/radar-aides/formulaire?name=${encodeURIComponent(formatTitle(pdf.aide_name))}`} passHref>
+                            <Link key={idx} href={`/formulaires`} passHref>
                                 <div className="bg-white flex-col h-full cursor-pointer rounded-[1.25rem] shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 flex relative overflow-hidden group">
                                     {pdf.image_url && (
                                         <div className="w-full h-44 shrink-0 overflow-hidden relative bg-gray-100">

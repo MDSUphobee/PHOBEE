@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class PdfController extends Controller
+{
+    /**
+     * Get all PDF names from the VPS directory.
+     */
+    public function index()
+    {
+        try {
+            // Get all files from the SFTP disk
+            $files = Storage::disk('sftp')->files('/');
+
+            // Filter for PDF files and get just their names (basenames)
+            $pdfFiles = collect($files)->filter(function ($file) {
+                return strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'pdf';
+            })->map(function ($file) {
+                return pathinfo($file, PATHINFO_BASENAME);
+            })->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => $pdfFiles
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to connect to VPS or retrieve files.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Retrieve a specific PDF file to display or download.
+     */
+    public function show($filename)
+    {
+        try {
+            // Check if file has .pdf extension for security
+            if (strtolower(pathinfo($filename, PATHINFO_EXTENSION)) !== 'pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed.'], 403);
+            }
+
+            // Check if file exists on SFTP
+            if (!Storage::disk('sftp')->exists('/' . $filename)) {
+                return response()->json(['success' => false, 'message' => 'File not found on the server.'], 404);
+            }
+
+            // Determine whether to force download or display inline
+            // Use ?download=1 in URL to force download
+            $disposition = request()->query('download') ? 'attachment' : 'inline';
+            
+            return Storage::disk('sftp')->response('/' . $filename, $filename, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => $disposition . '; filename="' . $filename . '"'
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve the file.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+}

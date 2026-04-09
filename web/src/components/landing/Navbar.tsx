@@ -20,6 +20,7 @@ export default function Navbar() {
     // Future proper links, anchors for now as requested
     const navLinks = [
         { name: "L'abonnement", href: "/abonnements" },
+        { name: "Formulaires CERFA", href: "/formulaires" },
         { name: "Le dictionnaire de l'entrepreneur", href: "/dictionary" },
         { name: "FAQ", href: "/faq" },
         { name: "Contact", href: "/contact" },
