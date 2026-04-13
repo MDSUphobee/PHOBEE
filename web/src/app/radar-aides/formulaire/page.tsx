@@ -1,503 +1,737 @@
 "use client";
 
-import { useEffect, useState, Suspense, useRef } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import { ArrowLeft, Loader2, Send } from "lucide-react";
-import { toast } from "sonner";
-import { jsPDF } from "jspdf";
+import { ArrowLeft, Loader2, Download, CheckCircle2, AlertCircle, FileText } from "lucide-react";
 
-function FileUploader({ 
-    id, 
-    label, 
-    selectedFiles = [], 
-    onChange 
-}: { 
-    id: string, 
-    label: string, 
-    selectedFiles: File[], 
-    onChange: (files: File[]) => void 
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface CerfaField {
+    name: string;
+    /** "/Tx" for text inputs, "/Btn" for radio/checkbox */
+    type: string;
+    value: string | null;
+    /** Only present on /Btn fields */
+    on_values?: string[];
+}
+
+/** Fields sharing the same on_value (e.g. ["/Oui", "/Non"]) form a radio group */
+interface RadioGroup {
+    kind: "radio";
+    /** Common on_value that identifies this group (e.g. "/Oui") */
+    groupId: string;
+    fields: CerfaField[];
+}
+
+interface SingleField {
+    kind: "text" | "checkbox";
+    field: CerfaField;
+}
+
+type FormItem = RadioGroup | SingleField;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Group /Btn fields that share the same set of on_values into radio groups */
+function buildFormItems(fields: CerfaField[]): FormItem[] {
+    const items: FormItem[] = [];
+    // Track which field names we've already handled
+    const handled = new Set<string>();
+
+    for (const field of fields) {
+        if (handled.has(field.name)) continue;
+
+        if (field.type === "/Tx") {
+            items.push({ kind: "text", field });
+            handled.add(field.name);
+            continue;
+        }
+
+        if (field.type === "/Btn") {
+            const onVals = field.on_values ?? [];
+
+            // If a /Btn field has exactly one on_value: it's a standalone checkbox
+            if (onVals.length <= 1) {
+                items.push({ kind: "checkbox", field });
+                handled.add(field.name);
+                continue;
+            }
+
+            // Look for sibling fields that share the SAME on_values pattern
+            // (same sorted on_values array) — they form a radio group
+            const onKey = [...onVals].sort().join("|");
+            const siblings = fields.filter(
+                (f) =>
+                    f.type === "/Btn" &&
+                    !handled.has(f.name) &&
+                    [...(f.on_values ?? [])].sort().join("|") === onKey
+            );
+
+            if (siblings.length > 1) {
+                items.push({ kind: "radio", groupId: onKey, fields: siblings });
+                siblings.forEach((s) => handled.add(s.name));
+            } else {
+                // Unique on_values pattern — treat as standalone boolean radio (oui/non)
+                items.push({ kind: "radio", groupId: field.name, fields: [field] });
+                handled.add(field.name);
+            }
+        }
+    }
+
+    return items;
+}
+
+/** Build the {field_name: value} mapping expected by the Laravel fill endpoint */
+function buildMapping(formData: Record<string, string>, fields: CerfaField[]): Record<string, string> {
+    const mapping: Record<string, string> = {};
+
+    for (const field of fields) {
+        const raw = formData[field.name];
+        if (raw === undefined || raw === "") continue;
+
+        if (field.type === "/Btn") {
+            // Value should already be a slash-prefixed name (e.g. "/Yes", "/Oui")
+            // If the user left it blank, omit it
+            mapping[field.name] = raw.startsWith("/") ? raw : `/${raw}`;
+        } else {
+            mapping[field.name] = raw;
+        }
+    }
+
+    return mapping;
+}
+
+/** Make a human-readable label from an AcroForm field name */
+function fieldLabel(name: string): string {
+    return name
+        .replace(/_/g, " ")
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sub-components
+// ─────────────────────────────────────────────────────────────────────────────
+
+function TextInput({
+    field,
+    value,
+    onChange,
+}: {
+    field: CerfaField;
+    value: string;
+    onChange: (v: string) => void;
 }) {
-    const [dragging, setDragging] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleDragEvent = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.type === "dragenter" || e.type === "dragover") {
-            setDragging(true);
-        } else if (e.type === "dragleave" || e.type === "drop") {
-            setDragging(false);
-        }
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        handleDragEvent(e);
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            handleFiles(Array.from(e.dataTransfer.files));
-        }
-    };
-
-    const handleFiles = (newFiles: File[]) => {
-        onChange([...selectedFiles, ...newFiles]);
-    };
-
-    const removeFile = (index: number) => {
-        const updated = [...selectedFiles];
-        updated.splice(index, 1);
-        onChange(updated);
-    };
-
     return (
-        <div className="space-y-4 w-full" suppressHydrationWarning>
-            <div 
-                className={`w-full border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center text-center transition-colors cursor-pointer group ${dragging ? 'bg-amber-50 border-amber-500' : 'bg-gray-50 border-gray-300 hover:bg-white hover:border-amber-400'}`}
-                onDragEnter={handleDragEvent}
-                onDragOver={handleDragEvent}
-                onDragLeave={handleDragEvent}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
+        <div className="flex flex-col space-y-1.5">
+            <label
+                htmlFor={`field-${field.name}`}
+                className="text-xs font-semibold text-gray-500 uppercase tracking-wider"
             >
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-sm mb-4 transition-transform ${dragging ? 'bg-amber-100 scale-110' : 'bg-white group-hover:scale-110'}`}>
-                    <svg className="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                </div>
-                <p className="font-semibold text-gray-900 mb-1">
-                    {dragging ? "Relâchez pour ajouter vos fichiers" : "Cliquez pour téléverser ou glissez vos fichiers ici"}
-                </p>
-                <p className="text-sm text-gray-500">Limité à 10 Mo par fichier (PDF, JPG, PNG)</p>
-                <input 
-                    type="file" 
-                    multiple 
-                    className="hidden" 
-                    ref={fileInputRef}
-                    onChange={(e) => {
-                        if (e.target.files) handleFiles(Array.from(e.target.files));
-                        e.target.value = ''; // reset to allow re-uploading same file
-                    }}
-                />
-            </div>
-            
-            {selectedFiles.length > 0 && (
-                <div className="space-y-2 mt-4">
-                    {selectedFiles.map((f, idx) => (
-                        <div key={`${f.name}-${idx}`} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:border-amber-200 transition-colors">
-                            <div className="flex items-center space-x-3 truncate">
-                                <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                </svg>
-                                <span className="text-sm font-medium text-gray-700 truncate" title={f.name}>{f.name}</span>
-                                <span className="text-xs text-gray-400 shrink-0">({(f.size / 1024 / 1024).toFixed(2)} Mo)</span>
-                            </div>
-                            <button 
-                                type="button" 
-                                onClick={(e) => { e.stopPropagation(); removeFile(idx); }} 
-                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            )}
+                {fieldLabel(field.name)}
+            </label>
+            <input
+                id={`field-${field.name}`}
+                type="text"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={field.value ?? ""}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all text-gray-900 text-sm"
+            />
         </div>
     );
 }
 
-function FormContent() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const aideName = searchParams.get("name");
+function CheckboxInput({
+    field,
+    value,
+    onChange,
+}: {
+    field: CerfaField;
+    value: string;
+    onChange: (v: string) => void;
+}) {
+    const onVal  = field.on_values?.[0] ?? "/Yes";
+    const checked = value === onVal;
 
-    const [formDef, setFormDef] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-    const [formData, setFormData] = useState<Record<string, any>>({});
-    
-    // UI States
-    const [submitting, setSubmitting] = useState(false);
-    const [pdfGenerating, setPdfGenerating] = useState(false);
-    const [pdfGenerated, setPdfGenerated] = useState(false);
-    const [pdfUrl, setPdfUrl] = useState("");
+    return (
+        <div className="flex items-center space-x-3">
+            <button
+                type="button"
+                role="checkbox"
+                aria-checked={checked}
+                id={`field-${field.name}`}
+                onClick={() => onChange(checked ? "/Off" : onVal)}
+                className={`w-5 h-5 flex-shrink-0 rounded border-2 transition-all flex items-center justify-center ${
+                    checked
+                        ? "bg-amber-400 border-amber-400"
+                        : "border-gray-300 bg-white hover:border-amber-400"
+                }`}
+            >
+                {checked && (
+                    <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                )}
+            </button>
+            <label htmlFor={`field-${field.name}`} className="text-sm font-medium text-gray-800 cursor-pointer select-none">
+                {fieldLabel(field.name)}
+            </label>
+        </div>
+    );
+}
+
+function RadioGroupInput({
+    group,
+    formData,
+    onChange,
+}: {
+    group: RadioGroup;
+    formData: Record<string, string>;
+    onChange: (name: string, v: string) => void;
+}) {
+    // For single-field groups: the field itself has multiple on_values → user picks one
+    if (group.fields.length === 1) {
+        const field  = group.fields[0];
+        const onVals = field.on_values ?? [];
+
+        return (
+            <div className="flex flex-col space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    {fieldLabel(field.name)}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                    {onVals.map((val) => {
+                        const selected = formData[field.name] === val;
+                        const label    = val.replace(/^\//, "");
+                        return (
+                            <button
+                                key={val}
+                                type="button"
+                                onClick={() => onChange(field.name, selected ? "" : val)}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
+                                    selected
+                                        ? "bg-amber-400 border-amber-400 text-gray-900 shadow-sm"
+                                        : "bg-white border-gray-200 text-gray-700 hover:border-amber-300 hover:bg-amber-50"
+                                }`}
+                            >
+                                {label}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
+
+    // Multi-field group: each field represents one radio option
+    // (e.g. field "SEXE_M" and "SEXE_F" with shared on_value "/X")
+    const onVal = group.fields[0].on_values?.[0] ?? "/Yes";
+
+    return (
+        <div className="flex flex-col space-y-1.5 md:col-span-2">
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {/* Derive a group label from field name prefix */}
+                {fieldLabel(group.fields[0].name.replace(/_[^_]+$/, ""))}
+            </label>
+            <div className="flex flex-wrap gap-2">
+                {group.fields.map((field) => {
+                    const selected = formData[field.name] === onVal;
+                    const label    = field.name.split("_").pop() ?? field.name;
+                    return (
+                        <button
+                            key={field.name}
+                            type="button"
+                            onClick={() => {
+                                // Deselect all siblings, select this one
+                                group.fields.forEach((f) => onChange(f.name, "/Off"));
+                                onChange(field.name, selected ? "/Off" : onVal);
+                            }}
+                            className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
+                                selected
+                                    ? "bg-amber-400 border-amber-400 text-gray-900 shadow-sm"
+                                    : "bg-white border-gray-200 text-gray-700 hover:border-amber-300 hover:bg-amber-50"
+                            }`}
+                        >
+                            {fieldLabel(label)}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Loading overlay (shown while Python processes the PDF)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const STEPS = [
+    "Analyse du formulaire Cerfa…",
+    "Construction du mapping de champs…",
+    "Traitement Python en cours…",
+    "Injection des valeurs dans le PDF…",
+    "Finalisation du document…",
+];
+
+function PdfProcessingOverlay() {
+    const [step, setStep] = useState(0);
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
-        if (!aideName) {
-            setError("Aucun nom d'aide spécifié.");
+        // Advance steps every ~1.2 s
+        const stepTimer = setInterval(() => {
+            setStep((s) => Math.min(s + 1, STEPS.length - 1));
+        }, 1200);
+
+        // Smooth progress bar — fills to ~90% in ~6 s, leaves room for real completion
+        const progressTimer = setInterval(() => {
+            setProgress((p) => {
+                if (p >= 90) return p;
+                return p + (90 - p) * 0.06;
+            });
+        }, 100);
+
+        return () => {
+            clearInterval(stepTimer);
+            clearInterval(progressTimer);
+        };
+    }, []);
+
+    return (
+        <div className="fixed inset-0 z-50 bg-white/90 backdrop-blur-sm flex items-center justify-center">
+            <div className="w-full max-w-md mx-4 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
+                {/* Animated amber top bar */}
+                <div className="h-1.5 bg-gray-100 w-full">
+                    <div
+                        className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300 ease-out rounded-full"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
+
+                <div className="p-10 flex flex-col items-center text-center">
+                    {/* Spinning document icon */}
+                    <div className="relative w-20 h-20 mb-8">
+                        <div className="absolute inset-0 border-4 border-amber-100 rounded-full" />
+                        <div className="absolute inset-0 border-4 border-amber-400 rounded-full border-t-transparent animate-spin" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <FileText className="w-7 h-7 text-amber-400" />
+                        </div>
+                    </div>
+
+                    <h2 className="text-2xl font-extrabold text-gray-900 mb-3">
+                        Génération du PDF
+                    </h2>
+                    <p className="text-sm text-gray-400 mb-8">
+                        Le script Python traite votre document Cerfa.<br />
+                        Cela peut prendre quelques secondes.
+                    </p>
+
+                    {/* Step list */}
+                    <ol className="w-full space-y-2 text-left mb-6">
+                        {STEPS.map((s, i) => (
+                            <li
+                                key={i}
+                                className={`flex items-center gap-3 text-sm transition-all ${
+                                    i < step
+                                        ? "text-green-500"
+                                        : i === step
+                                        ? "text-amber-500 font-semibold"
+                                        : "text-gray-300"
+                                }`}
+                            >
+                                {i < step ? (
+                                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                                ) : i === step ? (
+                                    <Loader2 className="w-4 h-4 flex-shrink-0 animate-spin" />
+                                ) : (
+                                    <span className="w-4 h-4 flex-shrink-0 rounded-full border border-gray-200 inline-block" />
+                                )}
+                                {s}
+                            </li>
+                        ))}
+                    </ol>
+
+                    <p className="text-[11px] text-gray-300">Ne fermez pas cette fenêtre.</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Success screen
+// ─────────────────────────────────────────────────────────────────────────────
+
+function SuccessScreen({
+    cerfa_name,
+    onReset,
+    onBack,
+}: {
+    cerfa_name: string;
+    onReset: () => void;
+    onBack: () => void;
+}) {
+    return (
+        <div className="flex-1 pt-32 pb-24 container mx-auto px-4 max-w-lg text-center" suppressHydrationWarning>
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 flex flex-col items-center">
+                <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-50">
+                    <CheckCircle2 className="w-10 h-10 text-green-500" />
+                </div>
+                <h2 className="text-2xl font-extrabold text-gray-900 mb-3">
+                    Votre PDF est prêt&nbsp;!
+                </h2>
+                <p className="text-gray-500 mb-8 text-sm">
+                    Le document <span className="font-semibold text-gray-700">{cerfa_name}</span> a
+                    été rempli et téléchargé automatiquement dans votre dossier de téléchargements.
+                </p>
+
+                <div className="flex flex-col gap-3 w-full">
+                    <button
+                        onClick={onReset}
+                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold rounded-xl shadow-md hover:shadow-xl transition-all hover:-translate-y-0.5"
+                    >
+                        <Download className="w-5 h-5" />
+                        Remplir à nouveau
+                    </button>
+                    <button
+                        onClick={onBack}
+                        className="text-sm font-medium text-gray-400 hover:text-gray-700 transition-colors flex items-center justify-center gap-2"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Retour à la liste des aides
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Main form content (reads ?name= from query)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function CerfaFormContent() {
+    const searchParams = useSearchParams();
+    const router       = useRouter();
+    const cerfa_name   = searchParams.get("name") ?? "";
+
+    const [fields,    setFields]    = useState<CerfaField[]>([]);
+    const [loading,   setLoading]   = useState(true);
+    const [error,     setError]     = useState("");
+    const [formData,  setFormData]  = useState<Record<string, string>>({});
+    const [submitting, setSubmitting] = useState(false);
+    const [success,   setSuccess]   = useState(false);
+
+    // ── Fetch fields from API ─────────────────────────────────────────────────
+    useEffect(() => {
+        if (!cerfa_name || cerfa_name === "undefined") {
+            setError("Aucun nom de formulaire Cerfa spécifié dans l'URL.");
             setLoading(false);
             return;
         }
 
-        async function fetchForm() {
+        async function fetchFields() {
             try {
-                const res = await fetch("/aides", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ filters: { aide_name: aideName } })
-                });
-
-                if (!res.ok) throw new Error("Erreur serveur lors de la récupération du formulaire.");
+                const cleanName = cerfa_name.trim();
+                const res = await fetch(
+                    `/api/pdfs/get-fields/${encodeURIComponent(cleanName)}`
+                );
                 
-                const data = await res.json();
-                if (data && data.length > 0 && data[0].json_questions) {
-                    let parsedContent = data[0].json_questions;
-                    if (typeof parsedContent === 'string') {
-                        try {
-                            parsedContent = JSON.parse(parsedContent);
-                        } catch (e) {
-                            console.error("Erreur de parsing json_questions:", e);
-                        }
-                    }
-
-                    // Save both the full structure and the ID
-                    setFormDef({
-                        id: data[0].id,
-                        content: parsedContent
-                    });
-                } else {
-                    throw new Error("Formulaire introuvable pour ce document.");
+                if (res.status === 404) {
+                    throw new Error("Ce formulaire Cerfa n'est pas encore disponible ou le nom est incorrect");
                 }
+
+                const json = await res.json();
+
+                if (!res.ok || !json.success) {
+                    throw new Error(json.message ?? json.error ?? `Erreur HTTP ${res.status}`);
+                }
+
+                const data: CerfaField[] = Array.isArray(json.data) ? json.data : [];
+                if (data.length === 0) {
+                    throw new Error("Aucun champ AcroForm trouvé dans ce document.");
+                }
+
+                setFields(data);
+
+                // Pre-populate form with current values (if any)
+                const initial: Record<string, string> = {};
+                data.forEach((f) => {
+                    if (f.value && f.value !== "None") initial[f.name] = f.value;
+                });
+                setFormData(initial);
             } catch (err: any) {
-                setError(err.message);
+                setError(err.message ?? "Erreur lors du chargement des champs.");
             } finally {
                 setLoading(false);
             }
         }
 
-        fetchForm();
-    }, [aideName]);
+        fetchFields();
+    }, [cerfa_name]);
 
-    const handleInputChange = (id: string, value: any) => {
-        setFormData(prev => ({ ...prev, [id]: value }));
-    };
+    // ── Input handler ─────────────────────────────────────────────────────────
+    const handleChange = useCallback((name: string, value: string) => {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    }, []);
 
+    // ── Form submit ───────────────────────────────────────────────────────────
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // Simuler la présence ou non d'un utilisateur
-        // CHANGE THIS VALUE TO TEST DIFFERENT FLOWS
-        const user_id = null; // null = génère le PDF. "123" = Sauvegarde en BDD.
+        setSubmitting(true);
 
-        if (user_id) {
-            // Utilisateur connecté -> Enregistrement en base de données via notre nouvelle API (et pas de génération de PDF simulée frontend)
-            setSubmitting(true);
-            try {
-                const res = await fetch("/user-data", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        user_id: user_id,
-                        aides_id: formDef.id,
-                        json_data: formData
-                    })
-                });
+        try {
+            const mapping = buildMapping(formData, fields);
 
-                if (!res.ok) throw new Error("Erreur de validation. Identifiant manquant.");
-                
-                toast.success("Dossier validé et enregistré en base de données !");
-                router.push("/radar-aides");
-            } catch (err: any) {
-                toast.error(err.message);
-            } finally {
-                setSubmitting(false);
-            }
-        } else {
-            // Utilisateur non connecté -> Ne PAS sauvegarder en base. Simuler remplissage PDF et affichage
-            console.log("Utilisateur non connecté : l'envoi en base de données a été annulé.");
-            console.log("Les données qui auraient été envoyées :", { user_id, aides_id: formDef.id, json_data: formData });
-            
-            setPdfGenerating(true);
-            
-            // Simulation du remplissage du document PDF officiel
-            setTimeout(() => {
+            const res = await fetch("/api/pdfs/fill", {
+                method:  "POST",
+                headers: { "Content-Type": "application/json" },
+                body:    JSON.stringify({ pdf: cerfa_name, mapping, flatten: false }),
+            });
+
+            if (!res.ok) {
+                // Try to parse error JSON; otherwise use status text
+                let msg = `Erreur ${res.status}`;
                 try {
-                    const doc = new jsPDF();
-                    doc.setFontSize(22);
-                    doc.setTextColor(230, 150, 0); // Amber Phobee Color
-                    doc.text(formDef.content.formulaire || "Document Pré-rempli", 20, 20);
-                    
-                    doc.setFontSize(11);
-                    doc.setTextColor(50, 50, 50);
-                    let yPosition = 35;
-                    
-                    Object.entries(formData).forEach(([key, value]) => {
-                        if (yPosition > 270) {
-                            doc.addPage();
-                            yPosition = 20;
-                        }
-                        doc.setFont("helvetica", "bold");
-                        doc.text(`${key} :`, 20, yPosition);
-                        doc.setFont("helvetica", "normal");
-                        
-                        let strValue = Array.isArray(value) ? value.join(", ") : 
-                                       value === true ? "Oui" : 
-                                       value === false ? "Non" : 
-                                       typeof value === 'object' ? "[Fichiers joints]" : String(value);
-                                       
-                        doc.text(strValue, 80, yPosition);
-                        yPosition += 10;
-                    });
-                    
-                    doc.setFontSize(9);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text("Généré par Phobee Aides-Agricoles", 20, 285);
+                    const errJson = await res.json();
+                    msg = errJson.message ?? msg;
+                } catch {}
+                throw new Error(msg);
+            }
 
-                    const blobUrl = URL.createObjectURL(doc.output("blob"));
-                    setPdfUrl(blobUrl);
-                    
-                    setPdfGenerating(false);
-                    setPdfGenerated(true);
-                } catch(e) {
-                    console.error("PDF generation failed:", e);
-                    toast.error("Échec lors de la génération du PDF.");
-                    setPdfGenerating(false);
-                }
-            }, 3000); // 3 seconds delay for realism
+            // ── Download the PDF binary blob ──────────────────────────────────
+            const blob    = await res.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const anchor  = document.createElement("a");
+            anchor.href     = blobUrl;
+            anchor.download  = `${cerfa_name}.pdf`;
+            anchor.click();
+
+            // Clean up
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 10_000);
+
+            setSuccess(true);
+        } catch (err: any) {
+            setError(err.message ?? "Erreur lors de la génération du PDF.");
+        } finally {
+            setSubmitting(false);
         }
     };
 
+    // ── Guard states ──────────────────────────────────────────────────────────
     if (loading) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center pt-32 pb-24" suppressHydrationWarning>
-                <Loader2 className="h-10 w-10 text-amber-500 animate-spin mb-4" />
-                <p className="text-gray-500">Chargement du formulaire...</p>
+                <Loader2 className="h-10 w-10 text-amber-400 animate-spin mb-4" />
+                <p className="text-gray-500 text-sm">Chargement des champs du formulaire…</p>
             </div>
         );
     }
 
-    if (error) {
-        return (
-            <div className="flex-1 pt-32 pb-24 container mx-auto px-4 max-w-3xl text-center" suppressHydrationWarning>
-                <div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100">
-                    <p className="font-medium mb-4">{error}</p>
-                    <button onClick={() => router.back()} className="px-4 py-2 bg-white rounded-lg shadow-sm font-medium hover:bg-gray-50 border border-gray-200">
-                        Retour
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    if (!formDef) return null;
-
-    if (pdfGenerating) {
-        return (
-            <div className="flex-1 flex items-center justify-center pt-32 pb-24 container mx-auto px-4 max-w-2xl text-center" suppressHydrationWarning>
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 flex flex-col items-center w-full">
-                    <div className="relative w-24 h-24 mb-8">
-                        <div className="absolute inset-0 border-4 border-amber-100 rounded-full"></div>
-                        <div className="absolute inset-0 border-4 border-amber-500 rounded-full border-t-transparent animate-spin"></div>
-                        <svg className="absolute inset-0 m-auto w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-4 animate-pulse">Remplissage du PDF...</h2>
-                    <p className="text-gray-500 mb-8 max-w-md">Nous intégrons vos informations dans le document officiel. Merci de patienter quelques secondes.</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (pdfGenerated) {
+    if (error && fields.length === 0) {
         return (
             <div className="flex-1 pt-32 pb-24 container mx-auto px-4 max-w-2xl text-center" suppressHydrationWarning>
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 flex flex-col items-center">
-                    <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
-                        <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Votre formulaire est prêt !</h2>
-                    <p className="text-gray-500 mb-8 max-w-md">Vous n'êtes pas connecté, votre dossier n'a donc pas été enregistré en base. Vous pouvez dès à présent télécharger votre PDF complété.</p>
-                    
-                    <a 
-                        href={pdfUrl} 
-                        download={`document_${aideName?.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`}
-                        className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 mb-6"
+                <div className="bg-red-50 text-red-600 p-8 rounded-2xl border border-red-100 flex flex-col items-center gap-4">
+                    <AlertCircle className="w-8 h-8" />
+                    <p className="font-medium">{error}</p>
+                    <button
+                        onClick={() => router.back()}
+                        className="px-6 py-2.5 bg-white rounded-xl shadow-sm font-medium hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm"
                     >
-                        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Télécharger le document PDF
-                    </a>
-                    
-                    <button 
-                        onClick={() => router.push('/radar-aides')} 
-                        className="text-sm font-medium text-gray-400 hover:text-gray-700 transition-colors flex items-center"
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2" /> Retour à la liste des aides
+                        ← Retour
                     </button>
                 </div>
             </div>
         );
     }
 
-    return (
-        <div className="flex-1 pt-32 pb-24 container mx-auto px-4 md:px-6 max-w-4xl" suppressHydrationWarning>
-            <button 
-                onClick={() => router.back()} 
-                className="flex items-center text-gray-500 hover:text-gray-900 mb-8 transition-colors font-medium"
-            >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Retour à la liste des documents
-            </button>
+    if (success) {
+        return (
+            <SuccessScreen
+                cerfa_name={cerfa_name}
+                onReset={() => { setSuccess(false); setError(""); }}
+                onBack={() => router.push("/radar-aides")}
+            />
+        );
+    }
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-12">
-                <div className="mb-10 border-b border-gray-100 pb-8">
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-[#111827] mb-4">
-                        {formDef.content.formulaire}
-                    </h1>
-                    <p className="text-gray-500 text-lg">
-                        Document : <span className="font-semibold text-gray-700">{aideName}</span>
-                    </p>
+    // ── Build form structure ──────────────────────────────────────────────────
+    const formItems = buildFormItems(fields);
+
+    // Separate text fields from /Btn items for layout
+    const textItems     = formItems.filter((i) => i.kind === "text")     as SingleField[];
+    const btnItems      = formItems.filter((i) => i.kind !== "text")     as (RadioGroup | SingleField)[];
+    const checkboxItems = btnItems.filter((i) => i.kind === "checkbox")  as SingleField[];
+    const radioItems    = btnItems.filter((i) => i.kind === "radio")     as RadioGroup[];
+
+    return (
+        <>
+            {/* Loading overlay on top of everything while Python runs */}
+            {submitting && <PdfProcessingOverlay />}
+
+            <div className="flex-1 pt-32 pb-24 container mx-auto px-4 md:px-6 max-w-5xl" suppressHydrationWarning>
+                {/* Back button */}
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center text-gray-400 hover:text-gray-900 mb-8 transition-colors font-medium text-sm gap-2"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Retour à la liste des documents
+                </button>
+
+                {/* Header card */}
+                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+                    <div className="bg-gradient-to-r from-amber-400 to-amber-300 px-10 py-7 flex items-center gap-5">
+                        <div className="w-14 h-14 bg-white/30 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <FileText className="w-7 h-7 text-white" />
+                        </div>
+                        <div>
+                            <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">
+                                Formulaire Cerfa
+                            </p>
+                            <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-tight">
+                                {cerfa_name}
+                            </h1>
+                        </div>
+                    </div>
+
+                    <div className="px-10 py-4 bg-amber-50/60 border-t border-amber-100 flex items-center gap-2 text-xs text-amber-700 font-medium">
+                        <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+                        {fields.length} champ{fields.length > 1 ? "s" : ""} détecté{fields.length > 1 ? "s" : ""} dans ce document PDF
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-12">
-                    {formDef.content.sections?.map((section: any) => (
-                        <div key={section.id} className="space-y-6">
-                            <h2 className="text-xl font-bold text-[#111827] border-l-4 border-[#FFCC00] pl-4 py-1.5 bg-gray-50 rounded-r-lg">
-                                {section.titre}
+                {/* Error banner (non-fatal) */}
+                {error && (
+                    <div className="mb-6 px-5 py-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm">
+                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                        {error}
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* ── Text fields ─────────────────────────────────────── */}
+                    {textItems.length > 0 && (
+                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
+                            <h2 className="text-lg font-extrabold text-gray-900 mb-6 border-l-4 border-amber-400 pl-4 py-1">
+                                Informations textuelles
                             </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-5">
-                                {section.questions?.map((q: any) => (
-                                    <div key={q.id} className={`flex flex-col space-y-2 ${q.type === 'textarea' || q.type === 'file_list' ? 'md:col-span-2' : ''}`}>
-                                        <label htmlFor={q.id} className="text-sm font-semibold text-[#111827] uppercase tracking-wider">
-                                            {q.label} {q.type === 'file_list' && <span className="text-[10px] font-normal text-amber-600 bg-amber-50 px-2 py-0.5 rounded ml-2">Téléversement recommandé</span>}
-                                        </label>
-                                        
-                                        {q.type === 'select' ? (
-                                            <select
-                                                id={q.id}
-                                                required
-                                                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FFCC00] focus:border-transparent transition-all text-gray-900"
-                                                value={formData[q.id] || ''}
-                                                onChange={(e) => handleInputChange(q.id, e.target.value)}
-                                            >
-                                                <option value="" disabled>Sélectionner une option...</option>
-                                                {q.options?.map((opt: string) => (
-                                                    <option key={opt} value={opt}>{opt}</option>
-                                                ))}
-                                            </select>
-                                        ) : q.type === 'textarea' ? (
-                                            <textarea
-                                                id={q.id}
-                                                required
-                                                rows={4}
-                                                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FFCC00] focus:border-transparent transition-all resize-none text-gray-900"
-                                                value={formData[q.id] || ''}
-                                                onChange={(e) => handleInputChange(q.id, e.target.value)}
-                                            />
-                                        ) : q.type === 'boolean' ? (
-                                            <div className="flex items-center space-x-6 h-12">
-                                                <label className="flex items-center space-x-2.5 cursor-pointer bg-white border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                                    <input 
-                                                        type="radio" 
-                                                        name={q.id} 
-                                                        value="yes" 
-                                                        checked={formData[q.id] === true}
-                                                        onChange={() => handleInputChange(q.id, true)}
-                                                        className="w-5 h-5 text-amber-500 focus:ring-amber-500 border-gray-300"
-                                                    />
-                                                    <span className="font-medium text-gray-900">Oui</span>
-                                                </label>
-                                                <label className="flex items-center space-x-2.5 cursor-pointer bg-white border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                                    <input 
-                                                        type="radio" 
-                                                        name={q.id} 
-                                                        value="no" 
-                                                        checked={formData[q.id] === false}
-                                                        onChange={() => handleInputChange(q.id, false)}
-                                                        className="w-5 h-5 text-amber-500 focus:ring-amber-500 border-gray-300"
-                                                    />
-                                                    <span className="font-medium text-gray-900">Non</span>
-                                                </label>
-                                            </div>
-                                        ) : q.type === 'checkbox' ? (
-                                            <div className="space-y-2 mt-2">
-                                                {q.options?.map((opt: string) => (
-                                                    <label key={opt} className="flex items-center space-x-3 cursor-pointer p-3 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors bg-white">
-                                                        <input 
-                                                            type="checkbox"
-                                                            value={opt}
-                                                            checked={(formData[q.id] || []).includes(opt)}
-                                                            onChange={(e) => {
-                                                                const current = formData[q.id] || [];
-                                                                if (e.target.checked) {
-                                                                    handleInputChange(q.id, [...current, opt]);
-                                                                } else {
-                                                                    handleInputChange(q.id, current.filter((item: string) => item !== opt));
-                                                                }
-                                                            }}
-                                                            className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500"
-                                                        />
-                                                        <span className="text-gray-900 font-medium">{opt}</span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        ) : q.type === 'file_list' ? (
-                                            <FileUploader 
-                                                id={q.id} 
-                                                label={q.label} 
-                                                selectedFiles={formData[q.id] || []} 
-                                                onChange={(files) => handleInputChange(q.id, files)} 
-                                            />
-                                        ) : (
-                                            <input
-                                                type={q.type}
-                                                id={q.id}
-                                                required
-                                                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FFCC00] focus:border-transparent transition-all text-gray-900"
-                                                value={formData[q.id] || ''}
-                                                onChange={(e) => handleInputChange(q.id, e.target.value)}
-                                            />
-                                        )}
-                                    </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                {textItems.map((item) => (
+                                    <TextInput
+                                        key={item.field.name}
+                                        field={item.field}
+                                        value={formData[item.field.name] ?? ""}
+                                        onChange={(v) => handleChange(item.field.name, v)}
+                                    />
                                 ))}
                             </div>
                         </div>
-                    ))}
+                    )}
 
-                    <div className="pt-10 border-t border-gray-200 flex justify-end">
+                    {/* ── Radio groups ─────────────────────────────────────── */}
+                    {radioItems.length > 0 && (
+                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
+                            <h2 className="text-lg font-extrabold text-gray-900 mb-6 border-l-4 border-amber-400 pl-4 py-1">
+                                Choix &amp; sélections
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {radioItems.map((group, idx) => (
+                                    <RadioGroupInput
+                                        key={group.groupId + idx}
+                                        group={group}
+                                        formData={formData}
+                                        onChange={handleChange}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ── Checkboxes ────────────────────────────────────────── */}
+                    {checkboxItems.length > 0 && (
+                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
+                            <h2 className="text-lg font-extrabold text-gray-900 mb-6 border-l-4 border-amber-400 pl-4 py-1">
+                                Cases à cocher
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {checkboxItems.map((item) => (
+                                    <CheckboxInput
+                                        key={item.field.name}
+                                        field={item.field}
+                                        value={formData[item.field.name] ?? "/Off"}
+                                        onChange={(v) => handleChange(item.field.name, v)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ── Submit ────────────────────────────────────────────── */}
+                    <div className="flex justify-end pt-2 pb-4">
                         <button
                             type="submit"
-                            disabled={submitting || pdfGenerating}
-                            className={`flex items-center px-8 py-5 rounded-xl text-[#111827] font-extrabold text-lg shadow-md transition-all ${(submitting || pdfGenerating) ? 'bg-[#FFCC00]/70 cursor-not-allowed' : 'bg-[#FFCC00] hover:bg-[#eab308] hover:shadow-xl hover:-translate-y-1'}`}
+                            disabled={submitting}
+                            className={`flex items-center gap-3 px-10 py-5 rounded-2xl font-extrabold text-base shadow-lg transition-all ${
+                                submitting
+                                    ? "bg-amber-300/70 text-gray-500 cursor-not-allowed"
+                                    : "bg-amber-400 hover:bg-amber-500 text-gray-900 hover:shadow-xl hover:-translate-y-0.5"
+                            }`}
                         >
-                            {(submitting || pdfGenerating) ? (
+                            {submitting ? (
                                 <>
-                                    <Loader2 className="w-6 h-6 mr-3 animate-spin" />
-                                    Traitement en cours...
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Traitement en cours…
                                 </>
                             ) : (
                                 <>
-                                    Valider mes informations
-                                    <Send className="w-6 h-6 ml-3" />
+                                    <Download className="w-5 h-5" />
+                                    Générer et télécharger le PDF
                                 </>
                             )}
                         </button>
                     </div>
                 </form>
             </div>
-        </div>
+        </>
     );
 }
 
-export default function FormulairePage() {
+// ─────────────────────────────────────────────────────────────────────────────
+// Page wrapper
+// ─────────────────────────────────────────────────────────────────────────────
+
+export default function FormulaireCerfaPage() {
     return (
-        <main className="min-h-screen bg-[#F9FAFB] text-foreground flex flex-col" suppressHydrationWarning>
-            <Navbar />
-            <Suspense fallback={
-                <div className="flex-1 flex flex-col items-center justify-center pt-32 pb-24">
-                    <Loader2 className="h-12 w-12 text-[#FFCC00] animate-spin mb-6" />
-                    <p className="text-gray-500 font-medium text-lg">Préparation de votre dossier...</p>
-                </div>
-            }>
-                <FormContent />
+        <main
+            className="min-h-screen bg-[#F9FAFB] text-foreground flex flex-col"
+            suppressHydrationWarning
+        >
+            <div suppressHydrationWarning>
+                <Navbar />
+            </div>
+            <Suspense
+                fallback={
+                    <div className="flex-1 flex flex-col items-center justify-center pt-32 pb-24">
+                        <Loader2 className="h-12 w-12 text-amber-400 animate-spin mb-6" />
+                        <p className="text-gray-500 font-medium text-lg">
+                            Préparation du formulaire…
+                        </p>
+                    </div>
+                }
+            >
+                <CerfaFormContent />
             </Suspense>
-            <Footer />
+            <div suppressHydrationWarning>
+                <Footer />
+            </div>
         </main>
     );
 }

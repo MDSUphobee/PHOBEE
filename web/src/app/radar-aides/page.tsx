@@ -16,21 +16,33 @@ export default function RadarAides() {
     useEffect(() => {
         async function fetchPdfs() {
             try {
-                const res = await fetch("/aides");
+                // GET /api/pdfs → PdfController::index() — returns PDF filenames from SFTP disk.
+                // These filenames (without .pdf) are the exact template keys used by
+                // get-fields/{cerfa_name} and POST /api/pdfs/fill.
+                const res = await fetch("/api/pdfs");
                 if (!res.ok) {
                     throw new Error("Erreur lors de la récupération des documents.");
                 }
                 const json = await res.json();
-                
-                // Mettre à jour l'état avec un tableau de strings "aide_name"
+
+                // Normalise both possible shapes:
+                //   { success: true, data: ["cerfa_11423.pdf", ...] }
+                //   ["cerfa_11423.pdf", ...]
+                let raw: any[] = [];
                 if (Array.isArray(json)) {
-                    const names = json.map((item: any) => item.aide_name).filter(Boolean);
-                    setPdfs(names);
+                    raw = json;
                 } else if (json.data && Array.isArray(json.data)) {
-                    setPdfs(json.data.map((item: any) => item.aide_name || item).filter(Boolean));
-                } else {
-                    setPdfs([]);
+                    raw = json.data;
                 }
+
+                // Each item may be a string filename or an object with a name key
+                const names: string[] = raw
+                    .map((item: any) =>
+                        typeof item === "string" ? item : (item.name ?? item.aide_name ?? "")
+                    )
+                    .filter(Boolean);
+
+                setPdfs(names);
             } catch (err: any) {
                 setError(err.message);
             } finally {
