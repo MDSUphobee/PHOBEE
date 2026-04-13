@@ -6,9 +6,18 @@ import Footer from "@/components/landing/Footer";
 import SkeletonCard from "@/components/SkeletonCard";
 import { Search, FileText } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+
+type AideDocument = {
+    id?: number;
+    aide_name: string;
+    description?: string;
+    image_url?: string;
+    [key: string]: any;
+};
 
 export default function RadarAides() {
-    const [pdfs, setPdfs] = useState<string[]>([]);
+    const [pdfs, setPdfs] = useState<AideDocument[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [error, setError] = useState("");
@@ -22,12 +31,14 @@ export default function RadarAides() {
                 }
                 const json = await res.json();
                 
-                // Mettre à jour l'état avec un tableau de strings "aide_name"
                 if (Array.isArray(json)) {
-                    const names = json.map((item: any) => item.aide_name).filter(Boolean);
-                    setPdfs(names);
+                    setPdfs(json.filter((item: any) => item && item.aide_name));
                 } else if (json.data && Array.isArray(json.data)) {
-                    setPdfs(json.data.map((item: any) => item.aide_name || item).filter(Boolean));
+                    // Parfois l'API renvoie { data: [...] }
+                    setPdfs(json.data.map((item: any) => {
+                        if (typeof item === 'string') return { aide_name: item };
+                        return item;
+                    }).filter((item: any) => item && item.aide_name));
                 } else {
                     setPdfs([]);
                 }
@@ -43,7 +54,7 @@ export default function RadarAides() {
     const filteredPdfs = useMemo(() => {
         if (!searchQuery) return pdfs;
         const lowerQ = searchQuery.toLowerCase();
-        return pdfs.filter(pdf => pdf.toLowerCase().includes(lowerQ));
+        return pdfs.filter(pdf => pdf.aide_name.toLowerCase().includes(lowerQ));
     }, [pdfs, searchQuery]);
 
     const formatTitle = (filename: string) => {
@@ -94,17 +105,39 @@ export default function RadarAides() {
                         Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
                     ) : filteredPdfs.length > 0 ? (
                         filteredPdfs.map((pdf, idx) => (
-                            <Link key={idx} href={`/radar-aides/formulaire?name=${encodeURIComponent(formatTitle(pdf))}`} passHref>
-                                <div className="bg-white cursor-pointer rounded-[1.25rem] shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 p-6 flex flex-col h-full relative overflow-hidden group">
-                                    <div className="flex items-start gap-4 mb-4">
-                                        <div className="w-12 h-12 shrink-0 bg-amber-50 rounded-lg flex items-center justify-center border border-amber-100 text-amber-500">
-                                            <FileText className="w-6 h-6" />
+                            <Link key={idx} href={`/formulaires`} passHref>
+                                <div className="bg-white flex-col h-full cursor-pointer rounded-[1.25rem] shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 flex relative overflow-hidden group">
+                                    {pdf.image_url && (
+                                        <div className="w-full h-44 shrink-0 overflow-hidden relative bg-gray-100">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={pdf.image_url}
+                                                alt={formatTitle(pdf.aide_name)}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                            {/* L'overlay subtil */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />
                                         </div>
-                                        <div className="flex-1 pt-1 break-words">
-                                            <h3 className="text-lg font-bold text-[#111827] leading-tight group-hover:text-amber-500 transition-colors">
-                                                {formatTitle(pdf)}
-                                            </h3>
+                                    )}
+                                    <div className="p-6 flex flex-col flex-1">
+                                        <div className="flex items-start gap-4 mb-3">
+                                            {!pdf.image_url && (
+                                                <div className="w-12 h-12 shrink-0 bg-amber-50 rounded-lg flex items-center justify-center border border-amber-100 text-amber-500">
+                                                    <FileText className="w-6 h-6" />
+                                                </div>
+                                            )}
+                                            <div className="flex-1 pt-1 break-words">
+                                                <h3 className="text-lg font-bold text-[#111827] leading-tight group-hover:text-amber-500 transition-colors">
+                                                    {formatTitle(pdf.aide_name)}
+                                                </h3>
+                                            </div>
                                         </div>
+                                        
+                                        {pdf.description && (
+                                            <p className="text-sm text-gray-500 mt-2 line-clamp-3 leading-relaxed">
+                                                {pdf.description}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </Link>

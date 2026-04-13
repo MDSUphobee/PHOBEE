@@ -1,0 +1,41 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AideController;
+use App\Http\Controllers\PdfController;
+use App\Http\Controllers\UserDataController;
+use App\Http\Controllers\AidePdfController;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
+// Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('users', UserController::class)->only(['index', 'show', 'update','destroy']);
+    Route::put('users/{id}/user-info', [UserController::class, 'updateUserInfo']);
+
+    Route::get('/recherche', [AideController::class, 'index']);
+    Route::post('/logout', [UserController::class, 'logout']);
+
+    Route::post('/user-data', [UserDataController::class, 'store']);
+    Route::get('/user-data', [UserDataController::class, 'index']);
+});
+
+Route::post('/aides/fill-pdf', [AidePdfController::class, 'fill']);
+
+Route::get('/public', function () {
+    return response()->json(['message' => 'This is a public endpoint accessible without authentication.']);
+});
+
+
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'store']);
+Route::get('/pdfs', [PdfController::class, 'index']);
+Route::get('/pdfs/{filename}', [PdfController::class, 'show']);
+
+Route::get('/aides', [AideController::class, 'getAides']);
