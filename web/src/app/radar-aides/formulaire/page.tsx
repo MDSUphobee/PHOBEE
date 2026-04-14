@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { ArrowLeft, Loader2, Download, CheckCircle2, AlertCircle, FileText } from "lucide-react";
+import Cerfa11423Form from "@/components/forms/Cerfa11423Form";
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -525,7 +527,28 @@ function CerfaFormContent() {
         }
     };
 
+    // ── Pre-defined forms (Statics) ──────────────────────────────────────────
+    const isCerfa11423 = cerfa_name === "cerfa_11423" || 
+                         cerfa_name.includes("11423") || 
+                         cerfa_name.toLowerCase().includes("déclaration de situation pour les prestations familiales");
+
+    if (isCerfa11423) {
+        return (
+            <div className="flex-1 pt-32 pb-24 container mx-auto px-4 md:px-6 max-w-5xl" suppressHydrationWarning>
+                 <button
+                    onClick={() => router.back()}
+                    className="flex items-center text-gray-400 hover:text-gray-900 mb-8 transition-colors font-medium text-sm gap-2"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Retour à la liste des documents
+                </button>
+                <Cerfa11423Form />
+            </div>
+        );
+    }
+
     // ── Guard states ──────────────────────────────────────────────────────────
+
     if (loading) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center pt-32 pb-24" suppressHydrationWarning>
