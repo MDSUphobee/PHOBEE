@@ -1,7 +1,6 @@
 import React from 'react';
-
 import { Cerfa11423Data } from '@/lib/pdf/cerfa_11423_types';
-import { Label, RadioGroup, SectionTitle, Input, Checkbox } from '../FormElements';
+import { Label, RadioGroup, StepContainer, FormSection, FormGrid, Input, Checkbox } from '../FormElements';
 
 interface StepProps {
   data: Cerfa11423Data;
@@ -28,9 +27,8 @@ export default function FamilyStep({ data, updateData }: StepProps) {
   };
 
   return (
-    <div className="animate-in fade-in duration-500 space-y-12">
-      <div>
-        <SectionTitle>Votre situation familiale actuelle</SectionTitle>
+    <StepContainer>
+      <FormSection title="Votre situation familiale actuelle">
         <div className="space-y-6">
           <RadioGroup
             name="relationStatus"
@@ -56,12 +54,9 @@ export default function FamilyStep({ data, updateData }: StepProps) {
             </div>
           )}
         </div>
-      </div>
+      </FormSection>
 
-      <hr className="border-border/50" />
-
-      <div>
-        <SectionTitle>Autre cas de changement de situation</SectionTitle>
+      <FormSection title="Autre cas (changement de situation)">
         <div className="space-y-6">
           <RadioGroup
             name="livingStatus"
@@ -87,41 +82,47 @@ export default function FamilyStep({ data, updateData }: StepProps) {
             </div>
           )}
         </div>
-      </div>
+      </FormSection>
 
-      <hr className="border-border/50" />
+      <FormSection title="Parents séparés">
+        <div className="space-y-6">
+          <p className="text-sm text-muted-foreground mb-4">
+            Cochez cette case si vous êtes séparés et que vous avez des enfants en résidence alternée ou à charge.
+          </p>
+          
+          <Checkbox
+            label="Les parents sont séparés"
+            checked={data.livingSituation?.separatedParents?.isSeparated || false}
+            onChange={(val) => {
+              const sep = data.livingSituation?.separatedParents || {};
+              handleLivingChange('separatedParents', { ...sep, isSeparated: val });
+            }}
+          />
 
-      <div className="bg-muted/30 p-6 rounded-xl space-y-4">
-        <Checkbox
-          label="Les parents sont séparés"
-          checked={data.livingSituation?.separatedParents?.isSeparated || false}
-          onChange={(val) => {
-            const sep = data.livingSituation?.separatedParents || {};
-            handleLivingChange('separatedParents', { ...sep, isSeparated: val });
-          }}
-        />
-
-        {data.livingSituation?.separatedParents?.isSeparated && (
-          <div className="pl-6 space-y-4 pt-2 border-l border-primary/20 animate-in slide-in-from-left-2 duration-300">
-             <Checkbox
-              label="L'autre parent réside dans l'UE, l'EEE ou en Suisse"
-              checked={data.livingSituation?.separatedParents?.parentResidesEuEeeSwiss || false}
-              onChange={(val) => {
-                const sep = data.livingSituation?.separatedParents || {};
-                handleLivingChange('separatedParents', { ...sep, parentResidesEuEeeSwiss: val });
-              }}
-            />
-            <Checkbox
-              label="L'autre parent travaille à l'étranger"
-              checked={data.livingSituation?.separatedParents?.parentWorksAbroad || false}
-              onChange={(val) => {
-                const sep = data.livingSituation?.separatedParents || {};
-                handleLivingChange('separatedParents', { ...sep, parentWorksAbroad: val });
-              }}
-            />
-          </div>
-        )}
-      </div>
-    </div>
+          {data.livingSituation?.separatedParents?.isSeparated && (
+            <div className="pl-0 sm:pl-8 space-y-4 pt-4 animate-in slide-in-from-left-4 duration-500">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Checkbox
+                  label="L'autre parent réside en UE/EEE"
+                  checked={data.livingSituation?.separatedParents?.parentResidesEuEeeSwiss || false}
+                  onChange={(val) => {
+                    const sep = data.livingSituation?.separatedParents || {};
+                    handleLivingChange('separatedParents', { ...sep, parentResidesEuEeeSwiss: val });
+                  }}
+                />
+                <Checkbox
+                  label="L'autre parent travaille à l'étranger"
+                  checked={data.livingSituation?.separatedParents?.parentWorksAbroad || false}
+                  onChange={(val) => {
+                    const sep = data.livingSituation?.separatedParents || {};
+                    handleLivingChange('separatedParents', { ...sep, parentWorksAbroad: val });
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </FormSection>
+    </StepContainer>
   );
 }

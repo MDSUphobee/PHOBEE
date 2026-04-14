@@ -1,9 +1,8 @@
 import React from 'react';
 import { Plus, Trash2, Baby } from 'lucide-react';
 import { Cerfa11423Data, ChildData } from '@/lib/pdf/cerfa_11423_types';
-import { Input, Label, SectionTitle, Checkbox } from '../FormElements';
+import { Input, Label, Checkbox, StepContainer, FormSection, FormGrid } from '../FormElements';
 import { Button as ShadcnButton } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface StepProps {
   data: Cerfa11423Data;
@@ -33,58 +32,65 @@ export default function ChildrenStep({ data, updateData }: StepProps) {
   };
 
   return (
-    <div className="animate-in fade-in duration-500 space-y-8">
-      <div className="flex justify-between items-center">
-        <SectionTitle>Enfants à charge</SectionTitle>
+    <StepContainer>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
+        <div>
+          <h3 className="text-xl font-bold text-foreground">Vos enfants à charge</h3>
+          <p className="text-sm text-muted-foreground mt-1">Vous pouvez ajouter jusqu'à 5 enfants.</p>
+        </div>
         <ShadcnButton 
           type="button" 
           variant="outline" 
-          size="sm" 
           onClick={addChild}
           disabled={children.length >= 5}
-          className="gap-2"
+          className="rounded-full px-6 border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all gap-2"
         >
-          <Plus size={16} />
+          <Plus size={18} />
           Ajouter un enfant
         </ShadcnButton>
       </div>
 
       {children.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-muted rounded-2xl bg-muted/5">
-          <Baby size={48} className="text-muted-foreground/30 mb-4" />
-          <p className="text-muted-foreground">Aucun enfant ajouté pour le moment.</p>
-          <p className="text-xs text-muted-foreground/60">(Maximum 5 enfants)</p>
+        <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-muted rounded-[2rem] bg-muted/5 animate-in fade-in zoom-in-95 duration-500">
+          <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+            <Baby size={32} className="text-muted-foreground/30" />
+          </div>
+          <p className="text-lg font-medium text-muted-foreground">Aucun enfant ajouté</p>
+          <p className="text-sm text-muted-foreground/60 mt-2">Cliquez sur le bouton ci-dessus pour commencer.</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-8">
           {children.map((child, index) => (
-            <Card key={index} className="border-border/60 bg-background shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                    Enfant {index + 1}
+            <div key={index} className="group relative bg-card/40 backdrop-blur-sm border border-border/60 rounded-[2rem] p-6 md:p-8 shadow-sm hover:shadow-md transition-all animate-in slide-in-from-right-4 duration-500">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold shadow-lg shadow-primary/20">
+                    {index + 1}
                   </div>
-                  <ShadcnButton 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => removeChild(index)}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10 -mt-2 -mr-2"
-                  >
-                    <Trash2 size={18} />
-                  </ShadcnButton>
+                  <h4 className="text-lg font-bold">Enfant n°{index + 1}</h4>
                 </div>
+                <ShadcnButton 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => removeChild(index)}
+                  className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"
+                >
+                  <Trash2 size={20} />
+                </ShadcnButton>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-8">
+                <FormGrid>
                   <div className="space-y-2">
                     <Label>Nom et Prénom</Label>
                     <Input
                       value={child.nameSurname || ''}
                       onChange={(e) => updateChild(index, 'nameSurname', e.target.value)}
-                      placeholder="Ex: MARTIN Théo"
+                      placeholder="Identité complète"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <FormGrid className="md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Date de naissance</Label>
                       <Input
@@ -98,47 +104,50 @@ export default function ChildrenStep({ data, updateData }: StepProps) {
                       <Input
                         value={child.bornPlace || ''}
                         onChange={(e) => updateChild(index, 'bornPlace', e.target.value)}
-                        placeholder="Ex: Lyon"
+                        placeholder="Ville"
                       />
                     </div>
-                  </div>
+                  </FormGrid>
+                </FormGrid>
 
-                  <div className="space-y-2">
-                    <Label>Date d'arrivée au foyer</Label>
-                    <Input
-                      type="date"
-                      value={child.dateArrival || ''}
-                      onChange={(e) => updateChild(index, 'dateArrival', e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Lien de parenté</Label>
-                    <Input
-                      value={child.arrivalRelation || ''}
-                      onChange={(e) => updateChild(index, 'arrivalRelation', e.target.value)}
-                      placeholder="Ex: Fils, Fille"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                    <Checkbox
-                      label="Réside à l'étranger"
-                      checked={child.abroadResidence || false}
-                      onChange={(val) => updateChild(index, 'abroadResidence', val)}
-                    />
-                    <Checkbox
-                      label="Résidence alternée"
-                      checked={child.alternatingResidence || false}
-                      onChange={(val) => updateChild(index, 'alternatingResidence', val)}
-                    />
-                  </div>
+                <div className="pt-4 border-t border-border/40">
+                  <FormGrid>
+                    <div className="space-y-2">
+                      <Label>Arrivé au foyer le</Label>
+                      <Input
+                        type="date"
+                        value={child.dateArrival || ''}
+                        onChange={(e) => updateChild(index, 'dateArrival', e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Lien de parenté</Label>
+                      <Input
+                        value={child.arrivalRelation || ''}
+                        onChange={(e) => updateChild(index, 'arrivalRelation', e.target.value)}
+                        placeholder="Ex: Fils, Fille, Enfant recueilli"
+                      />
+                    </div>
+                  </FormGrid>
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <Checkbox
+                    label="Réside à l'étranger"
+                    checked={child.abroadResidence || false}
+                    onChange={(val) => updateChild(index, 'abroadResidence', val)}
+                  />
+                  <Checkbox
+                    label="Résidence alternée"
+                    checked={child.alternatingResidence || false}
+                    onChange={(val) => updateChild(index, 'alternatingResidence', val)}
+                  />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       )}
-    </div>
+    </StepContainer>
   );
 }

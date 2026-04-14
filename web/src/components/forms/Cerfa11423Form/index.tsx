@@ -119,18 +119,18 @@ export default function Cerfa11423Form() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
+    <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6">
       {/* Header */}
       {!isCompleted && (
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
           <motion.div 
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4"
+            className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3"
           >
-            <FileText size={32} />
+            <FileText size={24} />
           </motion.div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Génération CERFA 11423</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Génération CERFA 11423</h1>
           <p className="text-muted-foreground mt-2">Déclaration de situation pour les prestations familiales et les aides au logement</p>
         </div>
       )}
@@ -231,8 +231,8 @@ export default function Cerfa11423Form() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-10 text-center"
               >
-                <div className="w-20 h-20 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-green-500/20">
-                  <CheckCircle2 size={40} />
+                <div className="w-16 h-16 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-green-500/20">
+                  <CheckCircle2 size={32} />
                 </div>
                 
                 <h2 className="text-3xl font-bold mb-2">Document Prêt !</h2>
