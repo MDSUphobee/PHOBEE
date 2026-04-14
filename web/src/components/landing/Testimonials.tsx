@@ -35,7 +35,7 @@ export default function Testimonials() {
                         Déjà + de 500 <br className="md:hidden" />
                         entrepreneurs accompagnés
                     </h2>
-                    <p className="text-lg text-slate-500 max-w-2xl mx-auto uppercase tracking-wider font-semibold">
+                    <p className="text-lg text-slate-500 dark:text-white max-w-2xl mx-auto uppercase tracking-wider font-semibold">
                         Et ils en parlent mieux que nous
                     </p>
                     <div className="h-1 w-20 bg-[#FFD700] mx-auto mt-6 rounded-full" />
@@ -56,7 +56,7 @@ export default function Testimonials() {
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-lg text-slate-900 dark:text-white">{t.name}</h4>
-                                    <p className="text-sm text-slate-500">{t.role}</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-300">{t.role}</p>
                                 </div>
                             </div>
 
@@ -66,7 +66,7 @@ export default function Testimonials() {
                                 ))}
                             </div>
 
-                            <p className="text-slate-600 dark:text-slate-300 italic leading-relaxed">
+                            <p className="text-slate-600 dark:text-white italic leading-relaxed">
                                 « {t.content} »
                             </p>
                         </div>

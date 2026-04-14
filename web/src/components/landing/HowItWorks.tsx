@@ -109,7 +109,7 @@ export default function HowItWorks() {
                                             <h3 className="text-xl font-bold text-[#0F172A] dark:text-white mb-3 leading-tight min-h-[3.5rem]">
                                                 {step.title}
                                             </h3>
-                                            <p className="text-sm text-slate-500 leading-relaxed max-w-[200px] mx-auto hidden md:block">
+                                            <p className="text-sm text-slate-500 dark:text-white leading-relaxed max-w-[200px] mx-auto hidden md:block">
                                                 {step.desc}
                                             </p>
                                         </div>
@@ -249,13 +249,13 @@ export default function HowItWorks() {
                                                     </div>
 
                                                     {/* Notification Card */}
-                                                    <div className="bg-white rounded-xl p-4 shadow-lg flex items-start gap-4 transform rotate-1">
-                                                        <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center text-red-500 shrink-0">
+                                                    <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-lg flex items-start gap-4 transform rotate-1">
+                                                        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center text-red-500 dark:text-red-400 shrink-0">
                                                             <Bell className="w-5 h-5" />
                                                         </div>
                                                         <div>
-                                                            <h5 className="font-bold text-slate-900 text-sm">Déclaration URSSAF</h5>
-                                                            <p className="text-xs text-slate-500 mt-1">N'oubliez pas ! Échéance demain à 12:00.</p>
+                                                            <h5 className="font-bold text-slate-900 dark:text-white text-sm">Déclaration URSSAF</h5>
+                                                            <p className="text-xs text-slate-500 dark:text-white mt-1">N'oubliez pas ! Échéance demain à 12:00.</p>
                                                         </div>
                                                     </div>
 
@@ -285,12 +285,12 @@ export default function HowItWorks() {
                                 transition={{ delay: 0.5 }}
                                 className="absolute bottom-[10%] -left-12 z-20 bg-white rounded-2xl p-4 shadow-2xl max-w-[260px] flex items-start gap-4"
                             >
-                                <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                                    <Shield className="w-5 h-5 text-slate-900" />
+                                <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                                    <Shield className="w-5 h-5 text-slate-900 dark:text-white" />
                                 </div>
                                 <div>
-                                    <h5 className="font-extrabold text-slate-900 text-base">Sécurité Maximale</h5>
-                                    <p className="text-xs text-slate-500 mt-1 leading-tight">
+                                    <h5 className="font-extrabold text-slate-900 dark:text-white text-base">Sécurité Maximale</h5>
+                                    <p className="text-xs text-slate-500 dark:text-white mt-1 leading-tight">
                                         Vos données restent cryptées sur votre téléphone. On ne vend rien.
                                     </p>
                                 </div>

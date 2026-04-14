@@ -88,10 +88,10 @@ export default function FAQ() {
                     <AccordionRoot type="single" collapsible className="w-full">
                         {faqs.map((faq, i) => (
                             <AccordionItemWrapper key={i} value={`item-${i}`} className="border-slate-100 dark:border-slate-800 group">
-                                <AccordionTriggerWrapper className="text-left text-lg font-bold text-slate-800 dark:text-slate-200 hover:text-[#FFD700] transition-colors">
+                                <AccordionTriggerWrapper className="text-left text-lg font-bold text-slate-800 dark:text-white hover:text-[#FFD700] transition-colors">
                                     {faq.q}
                                 </AccordionTriggerWrapper>
-                                <AccordionContentWrapper className="text-slate-500 dark:text-slate-400 text-base leading-relaxed">
+                                <AccordionContentWrapper className="text-slate-500 dark:text-white text-base leading-relaxed">
                                     {faq.a}
                                 </AccordionContentWrapper>
                             </AccordionItemWrapper>

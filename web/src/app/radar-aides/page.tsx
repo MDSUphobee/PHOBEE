@@ -16,21 +16,33 @@ export default function RadarAides() {
     useEffect(() => {
         async function fetchPdfs() {
             try {
-                const res = await fetch("/aides");
+                // GET /api/pdfs → PdfController::index() — returns PDF filenames from SFTP disk.
+                // These filenames (without .pdf) are the exact template keys used by
+                // get-fields/{cerfa_name} and POST /api/pdfs/fill.
+                const res = await fetch("/api/pdfs");
                 if (!res.ok) {
                     throw new Error("Erreur lors de la récupération des documents.");
                 }
                 const json = await res.json();
-                
-                // Mettre à jour l'état avec un tableau de strings "aide_name"
+
+                // Normalise both possible shapes:
+                //   { success: true, data: ["cerfa_11423.pdf", ...] }
+                //   ["cerfa_11423.pdf", ...]
+                let raw: any[] = [];
                 if (Array.isArray(json)) {
-                    const names = json.map((item: any) => item.aide_name).filter(Boolean);
-                    setPdfs(names);
+                    raw = json;
                 } else if (json.data && Array.isArray(json.data)) {
-                    setPdfs(json.data.map((item: any) => item.aide_name || item).filter(Boolean));
-                } else {
-                    setPdfs([]);
+                    raw = json.data;
                 }
+
+                // Each item may be a string filename or an object with a name key
+                const names: string[] = raw
+                    .map((item: any) =>
+                        typeof item === "string" ? item : (item.name ?? item.aide_name ?? "")
+                    )
+                    .filter(Boolean);
+
+                setPdfs(names);
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -51,41 +63,41 @@ export default function RadarAides() {
     };
 
     return (
-        <main suppressHydrationWarning={true} className="min-h-screen bg-[#F9FAFB] text-foreground flex flex-col">
+        <main suppressHydrationWarning={true} className="min-h-screen bg-background text-foreground flex flex-col">
             <Navbar />
 
             <div suppressHydrationWarning={true} className="flex-1 pt-[120px] pb-24 container mx-auto px-4 md:px-6">
                 <div className="max-w-3xl mx-auto text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-extrabold text-[#111827] mb-6">
-                        Radar à <span className="text-[#eab308]">Documents</span>
+                    <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-6">
+                        Radar à <span className="text-primary">Documents</span>
                     </h1>
-                    <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                    <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Retrouvez facilement les déclarations et formulaires nécessaires à vos démarches.
                     </p>
 
                     <div className="relative max-w-xl mx-auto">
                         <div suppressHydrationWarning={true} className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Search className="h-5 w-5 text-gray-400" />
+                            <Search className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <input
                             type="text"
                             placeholder="Rechercher par mot-clé..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="block w-full pl-12 pr-4 py-4 border border-gray-200 rounded-full text-[16px] bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FFCC00] focus:border-[#FFCC00] shadow-sm transition-all"
+                            className="block w-full pl-12 pr-4 py-4 border border-border rounded-full text-[16px] bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-sm transition-all"
                         />
                     </div>
                 </div>
 
                 {error && (
-                    <div className="text-center text-red-600 bg-red-50 p-4 rounded-xl mb-8 max-w-2xl mx-auto border border-red-100">
+                    <div className="text-center text-destructive bg-destructive/10 p-4 rounded-xl mb-8 max-w-2xl mx-auto border border-destructive/20 shadow-sm">
                         {error}
                     </div>
                 )}
 
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-xl font-bold text-gray-900 border-l-4 border-amber-500 pl-3">
-                        <span className="text-amber-500">{loading ? '...' : filteredPdfs.length}</span> documents trouvés
+                    <h2 className="text-xl font-bold text-foreground border-l-4 border-primary pl-3">
+                        <span className="text-primary">{loading ? '...' : filteredPdfs.length}</span> documents trouvés
                     </h2>
                 </div>
 
@@ -95,13 +107,13 @@ export default function RadarAides() {
                     ) : filteredPdfs.length > 0 ? (
                         filteredPdfs.map((pdf, idx) => (
                             <Link key={idx} href={`/radar-aides/formulaire?name=${encodeURIComponent(formatTitle(pdf))}`} passHref>
-                                <div className="bg-white cursor-pointer rounded-[1.25rem] shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 p-6 flex flex-col h-full relative overflow-hidden group">
+                                <div className="bg-card cursor-pointer rounded-[1.25rem] shadow-sm hover:shadow-md transition-all duration-300 border border-border p-6 flex flex-col h-full relative overflow-hidden group">
                                     <div className="flex items-start gap-4 mb-4">
-                                        <div className="w-12 h-12 shrink-0 bg-amber-50 rounded-lg flex items-center justify-center border border-amber-100 text-amber-500">
+                                        <div className="w-12 h-12 shrink-0 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 text-primary">
                                             <FileText className="w-6 h-6" />
                                         </div>
                                         <div className="flex-1 pt-1 break-words">
-                                            <h3 className="text-lg font-bold text-[#111827] leading-tight group-hover:text-amber-500 transition-colors">
+                                            <h3 className="text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
                                                 {formatTitle(pdf)}
                                             </h3>
                                         </div>
@@ -110,9 +122,9 @@ export default function RadarAides() {
                             </Link>
                         ))
                     ) : (
-                        <div className="col-span-full bg-white rounded-xl border border-gray-100 p-12 text-center shadow-sm">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">Aucun document trouvé</h3>
-                            <p className="text-gray-500">Essayez de modifier vos termes de recherche.</p>
+                        <div className="col-span-full bg-card rounded-xl border border-border p-12 text-center shadow-sm">
+                            <h3 className="text-lg font-bold text-foreground mb-2">Aucun document trouvé</h3>
+                            <p className="text-muted-foreground">Essayez de modifier vos termes de recherche.</p>
                         </div>
                     )}
                 </div>

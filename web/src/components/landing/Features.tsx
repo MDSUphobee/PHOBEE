@@ -57,7 +57,7 @@ const features = [
         icon: Shield,
         className: "md:col-span-2 bg-slate-50 dark:bg-slate-900",
         visual: (
-            <div className="mt-4 flex items-center gap-2 text-slate-400 text-xs">
+            <div className="mt-4 flex items-center gap-2 text-slate-400 dark:text-white text-xs">
                 <span className="flex items-center gap-1"><div className="w-2 h-2 bg-primary dark:bg-primary rounded-full" /> AES-256</span>
                 <span className="flex items-center gap-1"><div className="w-2 h-2 bg-primary dark:bg-primary rounded-full" /> GDPR Compliant</span>
             </div>
@@ -97,7 +97,7 @@ export default function Features() {
                                     <feature.icon className="w-6 h-6" />
                                 </div>
                                 <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                                <p className="opacity-80 text-sm leading-relaxed">{feature.description}</p>
+                                <p className="opacity-80 dark:opacity-100 text-sm leading-relaxed">{feature.description}</p>
 
                                 <div className="mt-auto pt-6">
                                     {feature.visual}
