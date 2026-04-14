@@ -20,7 +20,10 @@ export async function POST(request: Request) {
         const mapping = body?.mapping ?? {};
         const flatten = body?.flatten ?? false;
 
-        const apiUrl   = process.env.API_URL || 'http://127.0.0.1:8000/';
+
+        const apiUrl   = process.env.NEXT_PUBLIC_API_BASE || 'http://127.0.0.1:8000/';
+        //alert(`API URL: ${apiUrl}\nPDF: ${pdf}\nMapping: ${JSON.stringify(mapping)}\nFlatten: ${flatten}`);
+
         const laravelUrl = new URL('api/pdfs/fill', apiUrl);
         laravelUrl.searchParams.set('pdf',      pdf);
         laravelUrl.searchParams.set('download', 'true');
