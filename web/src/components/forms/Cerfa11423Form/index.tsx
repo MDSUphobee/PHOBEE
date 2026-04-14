@@ -175,7 +175,7 @@ export default function Cerfa11423Form() {
         </div>
       )}
 
-      <Card className="border-none shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden">
+      <Card className="border-none shadow-xl bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl overflow-hidden shadow-primary/5">
         <CardContent className="p-0">
           <AnimatePresence mode="wait">
             {!isCompleted ? (

@@ -15,19 +15,19 @@ export default function Footer() {
     const FooterSection = ({ id, title, links }: { id: string, title: string, links: { name: string, href: string }[] }) => {
         const isOpen = openSection === id;
         return (
-            <div className="md:col-span-2 text-center sm:text-left border-b border-slate-800 md:border-none last:border-none py-2 md:py-0">
+            <div className="md:col-span-2 text-center sm:text-left border-b border-white/10 md:border-none last:border-none py-2 md:py-0">
                 <button
                     onClick={() => toggleSection(id)}
                     className="flex items-center justify-between w-full md:cursor-default"
                 >
-                    <h4 className="font-bold mb-0 md:mb-6 text-[#FFD700] text-sm md:text-base py-2 md:py-0">
+                    <h4 className="font-bold mb-0 md:mb-6 text-white text-sm md:text-base py-2 md:py-0 uppercase tracking-wider">
                         {title}
                     </h4>
-                    <ChevronDown className={`w-4 h-4 text-slate-400 md:hidden transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-white md:hidden transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 <div className="hidden md:block">
-                    <ul className="space-y-3 text-xs md:text-sm text-slate-400">
+                    <ul className="space-y-3 text-xs md:text-sm text-slate-200">
                         {links.map((link) => (
                             <li key={link.name}>
                                 <Link href={link.href} className="hover:text-white transition-colors">{link.name}</Link>
@@ -45,7 +45,7 @@ export default function Footer() {
                             className="md:hidden overflow-hidden"
                             transition={{ duration: 0.3 }}
                         >
-                            <ul className="pt-2 pb-4 space-y-3 text-sm text-slate-400">
+                            <ul className="pt-2 pb-4 space-y-3 text-sm text-slate-200">
                                 {links.map((link) => (
                                     <li key={link.name}>
                                         <Link href={link.href} onClick={() => setOpenSection(null)} className="hover:text-white transition-colors">{link.name}</Link>
@@ -60,7 +60,7 @@ export default function Footer() {
     };
 
     return (
-        <footer className="bg-[#0F172A] text-white pt-12 md:pt-16 pb-8 md:pb-12 border-t border-slate-800">
+        <footer className="bg-[#0F172A] text-white pt-12 md:pt-16 pb-8 md:pb-12 border-t border-white/10">
             <div className="container mx-auto px-4 md:px-6">
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 pb-8 md:pb-16 mb-8 md:mb-12">
@@ -73,7 +73,7 @@ export default function Footer() {
                                 className="h-20 md:h-32 w-auto object-contain mx-auto sm:mx-0"
                             />
                         </Link>
-                        <p className="text-slate-400 text-xs md:text-sm leading-relaxed max-w-xs mx-auto sm:mx-0">
+                        <p className="text-white text-xs md:text-sm leading-relaxed max-w-xs mx-auto sm:mx-0">
                             L'assistant administratif intelligent pensé pour les micro-entrepreneurs.
                         </p>
                     </div>
@@ -107,7 +107,7 @@ export default function Footer() {
                     />
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-slate-500 text-center md:text-left">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-slate-200 text-center md:text-left">
                     <p>© 2024 Phobee. Tous droits réservés.</p>
                     <div className="flex items-center gap-6">
                         <Link
@@ -122,6 +122,6 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-        </footer >
+        </footer>
     );
 }

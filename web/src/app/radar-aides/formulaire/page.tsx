@@ -134,7 +134,7 @@ function TextInput({
         <div className="flex flex-col space-y-1.5">
             <label
                 htmlFor={`field-${field.name}`}
-                className="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
             >
                 {fieldLabel(field.name)}
             </label>
@@ -144,7 +144,7 @@ function TextInput({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={field.value ?? ""}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all text-gray-900 text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-border bg-slate-100 dark:bg-slate-800/50 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-foreground text-sm placeholder:text-slate-500 dark:placeholder:text-slate-400"
             />
         </div>
     );
@@ -172,17 +172,17 @@ function CheckboxInput({
                 onClick={() => onChange(checked ? "/Off" : onVal)}
                 className={`w-5 h-5 flex-shrink-0 rounded border-2 transition-all flex items-center justify-center ${
                     checked
-                        ? "bg-amber-400 border-amber-400"
-                        : "border-gray-300 bg-white hover:border-amber-400"
+                        ? "bg-primary border-primary"
+                        : "border-border bg-card hover:border-primary"
                 }`}
             >
                 {checked && (
-                    <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                    <svg className="w-3 h-3 text-primary-foreground" viewBox="0 0 12 12" fill="none">
                         <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 )}
             </button>
-            <label htmlFor={`field-${field.name}`} className="text-sm font-medium text-gray-800 cursor-pointer select-none">
+            <label htmlFor={`field-${field.name}`} className="text-sm font-medium text-foreground cursor-pointer select-none">
                 {fieldLabel(field.name)}
             </label>
         </div>
@@ -205,7 +205,7 @@ function RadioGroupInput({
 
         return (
             <div className="flex flex-col space-y-1.5">
-                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {fieldLabel(field.name)}
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -219,8 +219,8 @@ function RadioGroupInput({
                                 onClick={() => onChange(field.name, selected ? "" : val)}
                                 className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
                                     selected
-                                        ? "bg-amber-400 border-amber-400 text-gray-900 shadow-sm"
-                                        : "bg-white border-gray-200 text-gray-700 hover:border-amber-300 hover:bg-amber-50"
+                                        ? "bg-primary border-primary text-primary-foreground shadow-sm"
+                                        : "bg-card border-border text-foreground hover:border-primary/50 hover:bg-primary/5"
                                 }`}
                             >
                                 {label}
@@ -238,7 +238,7 @@ function RadioGroupInput({
 
     return (
         <div className="flex flex-col space-y-1.5 md:col-span-2">
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {/* Derive a group label from field name prefix */}
                 {fieldLabel(group.fields[0].name.replace(/_[^_]+$/, ""))}
             </label>
@@ -257,8 +257,8 @@ function RadioGroupInput({
                             }}
                             className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
                                 selected
-                                    ? "bg-amber-400 border-amber-400 text-gray-900 shadow-sm"
-                                    : "bg-white border-gray-200 text-gray-700 hover:border-amber-300 hover:bg-amber-50"
+                                    ? "bg-primary border-primary text-primary-foreground shadow-sm"
+                                    : "bg-card border-border text-foreground hover:border-primary/50 hover:bg-primary/5"
                             }`}
                         >
                             {fieldLabel(label)}
@@ -307,12 +307,12 @@ function PdfProcessingOverlay() {
     }, []);
 
     return (
-        <div className="fixed inset-0 z-50 bg-white/90 backdrop-blur-sm flex items-center justify-center">
-            <div className="w-full max-w-md mx-4 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-                {/* Animated amber top bar */}
-                <div className="h-1.5 bg-gray-100 w-full">
+        <div className="fixed inset-0 z-50 bg-background/90 backdrop-blur-sm flex items-center justify-center">
+            <div className="w-full max-w-md mx-4 bg-card rounded-3xl shadow-2xl border border-border overflow-hidden">
+                {/* Animated primary top bar */}
+                <div className="h-1.5 bg-muted w-full">
                     <div
-                        className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-300 ease-out rounded-full"
+                        className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-300 ease-out rounded-full"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
@@ -320,17 +320,17 @@ function PdfProcessingOverlay() {
                 <div className="p-10 flex flex-col items-center text-center">
                     {/* Spinning document icon */}
                     <div className="relative w-20 h-20 mb-8">
-                        <div className="absolute inset-0 border-4 border-amber-100 rounded-full" />
-                        <div className="absolute inset-0 border-4 border-amber-400 rounded-full border-t-transparent animate-spin" />
+                        <div className="absolute inset-0 border-4 border-primary/10 rounded-full" />
+                        <div className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin" />
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <FileText className="w-7 h-7 text-amber-400" />
+                            <FileText className="w-7 h-7 text-primary" />
                         </div>
                     </div>
 
-                    <h2 className="text-2xl font-extrabold text-gray-900 mb-3">
+                    <h2 className="text-2xl font-extrabold text-foreground mb-3">
                         Génération du PDF
                     </h2>
-                    <p className="text-sm text-gray-400 mb-8">
+                    <p className="text-sm text-muted-foreground mb-8">
                         Le script Python traite votre document Cerfa.<br />
                         Cela peut prendre quelques secondes.
                     </p>
@@ -344,8 +344,8 @@ function PdfProcessingOverlay() {
                                     i < step
                                         ? "text-green-500"
                                         : i === step
-                                        ? "text-amber-500 font-semibold"
-                                        : "text-gray-300"
+                                        ? "text-primary font-semibold"
+                                        : "text-muted-foreground/30"
                                 }`}
                             >
                                 {i < step ? (
@@ -353,14 +353,14 @@ function PdfProcessingOverlay() {
                                 ) : i === step ? (
                                     <Loader2 className="w-4 h-4 flex-shrink-0 animate-spin" />
                                 ) : (
-                                    <span className="w-4 h-4 flex-shrink-0 rounded-full border border-gray-200 inline-block" />
+                                    <span className="w-4 h-4 flex-shrink-0 rounded-full border border-border inline-block" />
                                 )}
                                 {s}
                             </li>
                         ))}
                     </ol>
 
-                    <p className="text-[11px] text-gray-300">Ne fermez pas cette fenêtre.</p>
+                    <p className="text-[11px] text-muted-foreground/50">Ne fermez pas cette fenêtre.</p>
                 </div>
             </div>
         </div>
@@ -382,29 +382,29 @@ function SuccessScreen({
 }) {
     return (
         <div className="flex-1 pt-32 pb-24 container mx-auto px-4 max-w-lg text-center" suppressHydrationWarning>
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 flex flex-col items-center">
-                <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-50">
+            <div className="bg-card rounded-3xl shadow-sm border border-border p-12 flex flex-col items-center">
+                <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-500/5">
                     <CheckCircle2 className="w-10 h-10 text-green-500" />
                 </div>
-                <h2 className="text-2xl font-extrabold text-gray-900 mb-3">
+                <h2 className="text-2xl font-extrabold text-foreground mb-3">
                     Votre PDF est prêt&nbsp;!
                 </h2>
-                <p className="text-gray-500 mb-8 text-sm">
-                    Le document <span className="font-semibold text-gray-700">{cerfa_name}</span> a
+                <p className="text-muted-foreground mb-8 text-sm">
+                    Le document <span className="font-semibold text-foreground/80">{cerfa_name}</span> a
                     été rempli et téléchargé automatiquement dans votre dossier de téléchargements.
                 </p>
 
                 <div className="flex flex-col gap-3 w-full">
                     <button
                         onClick={onReset}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold rounded-xl shadow-md hover:shadow-xl transition-all hover:-translate-y-0.5"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-md hover:shadow-xl transition-all hover:-translate-y-0.5"
                     >
                         <Download className="w-5 h-5" />
                         Remplir à nouveau
                     </button>
                     <button
                         onClick={onBack}
-                        className="text-sm font-medium text-gray-400 hover:text-gray-700 transition-colors flex items-center justify-center gap-2"
+                        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-2"
                     >
                         <ArrowLeft className="w-4 h-4" />
                         Retour à la liste des aides
@@ -537,7 +537,7 @@ function CerfaFormContent() {
             <div className="flex-1 pt-32 pb-24 container mx-auto px-4 md:px-6 max-w-5xl" suppressHydrationWarning>
                  <button
                     onClick={() => router.back()}
-                    className="flex items-center text-gray-400 hover:text-gray-900 mb-8 transition-colors font-medium text-sm gap-2"
+                    className="flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors font-medium text-sm gap-2"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Retour à la liste des documents
@@ -552,8 +552,8 @@ function CerfaFormContent() {
     if (loading) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center pt-32 pb-24" suppressHydrationWarning>
-                <Loader2 className="h-10 w-10 text-amber-400 animate-spin mb-4" />
-                <p className="text-gray-500 text-sm">Chargement des champs du formulaire…</p>
+                <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
+                <p className="text-foreground text-sm">Chargement des champs du formulaire…</p>
             </div>
         );
     }
@@ -561,12 +561,12 @@ function CerfaFormContent() {
     if (error && fields.length === 0) {
         return (
             <div className="flex-1 pt-32 pb-24 container mx-auto px-4 max-w-2xl text-center" suppressHydrationWarning>
-                <div className="bg-red-50 text-red-600 p-8 rounded-2xl border border-red-100 flex flex-col items-center gap-4">
+                <div className="bg-destructive/10 text-destructive p-8 rounded-2xl border border-destructive/20 flex flex-col items-center gap-4">
                     <AlertCircle className="w-8 h-8" />
                     <p className="font-medium">{error}</p>
                     <button
                         onClick={() => router.back()}
-                        className="px-6 py-2.5 bg-white rounded-xl shadow-sm font-medium hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm"
+                        className="px-6 py-2.5 bg-card rounded-xl shadow-sm font-medium hover:bg-muted border border-border text-foreground text-sm transition-colors"
                     >
                         ← Retour
                     </button>
@@ -603,20 +603,20 @@ function CerfaFormContent() {
                 {/* Back button */}
                 <button
                     onClick={() => router.back()}
-                    className="flex items-center text-gray-400 hover:text-gray-900 mb-8 transition-colors font-medium text-sm gap-2"
+                    className="flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors font-medium text-sm gap-2"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Retour à la liste des documents
                 </button>
 
                 {/* Header card */}
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-                    <div className="bg-gradient-to-r from-amber-400 to-amber-300 px-10 py-7 flex items-center gap-5">
-                        <div className="w-14 h-14 bg-white/30 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <div className="bg-card rounded-3xl shadow-sm border border-border overflow-hidden mb-6">
+                    <div className="bg-gradient-to-r from-primary to-primary/80 px-10 py-7 flex items-center gap-5">
+                        <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                             <FileText className="w-7 h-7 text-white" />
                         </div>
                         <div>
-                            <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">
+                            <p className="text-white/80 text-xs font-semibold uppercase tracking-widest mb-1">
                                 Formulaire Cerfa
                             </p>
                             <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-tight">
@@ -625,15 +625,15 @@ function CerfaFormContent() {
                         </div>
                     </div>
 
-                    <div className="px-10 py-4 bg-amber-50/60 border-t border-amber-100 flex items-center gap-2 text-xs text-amber-700 font-medium">
-                        <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+                    <div className="px-10 py-4 bg-primary/5 border-t border-primary/10 flex items-center gap-2 text-xs text-primary/80 font-medium">
+                        <span className="w-2 h-2 rounded-full bg-primary inline-block" />
                         {fields.length} champ{fields.length > 1 ? "s" : ""} détecté{fields.length > 1 ? "s" : ""} dans ce document PDF
                     </div>
                 </div>
 
                 {/* Error banner (non-fatal) */}
                 {error && (
-                    <div className="mb-6 px-5 py-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm">
+                    <div className="mb-6 px-5 py-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center gap-3 text-destructive text-sm">
                         <AlertCircle className="w-5 h-5 flex-shrink-0" />
                         {error}
                     </div>
@@ -642,8 +642,8 @@ function CerfaFormContent() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* ── Text fields ─────────────────────────────────────── */}
                     {textItems.length > 0 && (
-                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
-                            <h2 className="text-lg font-extrabold text-gray-900 mb-6 border-l-4 border-amber-400 pl-4 py-1">
+                        <div className="bg-card rounded-3xl shadow-sm border border-border p-8 md:p-10">
+                            <h2 className="text-lg font-extrabold text-foreground mb-6 border-l-4 border-primary pl-4 py-1">
                                 Informations textuelles
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -661,8 +661,8 @@ function CerfaFormContent() {
 
                     {/* ── Radio groups ─────────────────────────────────────── */}
                     {radioItems.length > 0 && (
-                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
-                            <h2 className="text-lg font-extrabold text-gray-900 mb-6 border-l-4 border-amber-400 pl-4 py-1">
+                        <div className="bg-card rounded-3xl shadow-sm border border-border p-8 md:p-10">
+                            <h2 className="text-lg font-extrabold text-foreground mb-6 border-l-4 border-primary pl-4 py-1">
                                 Choix &amp; sélections
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -680,8 +680,8 @@ function CerfaFormContent() {
 
                     {/* ── Checkboxes ────────────────────────────────────────── */}
                     {checkboxItems.length > 0 && (
-                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
-                            <h2 className="text-lg font-extrabold text-gray-900 mb-6 border-l-4 border-amber-400 pl-4 py-1">
+                        <div className="bg-card rounded-3xl shadow-sm border border-border p-8 md:p-10">
+                            <h2 className="text-lg font-extrabold text-foreground mb-6 border-l-4 border-primary pl-4 py-1">
                                 Cases à cocher
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -704,8 +704,8 @@ function CerfaFormContent() {
                             disabled={submitting}
                             className={`flex items-center gap-3 px-10 py-5 rounded-2xl font-extrabold text-base shadow-lg transition-all ${
                                 submitting
-                                    ? "bg-amber-300/70 text-gray-500 cursor-not-allowed"
-                                    : "bg-amber-400 hover:bg-amber-500 text-gray-900 hover:shadow-xl hover:-translate-y-0.5"
+                                    ? "bg-primary/50 text-muted-foreground cursor-not-allowed"
+                                    : "bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-xl hover:-translate-y-0.5"
                             }`}
                         >
                             {submitting ? (
@@ -734,7 +734,7 @@ function CerfaFormContent() {
 export default function FormulaireCerfaPage() {
     return (
         <main
-            className="min-h-screen bg-[#F9FAFB] text-foreground flex flex-col"
+            className="min-h-screen bg-background text-foreground flex flex-col"
             suppressHydrationWarning
         >
             <div suppressHydrationWarning>
@@ -743,8 +743,8 @@ export default function FormulaireCerfaPage() {
             <Suspense
                 fallback={
                     <div className="flex-1 flex flex-col items-center justify-center pt-32 pb-24">
-                        <Loader2 className="h-12 w-12 text-amber-400 animate-spin mb-6" />
-                        <p className="text-gray-500 font-medium text-lg">
+                        <Loader2 className="h-12 w-12 text-primary animate-spin mb-6" />
+                        <p className="text-muted-foreground font-medium text-lg">
                             Préparation du formulaire…
                         </p>
                     </div>
