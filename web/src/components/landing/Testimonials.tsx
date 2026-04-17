@@ -19,8 +19,8 @@ const testimonials = [
     },
     {
         name: "Pierre",
-        role: "Agriculteur bio",
-        content: "Grâce à PhoBee, j'ai pu bénéficier d'aides que je ne connaissais même pas. Mon comptable est impressionné par la qualité des documents générés.",
+        role: "Vigneron",
+        content: "Le suivi des aides à la restructuration du vignoble est un vrai casse-tête. PhoBee m'a permis de tout centraliser et de ne rien oublier.",
         stars: 5,
         image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pierre"
     }
@@ -33,7 +33,7 @@ export default function Testimonials() {
                 <div className="text-center mb-20">
                     <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6">
                         Déjà + de 500 <br className="md:hidden" />
-                        entrepreneurs accompagnés
+                        agriculteurs accompagnés
                     </h2>
                     <p className="text-lg text-slate-500 dark:text-white max-w-2xl mx-auto uppercase tracking-wider font-semibold">
                         Et ils en parlent mieux que nous
@@ -71,6 +71,14 @@ export default function Testimonials() {
                             </p>
                         </div>
                     ))}
+                </div>
+            </div>
+            {/* Yellow Social Proof Bar */}
+            <div className="bg-[#FFCC00] py-4 mt-20">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#0F172A] tracking-tight">
+                        Ils nous ont fait <span className="bg-white px-3 py-1 rounded-md ml-1">confiance</span>
+                    </h2>
                 </div>
             </div>
         </section>
