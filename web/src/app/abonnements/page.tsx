@@ -153,4 +153,4 @@ export default function AbonnementsPage() {
             <Footer />
         </main>
     );
-}
+}

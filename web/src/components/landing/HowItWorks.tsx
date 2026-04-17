@@ -53,6 +53,7 @@ export default function HowItWorks() {
                     {/* Header */}
                     <div className="text-left mb-8 max-w-4xl pt-4">
                         <h2 className="text-4xl md:text-5xl font-extrabold text-[#0F172A] dark:text-white mb-2 leading-tight">
+
                             Une plateforme qui vous guide, <br />
                             <span className="relative inline-block">
                                 étape par étape
@@ -274,6 +275,7 @@ export default function HowItWorks() {
                                 <div>
                                     <h5 className="font-extrabold text-slate-900 dark:text-white text-sm">Sécurité Maximale</h5>
                                     <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-tight">
+
                                         Vos données restent cryptées sur votre téléphone. On ne vend rien.
                                     </p>
                                 </div>

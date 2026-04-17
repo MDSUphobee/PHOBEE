@@ -12,7 +12,7 @@ export default function FAQPage() {
 
         <div className="container mx-auto py-12 max-w-3xl">
             <Navbar/>
-            <h1 className="text-3xl font-bold mb-8 text-center">Questions Fréquentes</h1>
+            <h1 className="text-3xl font-bold mb-8 mt-16 text-center">Questions Fréquentes</h1>
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">
                     <AccordionTrigger>Comment Phobee détecte-t-il mes aides ?</AccordionTrigger>
