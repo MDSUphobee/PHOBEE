@@ -19,8 +19,8 @@ export default function Navbar() {
 
     // Future proper links, anchors for now as requested
     const navLinks = [
-        { name: "L'abonnement", href: "/abonnements" },
-        { name: "Le dictionnaire de l'entrepreneur", href: "/dictionary" },
+        { name: "Notre tarif", href: "/abonnements" },
+        { name: "Le dictionnaire de l'agriculteur", href: "/dictionary" },
         { name: "FAQ", href: "/faq" },
         { name: "Contact", href: "/contact" },
     ];

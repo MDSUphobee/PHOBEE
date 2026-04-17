@@ -178,10 +178,10 @@ export default function DictionaryPage() {
                             <BookOpen className="w-5 h-5 text-[#FFCC00]" />
                             <span className="text-sm font-medium text-[#FFCC00] uppercase tracking-wider">Le Dico-Décodeur Phobee (V1)</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-6">Maîtrisez le langage de l'administration.</h1>
+                        <h1 className="text-4xl md:text-5xl font-bold mb-6">Maîtrisez le langage agricole et administratif.</h1>
                         <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-                            Simplifiez vos démarches grâce à notre lexique exhaustif.
-                            De l'abattement fiscal à la TVA, nous décryptons pour vous chaque terme technique avec clarté.
+                            Simplifiez vos démarches grâce à notre lexique exhaustif pensé pour votre exploitation.
+                            De la PAC à la MSA, nous décryptons pour vous chaque terme technique avec clarté.
                         </p>
 
                         {/* Search Bar */}

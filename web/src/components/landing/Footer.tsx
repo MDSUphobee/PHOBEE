@@ -74,7 +74,7 @@ export default function Footer() {
                             />
                         </Link>
                         <p className="text-white text-xs md:text-sm leading-relaxed max-w-xs mx-auto sm:mx-0">
-                            L'assistant administratif intelligent pensé pour les micro-entrepreneurs.
+                            L'assistant administratif intelligent pensé pour les agriculteurs.
                         </p>
                     </div>
 

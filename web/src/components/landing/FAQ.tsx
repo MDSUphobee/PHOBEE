@@ -60,19 +60,19 @@ export default function FAQ() {
     const faqs = [
         {
             q: "La plateforme prend-elle en compte ma situation spécifique ?",
-            a: "Oui, Phobee s'adapte à votre code APE et votre régime fiscal. Le radar à aides scanne uniquement ce qui est pertinent pour vous."
+            a: "Oui, PhoBee s'adapte à votre type d'exploitation (Cultures, Élevage, Viticulture) et votre forme juridique (EARL, GAEC, etc.). Le radar à aides scanne uniquement ce qui est pertinent pour vous."
         },
         {
-            q: "Mes données sont-elles partagées ?",
-            a: "Jamais. Vos données sont chiffrées sur votre téléphone et nos serveurs sécurisés. Nous ne vendons aucune donnée à des tiers."
+            q: "Mes données sont-elles sécurisées ?",
+            a: "Absolument. Vos données d'exploitation sont chiffrées. Nous savons à quel point le secret professionnel et la confidentialité sont importants dans le monde agricole."
         },
         {
-            q: "Les documents sont-ils conformes et officiels ?",
-            a: "Tous nos modèles (factures, devis, contrats) sont mis à jour régulièrement par des juristes pour garantir leur conformité légale."
+            q: "Les documents sont-ils conformes ?",
+            a: "Tous nos modèles de CERFA et contrats sont mis à jour régulièrement par des experts en droit rural pour garantir leur conformité totale."
         },
         {
-            q: "Puis-je résilier quand je veux ?",
-            a: "Oui, sans aucun frais ni délai. L'abonnement est sans engagement."
+            q: "Quel est le coût pour mon exploitation ?",
+            a: "Nous fonctionnons au résultat : vous ne payez un pourcentage que sur les subventions effectivement perçues. Pour les CERFA, le tarif est fixe selon la complexité."
         }
     ];
 
