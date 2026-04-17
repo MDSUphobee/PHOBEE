@@ -50,8 +50,8 @@ export default function HowItWorks() {
                 <div className="container mx-auto px-4 md:px-6">
 
                     {/* Header */}
-                    <div className="text-left mb-8 max-w-4xl pt-4">
-                        <h2 className="text-3xl md:text-5xl font-extrabold text-[#0F172A] dark:text-white mb-2 leading-tight">
+                    <div className="text-left max-w-4xl pt-4 mt-2">
+                        <h2 className="text-3xl md:text-5xl mb-8 font-extrabold text-[#0F172A] dark:text-white leading-tight">
                             Une plateforme qui vous guide, <br />
                             <span className="relative inline-block">
                                 étape par étape
@@ -289,8 +289,8 @@ export default function HowItWorks() {
                                     <Shield className="w-5 h-5 text-slate-900 dark:text-white" />
                                 </div>
                                 <div>
-                                    <h5 className="font-extrabold text-slate-900 dark:text-white text-base">Sécurité Maximale</h5>
-                                    <p className="text-xs text-slate-500 dark:text-white mt-1 leading-tight">
+                                    <h5 className="font-extrabold text-slate-900  text-base">Sécurité Maximale</h5>
+                                    <p className="text-xs text-slate-500  mt-1 leading-tight">
                                         Vos données restent cryptées sur votre téléphone. On ne vend rien.
                                     </p>
                                 </div>

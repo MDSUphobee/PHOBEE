@@ -223,12 +223,12 @@ export default function DictionaryPage() {
                                             {section.definitions.map((item, index) => (
                                                 <div
                                                     key={index}
-                                                    className="group bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:border-[#FFCC00]/50 hover:shadow-md transition-all duration-300"
+                                                    className="group bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 hover:border-[#FFCC00]/50 hover:shadow-md transition-all duration-300"
                                                 >
-                                                    <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-[#FFCC00] transition-colors">
+                                                    <h3 className="text-xl font-bold text-slate-400 mb-2 group-hover:text-[#FFCC00] transition-colors ">
                                                         {item.term}
                                                     </h3>
-                                                    <p className="text-slate-600 leading-relaxed">
+                                                    <p className="text-slate-600 leading-relaxed dark:text-red-500">
                                                         {item.definition}
                                                     </p>
                                                 </div>

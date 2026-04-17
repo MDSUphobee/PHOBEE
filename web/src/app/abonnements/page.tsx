@@ -64,7 +64,7 @@ export default function AbonnementsPage() {
                                     Uniquement si vous dépassez <br />
                                     <strong>1 000€ d'aides perçues / an</strong>.
                                 </p>
-                                <Link href="/signup">
+                                <Link href="/radar-aides">
                                     <Button className="w-full h-14 text-lg font-bold bg-[#FFD700] hover:bg-[#FFD700]/90 text-slate-900 rounded-full">
                                         Commencer maintenant
                                     </Button>

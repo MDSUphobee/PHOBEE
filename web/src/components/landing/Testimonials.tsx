@@ -19,8 +19,8 @@ const testimonials = [
     },
     {
         name: "Pierre",
-        role: "Restaurateur",
-        content: "Le calendrier et les rappels sont indispensables. On voit tout d'un coup d'œil, sans stress.",
+        role: "Agriculteur bio",
+        content: "Grâce à PhoBee, j'ai pu bénéficier d'aides que je ne connaissais même pas. Mon comptable est impressionné par la qualité des documents générés.",
         stars: 5,
         image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pierre"
     }

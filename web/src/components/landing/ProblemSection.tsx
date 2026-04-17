@@ -63,7 +63,7 @@ export default function ProblemSection() {
                         <div className="space-y-6">
                             {/* Item 1 - Dark */}
                             <div className="flex items-center gap-4">
-                                <span className="bg-[#0F172A] text-white px-4 py-2 rounded-md font-bold text-sm transform -rotate-1 shadow-md">
+                                <span className="bg-[#0F172A] dark:bg-slate-600 text-white px-4 py-2 rounded-md font-bold text-sm transform -rotate-1 shadow-md">
                                     Des dates importantes oubliées
                                 </span>
                             </div>
