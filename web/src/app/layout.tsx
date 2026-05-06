@@ -8,7 +8,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { CookieBanner } from "@/components/CookieBanner";
 import Script from "next/script";
-import { GaPageView } from "@/components/analytics/GaPageView";
+import GaPageView from "@/components/analytics/GaPageView";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
