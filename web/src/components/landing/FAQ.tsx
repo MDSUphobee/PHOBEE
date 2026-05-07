@@ -1,3 +1,4 @@
+// web/src/components/landing/FAQ.tsx
 "use client";
 
 import { useState } from "react";
@@ -84,13 +85,28 @@ export default function FAQ() {
                 <div className="flex flex-col gap-14">
                     {faqCategories.map((cat, ci) => (
                         <div key={ci}>
-                            {/* Category header */}
-                            <div className="mb-5">
-                                <div className="text-3xl font-extrabold text-[#FFD700] uppercase tracking-wide leading-none">
-                                    {cat.category}
-                                </div>
-                                <div className="text-xl font-extrabold text-slate-900 dark:text-white leading-snug">
-                                    {cat.subtitle}
+                            {/* Category header (modifié pour décalage) */}
+                            <div className="mb-8">
+                                <div className="pl-0 md:pl-0">
+                                    {/* Titre Jaune */}
+                                    <div className="text-3xl font-extrabold text-[#FFD700] uppercase tracking-wide leading-none -ml-4 md:-ml-24">
+                                        {cat.category}
+                                    </div>
+
+                                    {/* Sous-titre Noir */}
+                                    <div
+                                        style={{
+                                            color: "#000",
+                                            fontFamily: "Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+                                            fontSize: "24px",
+                                            fontStyle: "normal",
+                                            fontWeight: 700,
+                                            lineHeight: "26px",
+                                        }}
+                                        className="ml-1 md:-ml-4 mt-1"
+                                    >
+                                        {cat.subtitle}
+                                    </div>
                                 </div>
                             </div>
 
@@ -103,7 +119,7 @@ export default function FAQ() {
                                         <div key={key}>
                                             <button
                                                 onClick={() => toggle(key)}
-                                                className={`w-full flex items-center justify-between px-5 py-4 rounded-xl text-left transition-all duration-200 ${
+                                                className={`w-full flex items-center justify-between px-5 py-4 rounded-3xl text-left transition-all duration-200 ${
                                                     isOpen
                                                         ? "bg-[#0F172A] text-white shadow-md"
                                                         : "bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm border border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-500"
@@ -131,7 +147,7 @@ export default function FAQ() {
                                                         transition={{ duration: 0.22, ease: "easeInOut" }}
                                                         className="overflow-hidden"
                                                     >
-                                                        <div className="mt-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-4 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                                                        <div className="mt-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-3xl px-5 py-4 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
                                                             {faq.a.split("\n\n").map((para, pi) => (
                                                                 <p key={pi} className={pi > 0 ? "mt-3" : ""}>
                                                                     {para}
@@ -155,7 +171,7 @@ export default function FAQ() {
                         Vous avez d&apos;autres questions ?
                     </h3>
                     <Link href="/contact">
-                        <button className="rounded-full px-8 py-3 bg-[#FFD700] text-slate-900 font-bold hover:bg-[#FFC000] shadow-lg hover:shadow-xl transition-all text-base">
+                        <button className="rounded-full px-8 py-2 bg-[#FFD700] text-slate-900 font-bold hover:bg-[#FFC000] shadow-lg hover:shadow-xl transition-all text-base">
                             Contactez-nous
                         </button>
                     </Link>
