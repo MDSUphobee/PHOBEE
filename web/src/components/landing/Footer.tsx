@@ -83,7 +83,6 @@ export default function Footer() {
                         id="services"
                         title="Nos services"
                         links={[
-                            { name: "Générer une facture", href: "/facture" },
                             { name: "Profil", href: "/profile" },
                         ]}
                     />

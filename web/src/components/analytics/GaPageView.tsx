@@ -1,33 +1,54 @@
-"use client";
+// typescript
+'use client';
 
-import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
-declare global {
-    interface Window {
-        gtag?: (...args: any[]) => void;
-    }
-}
-
-export function GaPageView() {
+export default function GaPageView(): null {
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const search = searchParams?.toString() ?? "";
 
     useEffect(() => {
-        if (!GA_ID) return;
-        if (typeof window === "undefined") return;
-        if (typeof window.gtag !== "function") return;
+        if (!GA_ID && !GTM_ID) return;
 
-        const url = search ? `${pathname}?${search}` : pathname;
+        // ensure dataLayer exists
+        if (typeof window !== 'undefined') {
+            (window as any).dataLayer = (window as any).dataLayer || [];
+        }
 
-        window.gtag("event", "page_view", {
-            page_location: window.location.href,
-            page_path: url,
-        });
-    }, [pathname, search]);
+        // prefer gtag if available, fallback to pushing to dataLayer
+        const sendPageView = () => {
+            if (typeof window === 'undefined') return;
+
+            // setTimeout ensures Next.js has updated the document.title after navigation
+            setTimeout(() => {
+                const page_path = window.location.pathname + window.location.search;
+                const page_location = window.location.href;
+                const page_title = document.title;
+
+                if (typeof (window as any).gtag === 'function') {
+                    (window as any).gtag('event', 'page_view', {
+                        page_path,
+                        page_location,
+                        page_title,
+                    });
+                } else {
+                    (window as any).dataLayer.push({
+                        event: 'page_view',
+                        page_path,
+                        page_location,
+                        page_title,
+                    });
+                }
+            }, 150);
+        };
+
+        // send once on mount / pathname change
+        sendPageView();
+    }, [pathname, searchParams]);
 
     return null;
 }

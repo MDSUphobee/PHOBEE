@@ -3,6 +3,13 @@ import Navbar from "@/components/landing/Navbar";
 import Login from "@/components/auth/Login";
 import Footer from "@/components/landing/Footer";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Connexion | Phobee",
+    description: "Connectez-vous à votre espace Phobee.",
+};
+
 function LoginContent() {
     return (
         <main className="min-h-screen bg-white">

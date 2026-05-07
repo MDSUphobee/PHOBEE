@@ -79,10 +79,6 @@ export default function DashboardPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {/* Link to a future documents page, using /facture for now as placeholder or creating new */}
-                        {/*<Link href="/facture">
-                            <Button variant="outline" className="w-full">Générer un document</Button>
-                        </Link>*/}
                         <Button variant="outline" className="w-full" disabled>
                             À venir
                         </Button>

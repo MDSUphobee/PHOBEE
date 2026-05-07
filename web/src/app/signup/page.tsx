@@ -3,6 +3,13 @@ import Navbar from "@/components/landing/Navbar";
 import Signup from "@/components/auth/Signup";
 import Footer from "@/components/landing/Footer";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Inscription | Phobee",
+    description: "Créez votre compte Phobee et gérez vos démarches administratives.",
+};
+
 function SignupContent() {
     return (
         <main className="min-h-screen bg-white">
