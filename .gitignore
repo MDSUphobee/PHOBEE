@@ -40,4 +40,4 @@ dist-ssr
 .env.test.local.backup.3
 .env.test.local.backup.4
 
-.antigravity
+.antigravityweb/.env

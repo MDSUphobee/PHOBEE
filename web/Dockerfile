@@ -12,11 +12,13 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# --- CRUCIAL POUR NEXT.JS ---
-# On définit les arguments de build pour les variables NEXT_PUBLIC
+# Les variables NEXT_PUBLIC_* sont figées dans le build :
+# elles viennent du .env à la racine via docker-compose (args)
 ARG NEXT_PUBLIC_API_BASE
+ARG NEXT_PUBLIC_APP_ENV
 ENV NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
@@ -24,8 +26,8 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -38,6 +40,6 @@ COPY --from=builder /app/package.json ./package.json
 USER nextjs
 
 EXPOSE 3000
-ENV PORT 3000
+ENV PORT=3000
 
 CMD ["npm", "start"]
