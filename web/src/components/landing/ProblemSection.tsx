@@ -6,6 +6,7 @@ export default function ProblemSection() {
     return (
         <section className="py-24 md:py-32 bg-[#F9FAFB] dark:bg-slate-900/50 overflow-hidden">
             <div className="container mx-auto px-4 md:px-6">
+                <div className="relative rounded-[24px] md:rounded-[32px] bg-[#deeefc] dark:bg-slate-800/40 px-6 py-14 md:px-12 md:py-16 lg:px-16">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
 
                     {/* ── LEFT: Image with floating labels ── */}
@@ -50,16 +51,6 @@ export default function ProblemSection() {
                             Du temps perdu loin de votre métier
                         </motion.div>
 
-                        {/* Label: Peur de faire une erreur — white, bottom-right */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.5 }}
-                            className="absolute bottom-[6%] right-[-0.5rem] md:right-[-1rem] bg-white text-slate-900 font-extrabold px-4 py-2 rounded-md shadow-xl border border-slate-100 transform rotate-1 z-20 text-sm whitespace-nowrap"
-                        >
-                            Peur de faire une erreur administrative
-                        </motion.div>
                     </div>
 
                     {/* ── RIGHT: Title + labels ── */}
@@ -106,6 +97,7 @@ export default function ProblemSection() {
 
                     </div>
 
+                </div>
                 </div>
             </div>
         </section>

@@ -5,34 +5,13 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UnderNavbar from "@/components/ui/under_navbar";
+import Highlight from "@/components/ui/highlight";
 
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrgnkdqj";
 
 // Champs "pilule" réutilisés dans les deux formulaires (fidèle à la maquette Figma).
 const pillBase =
     "w-full h-[53px] rounded-full bg-[#f4faff] dark:bg-slate-900 border border-slate-400 dark:border-slate-700 px-6 text-base text-foreground placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition";
-
-// Surligneur façon feutre (jaune = accent principal, bleu = accent doux).
-function Highlight({
-    children,
-    variant = "yellow",
-}: {
-    children: React.ReactNode;
-    variant?: "yellow" | "blue";
-}) {
-    return (
-        <span
-            className={cn(
-                "rounded-md px-1.5 box-decoration-clone font-semibold",
-                variant === "yellow"
-                    ? "bg-primary text-[#0f1729]"
-                    : "bg-[#deeefc] text-[#0f1729] dark:bg-sky-400/20 dark:text-foreground"
-            )}
-        >
-            {children}
-        </span>
-    );
-}
 
 export default function ContactContent() {
     const [method, setMethod] = useState<"phone" | "video">("phone");
@@ -61,11 +40,11 @@ export default function ContactContent() {
             <section className="relative container mx-auto px-4 md:px-6 mt-14 md:mt-20">
                 <div className="max-w-4xl">
                     <p className="text-lg md:text-2xl leading-relaxed text-foreground">
-                        Vous avez <Highlight variant="blue">des questions</Highlight> sur vos
+                        Vous avez <Highlight variant="marker" color="blue">des questions</Highlight> sur vos
                         démarches administratives&nbsp;?
                         <br />
                         Contactez-nous,{" "}
-                        <Highlight variant="yellow">on vous explique tout simplement.</Highlight>
+                        <Highlight variant="marker" color="yellow">on vous explique tout simplement.</Highlight>
                     </p>
 
                     <form
@@ -107,9 +86,9 @@ export default function ContactContent() {
                     Parlez directement avec nous
                 </h2>
                 <p className="text-lg md:text-2xl leading-relaxed text-foreground">
-                    En <Highlight variant="blue">15&nbsp;minutes,</Highlight> nous pouvons&nbsp;: répondre à
+                    En <Highlight variant="marker" color="blue">15&nbsp;minutes,</Highlight> nous pouvons&nbsp;: répondre à
                     vos questions, vous expliquer comment on vous simplifie la vie, et même{" "}
-                    <Highlight variant="yellow">créer votre compte avec vous&nbsp;!</Highlight>
+                    <Highlight variant="marker" color="yellow">créer votre compte avec vous&nbsp;!</Highlight>
                 </p>
 
                 <div className="mt-10 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">

@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Zap, Bell, Check, FileText, Shield, Calendar, AlertCircle } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
+import Highlight from "@/components/ui/highlight";
 
 export default function HowItWorks() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -55,11 +56,7 @@ export default function HowItWorks() {
                         <h2 className="text-4xl md:text-5xl font-extrabold text-[#0F172A] dark:text-white mb-2 leading-tight">
 
                             Une plateforme qui vous guide, <br />
-                            <span className="relative inline-block">
-                                étape par étape
-                                {/* Highlight bg */}
-                                <span className="absolute bottom-2 left-0 w-full h-5 bg-[#FFD700] -z-10 opacity-100"></span>
-                            </span>
+                            <Highlight>étape par étape</Highlight>
                         </h2>
                     </div>
 
