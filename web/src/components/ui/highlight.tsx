@@ -1,22 +1,18 @@
+"use client";
+
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
 type HighlightProps = {
     children: React.ReactNode;
-    /**
-     * "underline" (défaut) : barre jaune derrière le bas du texte — pour les titres (ex. Hero).
-     * "marker" : fond plein façon surligneur, le texte passe par-dessus — pour le corps de texte (ex. Contact).
-     */
     variant?: "underline" | "marker";
-    /** Couleur du surlignage (utilisé surtout par le variant "marker"). */
     color?: "yellow" | "blue";
-    /** Inclinaison du surlignage en degrés (0 = droit, ex. -2 pour un effet feutre). */
     angle?: number;
     className?: string;
 };
 
-// Composant partagé de surlignage (jaune charte). Centralise les deux styles
-// utilisés dans le site pour éviter de répéter les <span> absolus à la main.
+type Bar = { left: number; top: number; width: number; height: number };
+
 export default function Highlight({
     children,
     variant = "underline",
@@ -25,6 +21,47 @@ export default function Highlight({
     className,
 }: HighlightProps) {
     const tilt = angle ? { transform: `rotate(${angle}deg)` } : undefined;
+
+    const wrapperRef = React.useRef<HTMLSpanElement>(null);
+    const textRef = React.useRef<HTMLSpanElement>(null);
+    const [bars, setBars] = React.useState<Bar[]>([]);
+
+    React.useEffect(() => {
+        if (variant !== "underline") return;
+        const wrap = wrapperRef.current;
+        const text = textRef.current;
+        if (!wrap || !text) return;
+
+        const measure = () => {
+            const wrapRect = wrap.getBoundingClientRect();
+            const lines = Array.from(text.getClientRects());
+            setBars(
+                lines.map((r) => {
+                    const height = Math.max(3, r.height * 0.18);
+                    return {
+                        left: r.left - wrapRect.left,
+                        top: r.bottom - wrapRect.top - height - 2,
+                        width: r.width,
+                        height,
+                    };
+                })
+            );
+        };
+
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(wrap);
+        window.addEventListener("resize", measure);
+        // La largeur du texte change une fois les polices web chargées.
+        if (typeof document !== "undefined" && document.fonts?.ready) {
+            document.fonts.ready.then(measure).catch(() => {});
+        }
+
+        return () => {
+            ro.disconnect();
+            window.removeEventListener("resize", measure);
+        };
+    }, [children, variant, angle]);
 
     if (variant === "marker") {
         return (
@@ -46,19 +83,29 @@ export default function Highlight({
         );
     }
 
-    // variant "underline" : barre jaune derrière le bas du mot
+    // variant "underline"
+    const barColorClass = color === "blue" ? "bg-[#deeefc]" : "bg-[#FFCC00]";
+
     return (
-        <span className="relative inline-block">
-            {children}
-            <span
-                aria-hidden
-                style={tilt}
-                className={cn(
-                    "absolute bottom-[2px] left-0 w-full h-[25%] -z-10 origin-left",
-                    color === "blue" ? "bg-[#deeefc]" : "bg-[#FFCC00]",
-                    className
-                )}
-            />
+        <span ref={wrapperRef} className="relative inline-block">
+            {/* Le texte passe au-dessus des barres (z-[1]) */}
+            <span ref={textRef} className="relative z-[1]">
+                {children}
+            </span>
+            {bars.map((b, i) => (
+                <span
+                    key={i}
+                    aria-hidden
+                    className={cn("absolute origin-left pointer-events-none rounded-[1px]", barColorClass, className)}
+                    style={{
+                        left: b.left,
+                        top: b.top,
+                        width: b.width,
+                        height: b.height,
+                        transform: tilt?.transform,
+                    }}
+                />
+            ))}
         </span>
     );
 }
