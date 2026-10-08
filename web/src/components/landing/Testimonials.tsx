@@ -73,14 +73,6 @@ export default function Testimonials() {
                     ))}
                 </div>
             </div>
-            {/* Yellow Social Proof Bar */}
-            <div className="bg-[#FFCC00] py-4 mt-20">
-                <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-                        Ils nous ont fait <span className="bg-white px-3 py-1 rounded-md ml-1">confiance</span>
-                    </h2>
-                </div>
-            </div>
         </section>
     );
 }

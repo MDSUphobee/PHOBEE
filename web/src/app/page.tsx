@@ -30,9 +30,9 @@ export default function Home() {
             {showLoader && <LoadingOverlay speed={loaderSpeed} />}
             <Navbar />
             <Hero />
-            {/* <SocialProof /> */}
             <ProblemSection />
             <HowItWorks />
+            <SocialProof />
             <Testimonials />
             <FAQ />
             <Footer />

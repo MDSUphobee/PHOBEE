@@ -1,23 +1,31 @@
 "use client";
 
+const logos = [
+    { src: "/images/trusted_customers/customer-trust-1.png", alt: "La Ferme aux Granges" },
+    { src: "/images/trusted_customers/customer-trust-2.png", alt: "Le Troglo" },
+    { src: "/images/trusted_customers/customer-trust-3.png", alt: "Le Mail" },
+    { src: "/images/trusted_customers/customer-trust-4.png", alt: "Anthony Coiffure" },
+    { src: "/images/trusted_customers/customer-trust-5.png", alt: "Ferme du Domaine" },
+];
+
 export default function SocialProof() {
     return (
-        <section className="py-16 bg-[#FFD700] text-slate-900 border-y border-amber-400">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="text-center md:text-left">
-                        <p className="text-xl md:text-2xl font-extrabold font-heading">
-                            Ils nous ont fait <span className="bg-white px-2 py-1 rounded-sm inline-block transform -rotate-2 shadow-sm border border-slate-900">confiance</span>
-                        </p>
-                    </div>
+        <section className="bg-[#FFCC00]">
+            <div className="container mx-auto px-4 md:px-6 py-10 md:py-12">
+                <h2 className="text-center text-2xl md:text-[28px] font-extrabold text-[#0F172A] font-heading tracking-tight">
+                    Ils nous ont fait{" "}
+                    <span className="bg-white px-3 py-1 rounded-lg ml-1 inline-block">confiance</span>
+                </h2>
 
-                    <div className="flex flex-wrap justify-center md:justify-end gap-x-12 gap-y-8 opacity-90 mix-blend-multiply">
-                        {/* Placeholder Logos with text for now as we don't have SVG assets */}
-                        <div className="text-2xl font-black font-serif opacity-80 uppercase tracking-widest text-slate-900">La Ferme des Granges</div>
-                        <div className="text-2xl font-black font-mono tracking-tighter opacity-80 text-slate-900">LE MAIL</div>
-                        <div className="text-2xl font-black font-sans italic opacity-80 text-slate-900">Anthony Coiffure</div>
-                        <div className="text-2xl font-black font-serif uppercase tracking-widest opacity-80 text-slate-900">Ferme du Domaine</div>
-                    </div>
+                <div className="mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 md:gap-x-16 lg:gap-x-20">
+                    {logos.map((logo) => (
+                        <img
+                            key={logo.src}
+                            src={logo.src}
+                            alt={logo.alt}
+                            className="h-14 md:h-[68px] w-auto max-w-[170px] object-contain"
+                        />
+                    ))}
                 </div>
             </div>
         </section>
