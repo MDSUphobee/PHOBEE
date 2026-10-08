@@ -15,6 +15,9 @@ interface UnderNavbarProps {
     dimensions?: Dimensions;
     showSearch?: boolean;
     highlightText?: string | string[]; // accepte une string ou un tableau de strings
+    titleSize?: string; // ex. "64px" — override la taille du titre
+    subtitleSize?: string; // ex. "64px" — override la taille du sous-titre
+    highlightAngle?: number; // inclinaison du surligneur en degrés (0 = droit)
 }
 
 export default function UnderNavbar({
@@ -24,6 +27,9 @@ export default function UnderNavbar({
                                         dimensions,
                                         highlightText,
                                         showSearch = false,
+                                        titleSize = "96px",
+                                        subtitleSize = "48px",
+                                        highlightAngle = -1,
                                     }: UnderNavbarProps) {
     // Base height utilisée comme référence pour le scaling
     const baseBannerHeight = 392;
@@ -60,7 +66,7 @@ export default function UnderNavbar({
         textAlign: "center",
         textShadow: "0 4px 10px rgba(0, 0, 0, 0.29)",
         fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-        fontSize: "48px",
+        fontSize: subtitleSize,
         fontStyle: "normal",
         fontWeight: 700,
         lineHeight: "148%",
@@ -120,7 +126,7 @@ export default function UnderNavbar({
                   height: "25%",
                   backgroundColor: "#FFCC00",
                   zIndex: 0,
-                  transform: "rotate(-1deg) scaleX(1)",
+                  transform: `rotate(${highlightAngle}deg) scaleX(1)`,
                   transformOrigin: "left center",
                   borderRadius: "4px",
               }}
@@ -172,7 +178,7 @@ export default function UnderNavbar({
                                     textShadow: "0 4px 10px rgba(0, 0, 0, 0.29)",
                                     fontFamily:
                                         "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-                                    fontSize: "96px",
+                                    fontSize: titleSize,
                                     fontStyle: "normal",
                                     fontWeight: 700,
                                     lineHeight: "110%",
