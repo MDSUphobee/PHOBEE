@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── View Transition : bascule dark/light en révélation circulaire ─── */
+/* On neutralise le cross-fade par défaut ; le cercle est animé en JS (ThemeProvider). */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+/* L'ancien thème reste dessous, le nouveau se révèle par-dessus via le clip-path. */
+::view-transition-old(root) {
+    z-index: 0;
+}
+::view-transition-new(root) {
+    z-index: 1;
+}
+
 @layer base {
   :root {
     --background: 248 71% 98%; /* #F8FAFC (Slate-50) */

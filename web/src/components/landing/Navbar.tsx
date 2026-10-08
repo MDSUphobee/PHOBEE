@@ -20,7 +20,7 @@ export default function Navbar() {
     // Future proper links, anchors for now as requested
     const navLinks = [
         { name: "Notre tarif", href: "/abonnements" },
-        { name: "Le dictionnaire de l'agriculteur", href: "/dictionary" },
+        { name: "Le dictionnaire de l'entrepreneur", href: "/dictionary" },
         { name: "FAQ", href: "/faq" },
         { name: "Contact", href: "/contact" },
     ];
@@ -28,15 +28,15 @@ export default function Navbar() {
     return (
         <>
             <header suppressHydrationWarning={true} className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-                <div suppressHydrationWarning={true} className="absolute inset-0 bg-[#0F172A] border-b border-white/10 shadow-sm" />
+                <div suppressHydrationWarning={true} className="absolute inset-0 bg-[#14233c] backdrop-blur-[6px] border-b-[0.8px] border-[rgba(30,41,59,0.6)] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
 
                 <div suppressHydrationWarning={true} className="relative container mx-auto px-4 md:px-6 h-[80px] flex items-center gap-10">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
                         <img
-                            src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-ToutBlanc.svg"
+                            src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Noir.svg"
                             alt="Logo Phobee"
-                            className="h-24 md:h-32 w-auto transition-transform duration-300 group-hover:scale-105"
+                            className="h-32 md:h-44 w-auto transition-transform duration-300 group-hover:scale-105"
                         />
                     </Link>
 
@@ -46,7 +46,7 @@ export default function Navbar() {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-sm font-medium text-white hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full"
+                                className="text-sm font-medium text-[#e2e8f0] hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full"
                             >
                                 {link.name}
                             </Link>
@@ -56,9 +56,9 @@ export default function Navbar() {
                     {/* Desktop CTA */}
                     <div className="hidden md:flex items-center gap-4 ml-auto">
                         <button
-                            onClick={toggleTheme}
+                            onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
                             aria-label="Basculer le thème"
-                            className="p-2 rounded-full border border-white/10 bg-white/5 text-white hover:text-primary transition-all shadow-sm"
+                            className="p-2 rounded-full border border-[#334155] bg-[rgba(30,41,59,0.8)] text-white hover:text-primary transition-all shadow-sm"
                         >
                             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                         </button>
@@ -73,13 +73,13 @@ export default function Navbar() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2 text-sm font-medium text-white hover:text-primary transition-colors"
+                                    className="px-4 py-2 text-base font-medium text-[#f8fafc] hover:text-primary transition-colors"
                                 >
                                     Se connecter
                                 </Link>
                                 <Link
                                     href="/signup"
-                                    className="px-6 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
+                                    className="px-6 py-2.5 bg-primary text-primary-foreground text-base font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
                                 >
                                     S'inscrire
                                 </Link>
@@ -141,7 +141,7 @@ export default function Navbar() {
 
                                 <div className="mt-auto pt-6 border-t border-white/10 flex flex-col gap-4">
                                     <button
-                                        onClick={toggleTheme}
+                                        onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
                                         className="w-full py-3 flex items-center justify-center gap-2 text-sm font-medium border border-white/10 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
                                     >
                                         {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
