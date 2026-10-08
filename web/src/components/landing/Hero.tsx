@@ -7,12 +7,12 @@ import Highlight from "@/components/ui/highlight";
 
 export default function Hero() {
     return (
-        <section className="relative pt-28 md:pt-44 pb-32 lg:pb-40 overflow-x-clip bg-[#F9FAFB] dark:bg-slate-900/50">
+        <section className="relative pt-28 md:pt-44 pb-16 lg:pb-20 overflow-x-clip bg-[#F9FAFB] dark:bg-slate-900/50">
             {/* Yellow radial gradient bottom-right */}
             <div className="absolute bottom-0 right-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_bottom_right,_#FEF3C7_0%,_transparent_60%)] -z-20 pointer-events-none" />
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
-                <div className="grid lg:grid-cols-[55%_45%] gap-16 lg:gap-8 items-center">
+                <div className="grid lg:grid-cols-[55%_45%] lg:gap-8 items-center">
 
                     {/* ═══════════════ ZONE 1 — Bloc texte ═══════════════ */}
                     <div data-zone="texte">
@@ -128,7 +128,7 @@ export default function Hero() {
                             {/* ── Badge certification (bas gauche, incliné) — visible partout ── */}
                             <div className="absolute -bottom-10 -left-2 lg:-bottom-16 lg:left-6 z-30 -rotate-12">
                                 <img
-                                    src="/images/badge-conforme-exigence.png"
+                                    src="/images/badge-conforme-exigence.svg"
                                     className="w-[105px] h-[105px] lg:w-[130px] lg:h-[130px] object-contain drop-shadow-xl"
                                     alt="Badge certifié"
                                 />
