@@ -10,7 +10,12 @@ const logos = [
 
 export default function SocialProof() {
     return (
-        <section className="bg-[#FFCC00]">
+        <section className="relative z-20 bg-[#FFCC00] lg:-mt-[140px]">
+            <img
+                src="/images/badge-modifiable-tout-moment.svg"
+                alt=""
+                className="absolute right-[2em] -top-[3em] size-[8em] rotate-12"
+            />
             <div className="container mx-auto px-4 md:px-6 py-10 md:py-12">
                 <h2 className="text-center text-2xl md:text-[28px] font-extrabold text-[#0F172A] font-heading tracking-tight">
                     Ils nous ont fait{" "}

@@ -41,3 +41,9 @@ dist-ssr
 .env.test.local.backup.4
 
 .antigravityweb/.env
+
+# Config Docker locale (hot-reload / ports exposés) — ne pas partager
+docker-compose.override.yml
+
+# Cache de build TypeScript (généré, local)
+*.tsbuildinfo
