@@ -41,3 +41,7 @@ dist-ssr
 .env.test.local.backup.4
 
 .antigravityweb/.env
+
+
+.claude/
+/.claude/
