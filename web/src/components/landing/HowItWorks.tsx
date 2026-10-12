@@ -115,8 +115,6 @@ function ScreenReminder() {
 
 const SCREENS: ComponentType[] = [ScreenForm, ScreenRadar, ScreenFilling, ScreenReminder];
 
-// TODO: Placer le téléphone sous la barre "ils nous font confiances" et le pivoter légérement comme sur Figma
-
 /* ═════════════════════ Téléphone (mis à l'échelle) ═════════════════════
  * Le téléphone est toujours dessiné en 300×600 puis réduit avec un scale()
  * pour remplir son conteneur. Résultat : le contenu est identique et
@@ -373,11 +371,11 @@ function MobileTimeline() {
 
             <div className="relative mx-auto mt-14 max-w-sm">
                 <SecurityCard />
-                <img
+                {/* <img
                     src="/images/badge-modifiable-tout-moment.svg"
                     alt=""
                     className="absolute -right-2 -top-10 size-20 rotate-12"
-                />
+                /> */}
             </div>
         </div>
     );
@@ -420,74 +418,76 @@ function DesktopTimeline() {
                 <div className="container mx-auto px-6">
                     <SectionTitle className="mb-8 max-w-4xl text-5xl" />
 
-                    <div className="flex items-center justify-between gap-8">
-                        {/* ── Timeline ── */}
-                        <div className="relative w-3/5">
-                            <div className="absolute left-[5%] right-[5%] top-10 border-t-2 border-dotted border-slate-300 dark:border-slate-700" />
+                    {/* ── Timeline (étapes) — occupe la gauche, le téléphone est ancré au bas de la section ── */}
+                    <div className="relative w-3/5">
+                        <div className="absolute left-[5%] right-[5%] top-10 border-t-2 border-dotted border-slate-300 dark:border-slate-700" />
 
-                            <motion.img
-                                src="/images/abeille.png"
-                                alt=""
-                                aria-hidden
-                                className="pointer-events-none absolute top-2 z-30 -ml-8 w-16 drop-shadow-xl"
-                                style={{ left: beeX, y: beeY, rotate: 12 }}
-                            />
+                        <motion.img
+                            src="/images/abeille.png"
+                            alt=""
+                            aria-hidden
+                            className="pointer-events-none absolute top-2 z-30 -ml-8 w-16 drop-shadow-xl"
+                            style={{ left: beeX, y: beeY, rotate: 12 }}
+                        />
 
-                            <div className="grid grid-cols-4 gap-8">
-                                {STEPS.map((step, i) => {
-                                    const isCurrent = active === i;
-                                    return (
-                                        <button
-                                            key={step.title}
-                                            type="button"
-                                            onClick={() => scrollToStep(i)}
-                                            aria-current={isCurrent ? "step" : undefined}
-                                            className="group relative flex flex-col items-center rounded-xl text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD700]"
+                        <div className="grid grid-cols-4 gap-8">
+                            {STEPS.map((step, i) => {
+                                const isCurrent = active === i;
+                                return (
+                                    <button
+                                        key={step.title}
+                                        type="button"
+                                        onClick={() => scrollToStep(i)}
+                                        aria-current={isCurrent ? "step" : undefined}
+                                        className="group relative flex flex-col items-center rounded-xl text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD700]"
+                                    >
+                                        <span
+                                            className={cn(
+                                                "z-20 mb-6 grid size-20 place-items-center rounded-full border-[3px] bg-white text-3xl shadow-lg transition-all duration-300 dark:bg-slate-900",
+                                                isCurrent
+                                                    ? "scale-110 border-[#FFD700] text-slate-900 dark:text-white"
+                                                    : "border-slate-200 text-slate-400 group-hover:border-slate-300 dark:border-slate-700"
+                                            )}
                                         >
-                                            <span
-                                                className={cn(
-                                                    "z-20 mb-6 grid size-20 place-items-center rounded-full border-[3px] bg-white text-3xl shadow-lg transition-all duration-300 dark:bg-slate-900",
-                                                    isCurrent
-                                                        ? "scale-110 border-[#FFD700] text-slate-900 dark:text-white"
-                                                        : "border-slate-200 text-slate-400 group-hover:border-slate-300 dark:border-slate-700"
-                                                )}
-                                            >
-                                                {i + 1}
-                                            </span>
-                                            <h3 className="mb-2 min-h-[3rem] text-sm font-bold leading-tight text-[#0F172A] dark:text-white">
-                                                {step.title}
-                                            </h3>
-                                            <p className="mx-auto max-w-[150px] text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                                                {step.desc}
-                                            </p>
-                                        </button>
-                                    );
-                                })}
-                            </div>
+                                            {i + 1}
+                                        </span>
+                                        <h3 className="mb-2 min-h-[3rem] text-sm font-bold leading-tight text-[#0F172A] dark:text-white">
+                                            {step.title}
+                                        </h3>
+                                        <p className="mx-auto max-w-[150px] text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                                            {step.desc}
+                                        </p>
+                                    </button>
+                                );
+                            })}
                         </div>
+                    </div>
+                </div>
 
-                        {/* ── Téléphone ── */}
-                        <div className="relative flex w-2/5 justify-center" style={{ perspective: 1000 }}>
-                            <Phone
-                                active={active}
-                                className="z-10 h-[min(600px,72vh)]"
-                            />
+                {/* ── Téléphone — ancré au bas de la section (bottom-0), à droite.
+                 * Son bas est donc toujours au niveau du haut de la barre jaune, quelle
+                 * que soit la hauteur d'écran : la barre (SocialProof) remonte par-dessus
+                 * et le téléphone « passe dessous », comme sur la maquette. ── */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10">
+                    <div className="container mx-auto flex justify-end px-6">
+                        <div className="relative" style={{ perspective: 1000 }}>
+                            <Phone active={active} className="h-[min(600px,72vh)] rotate-[7deg]" />
 
                             <motion.div
                                 initial={{ opacity: 0, x: -20, y: 20 }}
                                 whileInView={{ opacity: 1, x: 0, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.5 }}
-                                className="absolute bottom-[10%] -left-12 z-20 max-w-[260px]"
+                                className="absolute bottom-[26%] -left-[15em] z-20 max-w-[260px]"
                             >
                                 <SecurityCard />
                             </motion.div>
 
-                            <img
+                            {/* <img
                                 src="/images/badge-modifiable-tout-moment.svg"
                                 alt=""
-                                className="absolute -right-8 top-[80%] z-30 size-24 rotate-12"
-                            />
+                                className="absolute -right-8 top-[52%] z-30 size-24 rotate-12"
+                            /> */}
                         </div>
                     </div>
                 </div>
