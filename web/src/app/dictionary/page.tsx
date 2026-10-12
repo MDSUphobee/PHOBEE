@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import { Search, BookOpen } from "lucide-react";
+import UnderNavbar from "@/components/ui/under_navbar";
 
 interface Definition {
     term: string;
@@ -152,99 +153,83 @@ const DICTIONARY_DATA: LetterSection[] = [
     }
 ];
 
+const LETTRES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
 export default function DictionaryPage() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [lettre, setLettre] = useState("A");
 
-    const filteredData = DICTIONARY_DATA.map(section => ({
-        ...section,
-        definitions: section.definitions.filter(def =>
-            def.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            def.definition.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    })).filter(section => section.definitions.length > 0);
+    const q = searchTerm.trim().toLowerCase();
+    // Recherche : on cherche dans toutes les lettres ; sinon on affiche la lettre choisie.
+    const definitions = DICTIONARY_DATA
+        .filter((s) => q || s.letter === lettre)
+        .flatMap((s) => s.definitions)
+        .filter((d) => !q || d.term.toLowerCase().includes(q) || d.definition.toLowerCase().includes(q));
 
     return (
-        <main className="min-h-screen bg-background flex flex-col mt-16">
+        <>
             <Navbar />
-
-            <div className="flex-grow">
-                {/* Hero Section */}
-                <div className="bg-[#0F172A] text-white py-16 md:py-24 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0F172A]"></div>
-
-                    <div className="container mx-auto px-4 md:px-8 relative z-10 text-center">
-                        <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/10">
-                            <BookOpen className="w-5 h-5 text-[#FFCC00]" />
-                            <span className="text-sm font-medium text-[#FFCC00] uppercase tracking-wider">Le Dico-Décodeur Phobee (V1)</span>
-                        </div>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-6">Maîtrisez le langage agricole et administratif.</h1>
-                        <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-                            Simplifiez vos démarches grâce à notre lexique exhaustif pensé pour votre exploitation.
-                            De la PAC à la MSA, nous décryptons pour vous chaque terme technique avec clarté.
-                        </p>
-
-                        {/* Search Bar */}
-                        <div className="max-w-xl mx-auto relative">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <Search className="h-5 w-5 text-slate-400" />
-                            </div>
-                            <input
-                                type="text"
-                                className="block w-full pl-11 pr-4 py-4 rounded-xl border-0 ring-1 ring-white/20 bg-white/10 backdrop-blur-md text-white placeholder:text-slate-400 focus:ring-2 focus:ring-[#FFCC00] focus:bg-white/20 transition-all shadow-lg"
-                                placeholder="Rechercher une définition (ex: SIRET, TVA...)"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
+            <UnderNavbar
+                imageSrc="/images/dictionnaire-hero.jpg"
+                title="Le lexique administratif,"
+                subtitle="sans prise de tête"
+                dimensions={{ width: "1439px", height: "392px" }}
+                highlightText={["sans prise de tête"]}
+                titleSize="clamp(32px, 7vw, 64px)"
+                subtitleSize="clamp(32px, 7vw, 64px)"
+                highlightAngle={-1}
+                showSearch
+                searchPlaceholder="Rechercher un mot..."
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+            />
+            <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background font-['Poppins',sans-serif] text-[#0f172a] dark:text-white">
+                <div className="dark:hidden pointer-events-none absolute bottom-0 left-1/2 h-[420px] w-[800px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
+                <div className="relative mx-auto max-w-[830px] px-4 md:px-6 md:[zoom:0.8] pt-12 pb-24">
+                    <p className="text-xl font-light leading-7">Trier par :</p>
+                    <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-x-3 gap-y-3 md:grid-cols-[repeat(13,48px)] md:justify-between" role="group" aria-label="Filtrer par lettre">
+                        {LETTRES.map((l) => {
+                            const vide = !DICTIONARY_DATA.some((s) => s.letter === l);
+                            const actif = !q && l === lettre;
+                            return (
+                                <button
+                                    key={l}
+                                    type="button"
+                                    disabled={vide}
+                                    aria-pressed={actif}
+                                    onClick={() => { setSearchTerm(""); setLettre(l); }}
+                                    className={`aspect-square w-full rounded-xl font-['Gowun_Dodum',sans-serif] text-2xl shadow-[0_10px_15px_-3px_rgba(234,179,8,0.2),0_4px_6px_-4px_rgba(234,179,8,0.2)] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 ${
+                                        actif ? "bg-[#14233c] text-white dark:bg-white dark:text-[#14233c]" : "bg-primary text-[#0f172a]"
+                                    }`}
+                                >
+                                    {l}
+                                </button>
+                            );
+                        })}
                     </div>
+
+                    <div className="mt-12 flex flex-col gap-6">
+                        {definitions.length === 0 ? (
+                            <p className="py-12 text-center text-lg">Aucune définition trouvée pour "{searchTerm}".</p>
+                        ) : (
+                            definitions.map((d) => (
+                                <article key={d.term} className="rounded-2xl border border-[#f1f5f9] bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                                    <h2 className="text-xl tracking-[-0.01em]">{d.term}</h2>
+                                    <p className="mt-3 font-['Gowun_Dodum',sans-serif] text-base leading-[26px] text-[#475569]">{d.definition}</p>
+                                </article>
+                            ))
+                        )}
+                    </div>
+
+                    <section className="flex flex-col items-center pt-24 text-center">
+                        <h2 className="text-[28px] leading-[1.25] text-[#14233c] dark:text-white md:text-[40px] md:leading-[52px]">Vous avez d'autres questions ?</h2>
+                        <Link href="/faq" className="mt-8 inline-flex h-10 items-center justify-center rounded-full bg-primary px-10 text-lg font-medium text-[#0f1729] transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                            Consulter toute la FAQ
+                        </Link>
+                    </section>
                 </div>
-
-                {/* Content Section */}
-                <div className="container mx-auto px-4 md:px-8 py-16">
-                    {filteredData.length === 0 ? (
-                        <div className="text-center py-12">
-                            <p className="text-slate-500 text-lg">Aucune définition trouvée pour "{searchTerm}".</p>
-                        </div>
-                    ) : (
-                        <div className="max-w-4xl mx-auto space-y-12">
-                            {filteredData.map((section) => (
-                                <div key={section.letter} className="relative">
-                                    <div className="flex flex-col md:flex-row gap-8">
-                                        {/* Letter Sticky */}
-                                        <div className="md:w-24 flex-shrink-0">
-                                            <div className="sticky top-24 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#FFCC00] text-slate-900 font-bold text-2xl shadow-lg shadow-yellow-500/20">
-                                                {section.letter}
-                                            </div>
-                                        </div>
-
-                                        {/* Definitions List */}
-                                        <div className="flex-1 space-y-6">
-                                            {section.definitions.map((item, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="group bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 hover:border-[#FFCC00]/50 hover:shadow-md transition-all duration-300"
-                                                >
-                                                    <h3 className="text-xl font-bold text-slate-400 mb-2 group-hover:text-[#FFCC00] transition-colors ">
-                                                        {item.term}
-                                                    </h3>
-                                                    <p className="text-slate-600 leading-relaxed dark:text-red-500">
-                                                        {item.definition}
-                                                    </p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    {/* Section Divider */}
-                                    <div className="mt-12 border-b border-slate-100"></div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-
+            </main>
             <Footer />
-        </main>
+        </>
     );
 }

@@ -18,6 +18,9 @@ interface UnderNavbarProps {
     titleSize?: string; // ex. "64px" — override la taille du titre
     subtitleSize?: string; // ex. "64px" — override la taille du sous-titre
     highlightAngle?: number; // inclinaison du surligneur en degrés (0 = droit)
+    searchPlaceholder?: string;
+    searchValue?: string; // si fourni avec onSearchChange, la recherche est contrôlée
+    onSearchChange?: (value: string) => void;
 }
 
 export default function UnderNavbar({
@@ -30,6 +33,9 @@ export default function UnderNavbar({
                                         titleSize = "96px",
                                         subtitleSize = "48px",
                                         highlightAngle = -1,
+                                        searchPlaceholder = "Rechercher une question...",
+                                        searchValue,
+                                        onSearchChange,
                                     }: UnderNavbarProps) {
     // Base height utilisée comme référence pour le scaling
     const baseBannerHeight = 392;
@@ -211,7 +217,8 @@ export default function UnderNavbar({
                                         <input
                                             type="search"
                                             aria-label="Rechercher"
-                                            placeholder="Rechercher une question..."
+                                            placeholder={searchPlaceholder}
+                                            {...(onSearchChange ? { value: searchValue ?? "", onChange: (e) => onSearchChange(e.target.value) } : {})}
                                             className="w-full pl-14 pr-4 py-3 rounded-full border border-white bg-transparent text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 transition"
                                         />
                                         <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hidden md:block" />

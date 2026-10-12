@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { saveUserQuestionnaireInfo } from "@/lib/user";
+import Highlight from "@/components/ui/highlight";
 
 
 
@@ -15,9 +16,11 @@ export default function SignupForm() {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
-        name: "",
+        nom: "",
+        prenom: "",
         phone: "",
     });
+    const [cgu, setCgu] = useState(false);
 
     // Récupérer les paramètres de redirection depuis l'URL
     const redirectPath = searchParams.get("redirect");
@@ -34,15 +37,14 @@ export default function SignupForm() {
     };
 
     const validate = () => {
-        if (!formData.email || !formData.password || !formData.name || !formData.phone) return false;
-        return true;
+        return !!(formData.email && formData.password && formData.nom && formData.prenom && formData.phone && cgu);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         if (!validate()) {
-            setError("Tous les champs sont requis.");
+            setError("Tous les champs sont requis et les conditions d'utilisation doivent être acceptées.");
             return;
         }
 
@@ -52,8 +54,11 @@ export default function SignupForm() {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify({
-                    ...formData,
-                    // nature_income_id: Number(formData.nature_income_id)
+                    // l'API attend un seul champ "name"
+                    name: `${formData.prenom} ${formData.nom}`.trim(),
+                    email: formData.email,
+                    password: formData.password,
+                    phone: formData.phone,
                 }),
             });
 
@@ -156,153 +161,55 @@ export default function SignupForm() {
         }
     };
 
+    const champ = "h-[53px] w-full rounded-full border border-[#94a3b8] bg-[#f4faff] dark:bg-slate-700 px-7 text-base text-[#14233c] dark:text-white placeholder:text-[#94a3b8] shadow-sm focus:outline-none focus:ring-2 focus:ring-primary";
+
     return (
-        <div className="min-h-screen w-full flex bg-background">
-            {/* Left Side - Form */}
-            <div className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12">
-                <div className="w-full max-w-2xl mx-auto">
-                    <Link
-                        href="/"
-                        className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 transition-colors mb-8"
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        <p className="text-slate-500 dark:text-slate-400">Retour à l'accueil</p>
-                    </Link>
+        <section className="mx-auto w-full max-w-[1290px] px-4 md:px-6 py-12 md:py-16 text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
+            <h2 className="text-[28px] md:text-4xl leading-[42px]">Créer mon compte</h2>
+            <p className="text-xl md:text-2xl leading-[42px]">
+                En <Highlight variant="marker" color="blue">1 minutes,</Highlight> seulement !
+            </p>
 
-                    <div className="mb-8">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-xl bg-[#FFCC00] flex items-center justify-center shadow-lg shadow-yellow-500/20">
-                                <span className="text-slate-900 font-bold text-xl">P</span>
-                            </div>
-                            <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">PhoBee</span>
-                        </div>
-                        <h1 className="text-3xl font-bold text-slate-900 mb-2 dark:text-slate-100">Créer un compte</h1>
-                        {redirectPath === "resultats" ? (
-                            <p className="text-slate-500 dark:text-slate-400">Créez un compte pour voir vos aides éligibles personnalisées.</p>
-                        ) : (
-                            <p className="text-slate-500 dark:text-slate-400">Commencez à gérer votre exploitation apicole dès aujourd'hui.</p>
-                        )}
-                    </div>
+            {error && (
+                <div role="alert" className="mt-6 max-w-[760px] rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+                    {error}
+                </div>
+            )}
 
-                    {error && (
-                        <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm">
-                            {error}
-                        </div>
+            <form onSubmit={handleSubmit} className="mt-8 max-w-[760px]" noValidate>
+                <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                    <input name="nom" aria-label="Votre nom" placeholder="Votre Nom" autoComplete="family-name" value={formData.nom} onChange={handleChange} className={champ} required />
+                    <input name="prenom" aria-label="Votre prénom" placeholder="Votre Prénom" autoComplete="given-name" value={formData.prenom} onChange={handleChange} className={champ} required />
+                    <input name="phone" type="tel" aria-label="Téléphone" placeholder="Téléphone" autoComplete="tel" value={formData.phone} onChange={handleChange} className={champ} required />
+                    <input name="email" type="email" aria-label="Adresse email" placeholder="Adresse Email" autoComplete="email" value={formData.email} onChange={handleChange} className={champ} required />
+                    <input name="password" type="password" aria-label="Mot de passe" placeholder="Mot de passe (8 caractères minimum)" autoComplete="new-password" value={formData.password} onChange={handleChange} className={`${champ} sm:col-span-2`} required />
+                </div>
+
+                <label className="mt-8 flex items-center gap-4 text-sm cursor-pointer">
+                    <input type="checkbox" checked={cgu} onChange={(e) => setCgu(e.target.checked)} className="size-6 rounded-[5px] border border-[#94a3b8] accent-[#0f172a]" />
+                    <Link href="/mentions-legales" target="_blank" className="underline underline-offset-4">J'accepte les conditions d'utilisation*</Link>
+                </label>
+
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="mt-8 inline-flex h-[53px] items-center justify-center rounded-full bg-[#0f172a] px-12 text-xl font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70 dark:bg-primary dark:text-[#0f172a]"
+                >
+                    {loading ? (
+                        <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Création du compte...
+                        </>
+                    ) : (
+                        "Créer mon compte"
                     )}
+                </button>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {/* Identifiants */}
-                            <div className="md:col-span-2">
-                                <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wider dark:text-slate-100">Identifiants</h3>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Nom d'utilisateur</label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                                        placeholder="Pseudo"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Téléphone</label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                                        placeholder="0600000000"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
-                                <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                                        placeholder="email@exemple.com"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Mot de passe</label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white transition-all outline-none text-slate-900 placeholder:text-slate-400"
-                                        placeholder="Minimum 8 caractères"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full mt-8 py-3 px-4 bg-[#FFCC00] hover:bg-[#E6B800] text-slate-900 font-semibold rounded-xl transition-all shadow-lg shadow-yellow-500/20 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                    Création du compte...
-                                </>
-                            ) : (
-                                "S'inscrire"
-                            )}
-                        </button>
-                    </form>
-
-                    <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
-                        Déjà un compte ?{" "}
-                        <Link href="/login" className="text-[#0F172A] font-semibold hover:underline dark:text-slate-100">
-                            Se connecter
-                        </Link>
-                    </p>
-                </div>
-            </div>
-
-            {/* Right Side - Visual */}
-            <div className="hidden lg:flex flex-1 bg-[#0F172A] relative overflow-hidden items-center justify-center p-12">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1478491527271-f4c0dcd14c5c?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-[#FFCC00]/10 to-transparent"></div>
-
-                <div className="relative z-10 text-center max-w-lg">
-                    <h2 className="text-4xl font-bold text-white mb-6 leading-tight">
-                        Votre exploitation connectée.
-                    </h2>
-                    <p className="text-slate-300 text-lg">
-                        Gérez toute votre activité apicole depuis une seule plateforme. Suivi, analyses et rapports automatisés.
-                    </p>
-                </div>
-            </div>
-        </div>
+                <p className="mt-6 text-sm">
+                    Déjà un compte ?{" "}
+                    <Link href="/login" className="font-semibold underline underline-offset-4">Se connecter</Link>
+                </p>
+            </form>
+        </section>
     );
 }

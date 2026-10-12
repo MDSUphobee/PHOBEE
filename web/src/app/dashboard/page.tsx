@@ -72,7 +72,7 @@ function Calendrier() {
     return (
         <Card className={`${carte} px-6 md:px-[46px] pt-11 pb-5`}>
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl">Calendrier</h2>
+                <Link href="/calendrier" className="text-2xl font-bold hover:text-[#b38f00] dark:hover:text-primary transition-colors">Calendrier</Link>
                 <div className="flex items-center gap-4">
                     <button onClick={() => setMois(new Date(y, m - 1, 1))} aria-label="Mois précédent" className="p-1 rotate-180 dark:invert">
                         <img src="/images/dashboard/chevron.svg" alt="" />
@@ -174,7 +174,7 @@ export default function DashboardPage() {
                                 </table>
                             </div>
                             <div className="flex h-[85px] items-center px-6 md:px-[54px]">
-                                <Link href="/radar-aides" className={lienSouligne}>Voir toutes mes aides</Link>
+                                <Link href="/mes-aides" className={lienSouligne}>Voir toutes mes aides</Link>
                             </div>
                         </Card>
                     </div>
@@ -201,7 +201,7 @@ export default function DashboardPage() {
                                 ))}
                             </ul>
                             <div className="flex h-[79px] items-center px-6 md:px-[54px]">
-                                <Link href="/radar-aides" className={lienSouligne}>Voir toutes mes aides</Link>
+                                <Link href="/mes-aides" className={lienSouligne}>Voir toutes mes aides</Link>
                             </div>
                         </Card>
                     </div>
