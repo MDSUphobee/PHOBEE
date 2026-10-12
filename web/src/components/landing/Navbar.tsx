@@ -78,7 +78,7 @@ export default function Navbar() {
                                     Se connecter
                                 </Link>
                                 <Link
-                                    href="/signup"
+                                    href="/inscription"
                                     className="px-6 py-2.5 bg-primary text-primary-foreground text-base font-semibold rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
                                 >
                                     S'inscrire
@@ -165,7 +165,7 @@ export default function Navbar() {
                                                 Se connecter
                                             </Link>
                                             <Link
-                                                href="/signup"
+                                                href="/inscription"
                                                 onClick={() => setIsOpen(false)}
                                                 className="w-full py-3 text-center font-bold text-slate-900 bg-primary rounded-xl"
                                             >
