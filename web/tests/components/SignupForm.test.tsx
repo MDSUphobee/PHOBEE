@@ -30,12 +30,11 @@ describe('<SignupForm />', () => {
   });
 
   it('shows error when required fields missing', async () => {
-    const user = userEvent.setup();
     const { container } = render(<SignupForm />);
 
     // user click on submit doesn't always trigger form submit in jsdom
     fireEvent.submit(container.querySelector('form')!);
-    expect(await screen.findByText('Tous les champs sont requis.')).toBeInTheDocument();
+    expect(await screen.findByText(/Tous les champs sont requis/)).toBeInTheDocument();
   });
 
   it('registers then auto-logins and redirects', async () => {
@@ -53,10 +52,12 @@ describe('<SignupForm />', () => {
       });
 
     const { container } = render(<SignupForm />);
-    await user.type(screen.getByPlaceholderText('Pseudo'), 'bob');
-    await user.type(screen.getByPlaceholderText('0600000000'), '0600000000');
-    await user.type(screen.getByPlaceholderText('email@exemple.com'), 'b@c.com');
-    await user.type(screen.getByPlaceholderText('Minimum 8 caractères'), 'secret');
+    await user.type(screen.getByLabelText('Votre nom'), 'Bob');
+    await user.type(screen.getByLabelText('Votre prénom'), 'Bobby');
+    await user.type(screen.getByLabelText('Téléphone'), '0600000000');
+    await user.type(screen.getByLabelText('Adresse email'), 'b@c.com');
+    await user.type(screen.getByLabelText('Mot de passe'), 'secret12');
+    await user.click(screen.getByRole('checkbox')); // accepter les CGU
     fireEvent.submit(container.querySelector('form')!);
 
     await waitFor(() => expect(push).toHaveBeenCalledWith('/profile'));

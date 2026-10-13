@@ -59,7 +59,7 @@ describe('<LoginForm />', () => {
     await user.type(screen.getByLabelText('Mot de passe'), 'secret');
     fireEvent.submit(container.querySelector('form')!);
 
-    await waitFor(() => expect(push).toHaveBeenCalledWith('/profile'));
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/dashboard'));
     expect(localStorage.getItem('token')).toBe('t1');
     expect(localStorage.getItem('user')).toContain('"id":1');
   });
