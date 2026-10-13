@@ -67,11 +67,13 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
             set -e
+            sudo chown -R debian:debian /var/www/dev_app_phobee
             cd /var/www/dev_app_phobee
             git fetch origin DEV
             git reset --hard origin/DEV
-            docker exec -u root phobee_nextjs_dev npm install
-            docker restart phobee_nextjs_dev
+            # Le conteneur web sert un build figé : il FAUT reconstruire l'image
+            # pour prendre en compte le nouveau code (un simple restart ne suffit pas).
+            docker compose up -d --build nextjs
 
   # Déploiement automatique sur la PROD quand on pousse sur PROD (après merge DEV -> PROD),
   # et seulement si le job "test" est vert. En prod on RE-BUILD l'image (NEXT_PUBLIC_* figé au build).
