@@ -10,11 +10,35 @@ import { useTheme } from "../ThemeProvider";
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [hidden, setHidden] = useState(false);
     const { theme, toggleTheme } = useTheme();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         setIsLoggedIn(!!token);
+    }, []);
+
+    // Masque la navbar quand on scrolle vers le bas (réapparaît en remontant) — surtout utile sur mobile
+    useEffect(() => {
+        let lastY = window.scrollY;
+
+        const onScroll = () => {
+            const currentY = window.scrollY;
+            // en haut de page : toujours visible
+            if (currentY < 80) {
+                setHidden(false);
+            } else if (currentY > lastY + 6) {
+                // on descend
+                setHidden(true);
+            } else if (currentY < lastY - 6) {
+                // on remonte
+                setHidden(false);
+            }
+            lastY = currentY;
+        };
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
     // Future proper links, anchors for now as requested
@@ -27,7 +51,14 @@ export default function Navbar() {
 
     return (
         <>
-            <header suppressHydrationWarning={true} className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+            <header
+                suppressHydrationWarning={true}
+                className={cn(
+                    "fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out",
+                    // caché seulement sur mobile ; sur md+ la navbar reste toujours visible
+                    hidden && !isOpen ? "-translate-y-full md:translate-y-0" : "translate-y-0"
+                )}
+            >
                 <div suppressHydrationWarning={true} className="absolute inset-0 bg-[#14233c] backdrop-blur-[6px] border-b-[0.8px] border-[rgba(30,41,59,0.6)] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
 
                 <div suppressHydrationWarning={true} className="relative container mx-auto px-4 md:px-6 h-[80px] flex items-center gap-10">

@@ -10,6 +10,7 @@ export default {
         slug: "mobile",
         version: "1.0.0",
         orientation: "portrait",
+        plugins: ["expo-status-bar"],
         icon: "./assets/icon.png",
         userInterfaceStyle: "light",
         newArchEnabled: true,

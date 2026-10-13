@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { CookieBanner } from "@/components/CookieBanner";
+import MobileBottomBar from "@/components/MobileBottomBar";
 import Script from "next/script";
 import GaPageView from "@/components/analytics/GaPageView";
 
@@ -100,6 +101,7 @@ export default function RootLayout({
 
             {children}
 
+            <MobileBottomBar />
             <Toaster richColors position="top-center" />
             <CookieBanner />
         </ThemeProvider>
