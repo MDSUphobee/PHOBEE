@@ -68,5 +68,5 @@ jobs:
             cd /var/www/dev_app_phobee
             git fetch origin DEV
             git reset --hard origin/DEV
-            docker exec phobee_nextjs_dev npm install
+            docker exec -u root phobee_nextjs_dev npm install
             docker restart phobee_nextjs_dev
