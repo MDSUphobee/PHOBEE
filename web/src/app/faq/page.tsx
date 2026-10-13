@@ -3,6 +3,7 @@ import React from "react";
 import Navbar from "@/components/landing/Navbar";
 import FAQ from "@/components/landing/FAQ";
 import UnderNavbar from "@/components/ui/under_navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 
 export default function FAQPage() {
@@ -17,6 +18,9 @@ export default function FAQPage() {
                 highlightText={["simplement"]}
                 showSearch={true}
             />
+            <div className="container mx-auto px-4 pt-8 md:px-6">
+                <Breadcrumb items={[{ label: "FAQ" }]} />
+            </div>
             <FAQ />
             <Footer />
         </div>

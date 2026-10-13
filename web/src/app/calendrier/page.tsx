@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Navbar from "@/components/landing/Navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import { Card } from "@/components/ui/card";
 
@@ -100,6 +101,7 @@ export default function CalendrierPage() {
 
                 {/* ponytail: zoom 0.8 comme le dashboard (maquette dessinée en grand) */}
                 <div className="relative container mx-auto px-4 md:px-6 [zoom:0.8] pt-32 md:pt-36 pb-24">
+                    <Breadcrumb items={[{ label: "Calendrier" }]} className="mb-8" />
                     <Card className={`${carte} px-5 pb-10 pt-8 md:px-[60px] md:pb-[67px] md:pt-[44px]`}>
                         <h1 className="text-[26px] font-bold leading-[26px] md:text-[32px]">Calendrier des démarches</h1>
                         <p className="mt-4 text-sm md:text-base">Retrouvez toutes vos échéances administratives et aides agricoles au même endroit.</p>

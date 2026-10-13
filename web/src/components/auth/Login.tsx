@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { saveUserQuestionnaireInfo } from "@/lib/user";
+import { getApiBase } from "@/lib/api";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -38,8 +39,9 @@ export default function LoginForm() {
         if (!validate()) return;
 
         setLoading(true);
+        const API_BASE = getApiBase();
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/login`, {
+            const res = await fetch(`${API_BASE}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -65,7 +67,7 @@ export default function LoginForm() {
             let user = data.user;
             if (!user) {
                 try {
-                    const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/user?email=${encodeURIComponent(email)}`, {
+                    const userRes = await fetch(`${API_BASE}/user?email=${encodeURIComponent(email)}`, {
                         method: "GET",
                         headers: {
                             "Accept": "application/json",
@@ -103,7 +105,7 @@ export default function LoginForm() {
             if (redirectPath === "resultats" && answersParam) {
                 router.push(`/resultats?answers=${answersParam}`);
             } else {
-                router.push("/profile");
+                router.push("/dashboard");
             }
 
             router.refresh();

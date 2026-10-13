@@ -33,14 +33,14 @@ export default function Hero() {
 
                             <div className="flex flex-wrap items-center gap-4 mt-8">
                                 <Link
-                                    href="/radar-aides"
+                                    href="/inscription"
                                     className="group inline-flex items-center gap-2 px-7 py-4 text-[15px] font-bold text-[#111827] bg-[#FFD700] rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
                                 >
                                     Commencer ensemble
                                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
                                 <Link
-                                    href="#how-it-works"
+                                    href="/faq"
                                     className="inline-flex items-center justify-center px-7 py-4 text-[15px] font-medium text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                 >
                                     Comment ça marche

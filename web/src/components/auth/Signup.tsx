@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { saveUserQuestionnaireInfo } from "@/lib/user";
+import { getApiBase } from "@/lib/api";
 import Highlight from "@/components/ui/highlight";
 
 
@@ -49,8 +50,9 @@ export default function SignupForm() {
         }
 
         setLoading(true);
+        const API_BASE = getApiBase();
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/register`, {
+            const res = await fetch(`${API_BASE}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify({
@@ -73,7 +75,7 @@ export default function SignupForm() {
 
             // succès : tentative de connexion automatique avec les éléments du register
             try {
-                const loginRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/login`, {
+                const loginRes = await fetch(`${API_BASE}/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -92,7 +94,7 @@ export default function SignupForm() {
                     let user = loginData?.user;
                     if (!user && loginData?.token) {
                         try {
-                            const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/user?email=${encodeURIComponent(formData.email)}`, {
+                            const userRes = await fetch(`${API_BASE}/user?email=${encodeURIComponent(formData.email)}`, {
                                 method: "GET",
                                 headers: {
                                     "Accept": "application/json",

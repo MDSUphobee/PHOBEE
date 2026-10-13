@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import { Card } from "@/components/ui/card";
+import { getApiBase } from "@/lib/api";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
+const API_BASE = getApiBase();
 
 const FORMES = ["EI", "EARL", "GAEC", "SCEA", "GFA", "CUMA", "SARL"];
 const PRODUCTIONS = ["Élevage", "Céréales", "Maraîchage", "Viticulture", "Arboriculture", "Polyculture-élevage"];
@@ -179,6 +181,7 @@ export default function ProfilePage() {
                 <div className="dark:hidden pointer-events-none absolute -right-[20%] top-[10%] h-[45%] w-[55%] rotate-[36deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 
                 <div className="relative container mx-auto px-4 md:px-6 md:[zoom:0.8] pt-32 md:pt-36 pb-24">
+                    <Breadcrumb items={[{ label: "Mon profil" }]} className="mb-8" />
                     {/* En-tête */}
                     <Card className={`${carte} flex max-w-[790px] items-center gap-5 px-6 py-5 md:gap-[17px] md:px-9`}>
                         <img src="/images/profil/avatar.jpg" alt="" className="size-[77px] shrink-0 rounded-full object-cover" />

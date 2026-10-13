@@ -52,8 +52,16 @@ export default function UnderNavbar({
     };
 
     const requestedHeightNum = parsePx(dimensions?.height, baseBannerHeight);
-    const titleMaxPx = parsePx(titleSize, 96);
-    const subtitleMaxPx = parsePx(subtitleSize, 48);
+
+    // Si on reçoit une taille simple en px (ex. "56px"), on la rend fluide via clamp().
+    // Si la taille est déjà fluide (ex. "clamp(...)"), on la respecte telle quelle.
+    const isPlainPx = (val?: string) => !!val && /^\d+(?:\.\d+)?px$/.test(val.trim());
+    const titleFontSize = isPlainPx(titleSize)
+        ? `clamp(1.75rem, 7.5vw, ${parsePx(titleSize, 96)}px)`
+        : titleSize;
+    const subtitleFontSize = isPlainPx(subtitleSize)
+        ? `clamp(0.95rem, 3.2vw, ${parsePx(subtitleSize, 48)}px)`
+        : subtitleSize;
 
     // On garde le style inline pour la largeur personnalisée si définie
     const containerStyle: React.CSSProperties = {
@@ -72,7 +80,7 @@ export default function UnderNavbar({
         textAlign: "center",
         textShadow: "0 4px 10px rgba(0, 0, 0, 0.29)",
         fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-        fontSize: `clamp(1.75rem, 7.5vw, ${titleMaxPx}px)`,
+        fontSize: titleFontSize,
         fontStyle: "normal",
         fontWeight: 700,
         lineHeight: 1.1,
@@ -84,7 +92,7 @@ export default function UnderNavbar({
         textAlign: "center",
         textShadow: "0 4px 10px rgba(0, 0, 0, 0.29)",
         fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-        fontSize: `clamp(0.95rem, 3.2vw, ${subtitleMaxPx}px)`,
+        fontSize: subtitleFontSize,
         fontStyle: "normal",
         fontWeight: 700,
         lineHeight: 1.4,

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import UnderNavbar from "@/components/ui/under_navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 
 interface Definition {
     term: string;
@@ -185,7 +186,8 @@ export default function DictionaryPage() {
             />
             <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background font-['Poppins',sans-serif] text-[#0f172a] dark:text-white">
                 <div className="dark:hidden pointer-events-none absolute bottom-0 left-1/2 h-[420px] w-[800px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
-                <div className="relative mx-auto max-w-[830px] px-4 md:px-6 md:[zoom:0.8] pt-12 pb-24">
+                <div className="relative mx-auto max-w-[830px] px-4 md:px-6 md:[zoom:0.8] pt-8 pb-24">
+                    <Breadcrumb items={[{ label: "Dictionnaire de l'entrepreneur" }]} className="mb-8" />
                     <p className="text-xl font-light leading-7">Trier par :</p>
                     <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-x-3 gap-y-3 md:grid-cols-[repeat(13,48px)] md:justify-between" role="group" aria-label="Filtrer par lettre">
                         {LETTRES.map((l) => {

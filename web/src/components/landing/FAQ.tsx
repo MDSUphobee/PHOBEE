@@ -83,13 +83,19 @@ export default function FAQ() {
                 </div>
 
                 {/* CTA : voir toute la FAQ (comme la maquette) */}
-                <div className="mt-12 text-center">
+                <div className="mt-12 flex flex-col items-center gap-4 text-center">
                     <Link
                         href="/faq"
                         className="inline-block rounded-full bg-[#FFCC00] px-7 py-3 text-lg font-medium text-[#0f1729] transition-all hover:bg-[#FFC000]"
                     >
                         Consulter toute la FAQ
                     </Link>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        Vous ne trouvez pas votre réponse ?{" "}
+                        <Link href="/contact" className="font-semibold text-[#344256] underline underline-offset-2 hover:text-[#14233c] dark:text-slate-200">
+                            Contactez-nous
+                        </Link>
+                    </p>
                 </div>
             </div>
         </section>

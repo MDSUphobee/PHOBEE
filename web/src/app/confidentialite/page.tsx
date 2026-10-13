@@ -1,5 +1,6 @@
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 
 export const metadata = {
     title: "Politique de confidentialité | Phobee",
@@ -117,7 +118,8 @@ export default function ConfidentialitePage() {
                 </div>
             </section>
 
-            <section className="container mx-auto flex-grow px-4 py-16 md:px-8">
+            <section className="container mx-auto flex-grow px-4 py-12 md:px-8">
+                <Breadcrumb items={[{ label: "Politique de confidentialité" }]} className="mx-auto mb-10 max-w-4xl" />
                 <div className="mx-auto grid max-w-4xl gap-8">
                     <Card title="Qui est responsable de vos données">
                         <p>

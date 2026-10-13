@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Navbar from "@/components/landing/Navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import SkeletonCard from "@/components/SkeletonCard";
 import { Search, FileText } from "lucide-react";
@@ -67,6 +68,7 @@ export default function RadarAides() {
             <Navbar />
 
             <div suppressHydrationWarning={true} className="flex-1 pt-[120px] pb-24 container mx-auto px-4 md:px-6">
+                <Breadcrumb items={[{ label: "Radar à documents" }]} className="mb-10" />
                 <div className="max-w-3xl mx-auto text-center mb-12">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-6">
                         Radar à <span className="text-primary">Documents</span>

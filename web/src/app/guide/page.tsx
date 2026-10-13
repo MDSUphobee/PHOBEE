@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Navbar from "@/components/landing/Navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import { AlertCircle, Lightbulb, ChevronDown, ChevronUp, Rocket, Landmark, ShieldCheck, BrainCircuit, Search } from "lucide-react";
 import Link from "next/link";
@@ -234,6 +235,9 @@ export default function SurvivalManualPage() {
 
             {/* Header */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 pb-12 pt-16 md:pt-24 px-4">
+                <div className="container mx-auto max-w-4xl">
+                    <Breadcrumb items={[{ label: "Guide de survie" }]} className="mb-8" />
+                </div>
                 <div className="container mx-auto max-w-4xl text-center">
                     <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFCC00]/15 text-[#af8c00] dark:text-[#FFD54F] text-xs font-bold tracking-wide uppercase mb-6">
                         Documentation Développeur

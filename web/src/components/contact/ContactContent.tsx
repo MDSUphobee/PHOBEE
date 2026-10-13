@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UnderNavbar from "@/components/ui/under_navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import Highlight from "@/components/ui/highlight";
 
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrgnkdqj";
@@ -37,7 +38,8 @@ export default function ContactContent() {
             />
 
             {/* SECTION 1 — Formulaire de contact */}
-            <section className="relative container mx-auto px-4 md:px-6 mt-14 md:mt-20">
+            <section className="relative container mx-auto px-4 md:px-6 mt-8 md:mt-12">
+                <Breadcrumb items={[{ label: "Contact" }]} className="mb-8 md:mb-10" />
                 <div className="max-w-4xl">
                     <p className="text-lg md:text-2xl leading-relaxed text-foreground">
                         Vous avez <Highlight variant="marker" color="blue">des questions</Highlight> sur vos

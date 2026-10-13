@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/landing/Navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import { toast } from "sonner";
 import { Calculator, Calendar, CreditCard, CheckCircle2, Loader2, Save } from "lucide-react";
@@ -150,7 +151,11 @@ export default function CalculateurPage() {
         <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans mt-16 text-slate-900 dark:text-slate-100">
             <Navbar />
 
-            <div className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
+            <div className="container mx-auto px-4 pt-24 md:pt-28">
+                <Breadcrumb items={[{ label: "Calculateur" }]} />
+            </div>
+
+            <div className="flex-grow container mx-auto px-4 pb-12 pt-6 flex items-start justify-center">
                 <div className="w-full max-w-2xl">
                     <div className="text-center mb-10">
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#FFCC00] text-slate-900 mb-6 shadow-lg shadow-yellow-500/20">

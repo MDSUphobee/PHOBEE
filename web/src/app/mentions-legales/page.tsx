@@ -1,5 +1,6 @@
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 
 export const metadata = {
     title: "Mentions légales | Phobee",
@@ -67,7 +68,8 @@ export default function MentionsLegalesPage() {
                 </div>
             </section>
 
-            <section className="container mx-auto px-4 md:px-8 py-16 flex-grow">
+            <section className="container mx-auto px-4 md:px-8 py-12 flex-grow">
+                <Breadcrumb items={[{ label: "Mentions légales" }]} className="mb-10" />
                 <div className="grid gap-10 max-w-4xl">
                     {sections.map(({ title, content }) => (
                         <div key={title} className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">

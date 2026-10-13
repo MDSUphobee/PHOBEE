@@ -2,6 +2,7 @@ import Link from "next/link";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import UnderNavbar from "@/components/ui/under_navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 
 const features = [
     { label: "Pré-remplissage guidé", className: "bg-[#FFCC00] text-[#14233c] rotate-[-1.2deg]" },
@@ -40,7 +41,9 @@ export default function AbonnementsPage() {
                 subtitleSize="20px"
             />
 
-            <div className="container mx-auto flex-grow px-4 pt-10 pb-20 md:px-6">
+            <div className="container mx-auto flex-grow px-4 pt-6 pb-20 md:px-6">
+                <Breadcrumb items={[{ label: "Nos tarifs" }]} className="mb-10" />
+
                 {/* ───────── Feature pills ───────── */}
                 <div className="mx-auto flex max-w-2xl flex-col items-center gap-4">
                     {features.map((f) => (
@@ -133,6 +136,16 @@ export default function AbonnementsPage() {
                             </p>
                         </div>
                     </div>
+                </div>
+
+                {/* ───────── CTA principal : commencer ───────── */}
+                <div className="mt-20 text-center">
+                    <Link
+                        href="/inscription"
+                        className="inline-block rounded-full bg-[#FFCC00] px-10 py-4 text-lg font-bold text-[#0f1729] shadow-md transition-all hover:-translate-y-0.5 hover:bg-[#FFC000] hover:shadow-lg"
+                    >
+                        Commencer maintenant
+                    </Link>
                 </div>
 
                 {/* ───────── CTA FAQ ───────── */}

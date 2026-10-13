@@ -4,6 +4,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import Navbar from "@/components/landing/Navbar";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import { Card } from "@/components/ui/card";
 
@@ -61,6 +62,7 @@ export default function MesAidesPage() {
                 <div className="dark:hidden pointer-events-none absolute -right-[20%] top-0 h-[45%] w-[55%] rotate-[34deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 
                 <div className="relative container mx-auto px-4 md:px-6 [zoom:0.8] pt-32 md:pt-36 pb-24">
+                    <Breadcrumb items={[{ label: "Mes aides" }]} className="mb-8" />
                     <Card className={`${carte} max-w-[790px] px-6 md:px-[46px] pt-8 pb-7`}>
                         <h1 className="text-[26px] md:text-[32px] leading-tight">Mes aides disponibles</h1>
                         <p className="mt-3">Remplissez vos informations pour découvrir les aides disponibles !</p>
