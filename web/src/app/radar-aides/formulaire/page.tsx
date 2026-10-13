@@ -6,6 +6,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import { ArrowLeft, Loader2, Download, CheckCircle2, AlertCircle, FileText } from "lucide-react";
 import Cerfa11423Form from "@/components/forms/Cerfa11423Form";
+import Cerfa16015Form from "@/components/forms/Cerfa16015Form";
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -19,6 +20,76 @@ interface CerfaField {
     value: string | null;
     /** Only present on /Btn fields */
     on_values?: string[];
+}
+
+/** Schéma métier renvoyé par l'API quand un mapper existe (is_business_schema) */
+interface BusinessField {
+    name: string; // chemin pointé, ex. "demandeur.siret" ou "associes.0.nom_prenom"
+    label: string;
+    type: string; // text | email | number | date | select | checkbox | textarea
+    options?: string[];
+}
+
+interface BusinessSchema {
+    form_title: string;
+    sections: { title: string; fields: BusinessField[] }[];
+}
+
+/** {"a.b": "x"} → {a: {b: "x"}} : format attendu par les mappers Laravel */
+function nestMapping(formData: Record<string, string>): Record<string, any> {
+    const out: Record<string, any> = {};
+    for (const [path, value] of Object.entries(formData)) {
+        if (value === "") continue;
+        const keys = path.split(".");
+        let node = out;
+        keys.slice(0, -1).forEach((k) => (node = node[k] ??= {}));
+        node[keys[keys.length - 1]] = value;
+    }
+    return out;
+}
+
+const humanize = (s: string) => s.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+
+const INPUT_CLASS =
+    "w-full px-4 py-3 rounded-xl border border-border bg-slate-100 dark:bg-slate-800/50 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-foreground text-sm placeholder:text-slate-500 dark:placeholder:text-slate-400";
+
+function BusinessInput({ field, value, onChange }: { field: BusinessField; value: string; onChange: (v: string) => void }) {
+    const id = `field-${field.name}`;
+
+    if (field.type === "checkbox") {
+        return (
+            <label htmlFor={id} className="flex items-center gap-3 text-sm font-medium text-foreground cursor-pointer select-none">
+                <input
+                    id={id}
+                    type="checkbox"
+                    checked={value === "true"}
+                    onChange={(e) => onChange(e.target.checked ? "true" : "false")}
+                    className="w-5 h-5 accent-primary"
+                />
+                {field.label}
+            </label>
+        );
+    }
+
+    return (
+        <div className={`flex flex-col space-y-1.5 ${field.type === "textarea" ? "md:col-span-2" : ""}`}>
+            <label htmlFor={id} className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {field.label}
+            </label>
+            {field.type === "select" ? (
+                <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS}>
+                    <option value="">—</option>
+                    {field.options?.map((o) => (
+                        <option key={o} value={o}>{humanize(o)}</option>
+                    ))}
+                </select>
+            ) : field.type === "textarea" ? (
+                <textarea id={id} rows={3} value={value} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS} />
+            ) : (
+                <input id={id} type={field.type} value={value} onChange={(e) => onChange(e.target.value)} className={INPUT_CLASS} />
+            )}
+        </div>
+    );
 }
 
 /** Fields sharing the same on_value (e.g. ["/Oui", "/Non"]) form a radio group */
@@ -425,6 +496,7 @@ function CerfaFormContent() {
     const cerfa_name   = searchParams.get("name") ?? "";
 
     const [fields,    setFields]    = useState<CerfaField[]>([]);
+    const [schema,    setSchema]    = useState<BusinessSchema | null>(null);
     const [loading,   setLoading]   = useState(true);
     const [error,     setError]     = useState("");
     const [formData,  setFormData]  = useState<Record<string, string>>({});
@@ -454,6 +526,11 @@ function CerfaFormContent() {
 
                 if (!res.ok || !json.success) {
                     throw new Error(json.message ?? json.error ?? `Erreur HTTP ${res.status}`);
+                }
+
+                if (json.is_business_schema && json.data?.sections?.length) {
+                    setSchema(json.data);
+                    return;
                 }
 
                 const data: CerfaField[] = Array.isArray(json.data) ? json.data : [];
@@ -490,7 +567,7 @@ function CerfaFormContent() {
         setSubmitting(true);
 
         try {
-            const mapping = buildMapping(formData, fields);
+            const mapping = schema ? nestMapping(formData) : buildMapping(formData, fields);
 
             const res = await fetch("/api/pdfs/fill", {
                 method:  "POST",
@@ -532,7 +609,10 @@ function CerfaFormContent() {
                          cerfa_name.includes("11423") || 
                          cerfa_name.toLowerCase().includes("déclaration de situation pour les prestations familiales");
 
-    if (isCerfa11423) {
+    const isCerfa16015 = cerfa_name.includes("16015") ||
+                         cerfa_name.toLowerCase().includes("relance de l'exploitation agricole");
+
+    if (isCerfa11423 || isCerfa16015) {
         return (
             <div className="flex-1 pt-32 pb-24 container mx-auto px-4 md:px-6 max-w-5xl" suppressHydrationWarning>
                  <button
@@ -542,7 +622,7 @@ function CerfaFormContent() {
                     <ArrowLeft className="w-4 h-4" />
                     Retour à la liste des documents
                 </button>
-                <Cerfa11423Form />
+                {isCerfa11423 ? <Cerfa11423Form /> : <Cerfa16015Form />}
             </div>
         );
     }
@@ -558,7 +638,7 @@ function CerfaFormContent() {
         );
     }
 
-    if (error && fields.length === 0) {
+    if (error && fields.length === 0 && !schema) {
         return (
             <div className="flex-1 pt-32 pb-24 container mx-auto px-4 max-w-2xl text-center" suppressHydrationWarning>
                 <div className="bg-destructive/10 text-destructive p-8 rounded-2xl border border-destructive/20 flex flex-col items-center gap-4">
@@ -582,6 +662,71 @@ function CerfaFormContent() {
                 onReset={() => { setSuccess(false); setError(""); }}
                 onBack={() => router.push("/radar-aides")}
             />
+        );
+    }
+
+    // ── Schéma métier (mapper côté API) ───────────────────────────────────────
+    if (schema) {
+        return (
+            <>
+                {submitting && <PdfProcessingOverlay />}
+                <div className="flex-1 pt-32 pb-24 container mx-auto px-4 md:px-6 max-w-5xl" suppressHydrationWarning>
+                    <button
+                        onClick={() => router.back()}
+                        className="flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors font-medium text-sm gap-2"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Retour à la liste des documents
+                    </button>
+
+                    <div className="bg-card rounded-3xl shadow-sm border border-border overflow-hidden mb-6">
+                        <div className="bg-gradient-to-r from-primary to-primary/80 px-10 py-7 flex items-center gap-5">
+                            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
+                                <FileText className="w-7 h-7 text-white" />
+                            </div>
+                            <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-tight">{schema.form_title}</h1>
+                        </div>
+                    </div>
+
+                    {error && (
+                        <div className="mb-6 px-5 py-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center gap-3 text-destructive text-sm">
+                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {schema.sections.map((section) => (
+                            <div key={section.title} className="bg-card rounded-3xl shadow-sm border border-border p-8 md:p-10">
+                                <h2 className="text-lg font-extrabold text-foreground mb-6 border-l-4 border-primary pl-4 py-1">
+                                    {section.title}
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    {section.fields.map((f) => (
+                                        <BusinessInput
+                                            key={f.name}
+                                            field={f}
+                                            value={formData[f.name] ?? ""}
+                                            onChange={(v) => handleChange(f.name, v)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+
+                        <div className="flex justify-end pt-2 pb-4">
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className="flex items-center gap-3 px-10 py-5 rounded-2xl font-extrabold text-base shadow-lg transition-all bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-xl hover:-translate-y-0.5 disabled:bg-primary/50 disabled:cursor-not-allowed"
+                            >
+                                <Download className="w-5 h-5" />
+                                Générer et télécharger le PDF
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </>
         );
     }
 
