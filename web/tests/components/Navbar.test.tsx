@@ -22,9 +22,9 @@ describe('<Navbar />', () => {
     expect(screen.getByRole('link', { name: "S'inscrire" })).toBeInTheDocument();
   });
 
-  it('shows dashboard CTA when logged in', async () => {
+  it('shows the Mon Espace menu when logged in', async () => {
     localStorage.setItem('token', 'test-token');
     renderNavbar();
-    expect(await screen.findByRole('link', { name: 'Mon Espace' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Mon Espace' })).toBeInTheDocument();
   });
 });

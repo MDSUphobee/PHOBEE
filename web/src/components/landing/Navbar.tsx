@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, Moon, Sun, X } from "lucide-react";
+import { ChevronDown, Menu, Moon, Sun, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "../ThemeProvider";
@@ -11,7 +11,36 @@ export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [hidden, setHidden] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
     const { theme, toggleTheme } = useTheme();
+
+    const espaceLinks = [
+        { name: "Mon profil", href: "/profile" },
+        { name: "Dashboard", href: "/dashboard" },
+        { name: "Calendrier", href: "/calendrier" },
+    ];
+
+    const logout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.assign("/");
+    };
+
+    // Ferme le menu "Mon espace" au clic extérieur / Échap
+    useEffect(() => {
+        if (!menuOpen) return;
+        const onClick = (e: MouseEvent) => {
+            if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+        };
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+        document.addEventListener("mousedown", onClick);
+        document.addEventListener("keydown", onKey);
+        return () => {
+            document.removeEventListener("mousedown", onClick);
+            document.removeEventListener("keydown", onKey);
+        };
+    }, [menuOpen]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -94,12 +123,41 @@ export default function Navbar() {
                             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                         </button>
                         {isLoggedIn ? (
-                            <Link
-                                href="/dashboard"
-                                className="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-                            >
-                                Mon Espace
-                            </Link>
+                            <div ref={menuRef} className="relative" onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)}>
+                                <button
+                                    onClick={() => setMenuOpen((o) => !o)}
+                                    aria-haspopup="menu"
+                                    aria-expanded={menuOpen}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                                >
+                                    Mon Espace
+                                    <ChevronDown className={cn("h-4 w-4 transition-transform", menuOpen && "rotate-180")} />
+                                </button>
+                                {menuOpen && (
+                                    <div className="absolute right-0 top-full w-56 pt-3">
+                                    <div role="menu" className="overflow-hidden rounded-2xl bg-white dark:bg-slate-800 py-2 shadow-[0_1px_10px_rgba(0,0,0,0.25)]">
+                                        {espaceLinks.map((l) => (
+                                            <Link
+                                                key={l.href}
+                                                href={l.href}
+                                                role="menuitem"
+                                                onClick={() => setMenuOpen(false)}
+                                                className="block px-5 py-2.5 text-sm font-medium text-[#14233c] dark:text-white hover:bg-[#deeefc] dark:hover:bg-slate-700 transition-colors"
+                                            >
+                                                {l.name}
+                                            </Link>
+                                        ))}
+                                        <button
+                                            role="menuitem"
+                                            onClick={logout}
+                                            className="block w-full border-t border-[#deeefc] dark:border-slate-700 px-5 py-2.5 text-left text-sm font-medium text-[#dc2626] hover:bg-red-50 dark:hover:bg-slate-700 transition-colors"
+                                        >
+                                            Déconnexion
+                                        </button>
+                                    </div>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <>
                                 <Link
@@ -179,13 +237,24 @@ export default function Navbar() {
                                         <span>{theme === "dark" ? "Mode clair" : "Mode sombre"}</span>
                                     </button>
                                     {isLoggedIn ? (
-                                        <Link
-                                            href="/profile"
-                                            onClick={() => setIsOpen(false)}
-                                            className="w-full py-3 text-center font-bold text-slate-900 bg-primary rounded-xl"
-                                        >
-                                            Mon Espace
-                                        </Link>
+                                        <>
+                                            {espaceLinks.map((l) => (
+                                                <Link
+                                                    key={l.href}
+                                                    href={l.href}
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="w-full py-3 text-center font-bold text-slate-900 bg-primary rounded-xl"
+                                                >
+                                                    {l.name}
+                                                </Link>
+                                            ))}
+                                            <button
+                                                onClick={logout}
+                                                className="w-full py-3 text-center font-medium text-red-400 border border-white/10 rounded-xl hover:bg-white/10"
+                                            >
+                                                Déconnexion
+                                            </button>
+                                        </>
                                     ) : (
                                         <>
                                             <Link
