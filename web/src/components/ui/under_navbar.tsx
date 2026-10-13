@@ -52,19 +52,31 @@ export default function UnderNavbar({
     };
 
     const requestedHeightNum = parsePx(dimensions?.height, baseBannerHeight);
-    const scale = Math.max(0.1, requestedHeightNum / baseBannerHeight); // clamp minimal
-    const requestedHeightCss = toCssValue(requestedHeightNum);
+    const titleMaxPx = parsePx(titleSize, 96);
+    const subtitleMaxPx = parsePx(subtitleSize, 48);
 
     // On garde le style inline pour la largeur personnalisée si définie
     const containerStyle: React.CSSProperties = {
         maxWidth: toCssValue(dimensions?.width) ?? "1200px",
     };
 
-    // Background + hauteur réelle (l'inner wrapper aura la taille de base et sera scalé)
+    // Hauteur fluide : s'adapte au mobile et plafonne à la hauteur demandée sur grand écran
     const bannerStyle: React.CSSProperties = {
         backgroundImage: `linear-gradient(180deg, rgba(3,7,18,0.25), rgba(3,7,18,0.1)), url(${imageSrc})`,
-        height: requestedHeightCss,
-        overflow: "hidden",
+        minHeight: `clamp(200px, 42vw, ${requestedHeightNum}px)`,
+    };
+
+    // Tailles de police fluides (clamp) : lisibles sur mobile, plafonnées à la taille demandée
+    const titleStyle: React.CSSProperties = {
+        color: "#FFF",
+        textAlign: "center",
+        textShadow: "0 4px 10px rgba(0, 0, 0, 0.29)",
+        fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+        fontSize: `clamp(1.75rem, 7.5vw, ${titleMaxPx}px)`,
+        fontStyle: "normal",
+        fontWeight: 700,
+        lineHeight: 1.1,
+        letterSpacing: "-0.02em",
     };
 
     const subtitleStyle: React.CSSProperties = {
@@ -72,11 +84,11 @@ export default function UnderNavbar({
         textAlign: "center",
         textShadow: "0 4px 10px rgba(0, 0, 0, 0.29)",
         fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-        fontSize: subtitleSize,
+        fontSize: `clamp(0.95rem, 3.2vw, ${subtitleMaxPx}px)`,
         fontStyle: "normal",
         fontWeight: 700,
-        lineHeight: "148%",
-        letterSpacing: "-0.96px",
+        lineHeight: 1.4,
+        letterSpacing: "-0.01em",
     };
 
     const needles = (Array.isArray(highlightText)
@@ -157,75 +169,47 @@ export default function UnderNavbar({
             >
                 <div
                     className={cn(
-                        "relative w-full flex flex-col items-center justify-center text-center px-6",
+                        "relative w-full flex flex-col items-center justify-center text-center",
+                        "px-5 py-10 sm:px-6 sm:py-12 md:py-14",
                         "bg-center bg-cover bg-no-repeat transition-all duration-500"
                     )}
                     style={bannerStyle}
                 >
-                    {/* Inner wrapper: taille fixe (baseBannerHeight) puis scale pour respecter requestedHeight */}
-                    <div
-                        style={{
-                            width: "100%",
-                            height: `${baseBannerHeight}px`,
-                            transform: `scale(${scale})`,
-                            transformOrigin: "top center",
-                            transition: "transform 200ms ease",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            pointerEvents: "none", // permet d'éviter problèmes de positionnement pour les inputs; réactiver si nécessaire
-                        }}
-                    >
-                        <div style={{ width: "100%", pointerEvents: "auto" }} className="max-w-4xl mx-auto">
-                            <h1
-                                style={{
-                                    color: "#FFF",
-                                    textAlign: "center",
-                                    textShadow: "0 4px 10px rgba(0, 0, 0, 0.29)",
-                                    fontFamily:
-                                        "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
-                                    fontSize: titleSize,
-                                    fontStyle: "normal",
-                                    fontWeight: 700,
-                                    lineHeight: "110%",
-                                    letterSpacing: "-1.92px",
-                                }}
-                                className="drop-shadow-xl max-w-full leading-tight"
+                    <div className="w-full max-w-4xl mx-auto">
+                        <h1 style={titleStyle} className="drop-shadow-xl max-w-full">
+                            {highlightTextNodes(title)}
+                        </h1>
+
+                        <p style={subtitleStyle} className="mt-3 sm:mt-4 max-w-2xl mx-auto">
+                            {highlightTextNodes(subtitle)}
+                        </p>
+
+                        {showSearch && (
+                            <form
+                                onSubmit={(e) => e.preventDefault()}
+                                className="w-full max-w-2xl mt-5 sm:mt-6 mx-auto flex justify-center"
+                                role="search"
+                                aria-label="Rechercher une question"
                             >
-                                {highlightTextNodes(title)}
-                            </h1>
+                                <div className="relative w-full">
+                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-yellow-400">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                                      <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                      <circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></circle>
+                                    </svg>
+                                  </span>
 
-                            <p style={subtitleStyle} className="mt-4 max-w-2xl mx-auto">
-                                {highlightTextNodes(subtitle)}
-                            </p>
-
-                            {showSearch && (
-                                <form
-                                    onSubmit={(e) => e.preventDefault()}
-                                    className="w-full max-w-2xl mt-6 mx-auto flex justify-center"
-                                    role="search"
-                                    aria-label="Rechercher une question"
-                                >
-                                    <div className="relative w-full">
-                                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-yellow-400">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-                                          <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                                          <circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></circle>
-                                        </svg>
-                                      </span>
-
-                                        <input
-                                            type="search"
-                                            aria-label="Rechercher"
-                                            placeholder={searchPlaceholder}
-                                            {...(onSearchChange ? { value: searchValue ?? "", onChange: (e) => onSearchChange(e.target.value) } : {})}
-                                            className="w-full pl-14 pr-4 py-3 rounded-full border border-white bg-transparent text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 transition"
-                                        />
-                                        <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hidden md:block" />
-                                    </div>
-                                </form>
-                            )}
-                        </div>
+                                    <input
+                                        type="search"
+                                        aria-label="Rechercher"
+                                        placeholder={searchPlaceholder}
+                                        {...(onSearchChange ? { value: searchValue ?? "", onChange: (e) => onSearchChange(e.target.value) } : {})}
+                                        className="w-full pl-14 pr-4 py-3 rounded-full border border-white bg-transparent text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 transition"
+                                    />
+                                    <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hidden md:block" />
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
             </div>

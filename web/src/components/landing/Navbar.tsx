@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ChevronDown, Menu, Moon, Sun, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "../ThemeProvider";
 
 export default function Navbar() {
-    const [isOpen, setIsOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [hidden, setHidden] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -85,7 +83,7 @@ export default function Navbar() {
                 className={cn(
                     "fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out",
                     // caché seulement sur mobile ; sur md+ la navbar reste toujours visible
-                    hidden && !isOpen ? "-translate-y-full md:translate-y-0" : "translate-y-0"
+                    hidden ? "-translate-y-full md:translate-y-0" : "translate-y-0"
                 )}
             >
                 <div suppressHydrationWarning={true} className="absolute inset-0 bg-[#14233c] backdrop-blur-[6px] border-b-[0.8px] border-[rgba(30,41,59,0.6)] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
@@ -176,109 +174,16 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile : bouton dark/light uniquement — la navigation se fait via la barre du bas */}
                     <button
-                        onClick={() => setIsOpen(true)}
-                        className="md:hidden ml-auto p-2 text-white hover:bg-white/10 rounded-full transition-colors"
+                        onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
+                        aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
+                        className="md:hidden ml-auto p-2 rounded-full border border-[#334155] bg-[rgba(30,41,59,0.8)] text-white hover:text-primary transition-colors"
                     >
-                        <Menu className="w-6 h-6" />
+                        {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
                 </div>
             </header>
-
-            {/* Mobile Menu Overlay */}
-            <AnimatePresence>
-                {isOpen && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsOpen(false)}
-                            className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm md:hidden"
-                        />
-                        <motion.div
-                            initial={{ x: "100%" }}
-                            animate={{ x: 0 }}
-                            exit={{ x: "100%" }}
-                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 bottom-0 z-[70] w-full max-w-xs bg-[#0F172A] text-white shadow-2xl md:hidden flex flex-col"
-                        >
-                            <div className="p-4 flex items-center justify-between border-b border-white/10">
-                                <span className="text-lg font-bold">Menu</span>
-                                <button
-                                    onClick={() => setIsOpen(false)}
-                                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                                >
-                                    <X className="w-6 h-6 text-slate-300" />
-                                </button>
-                            </div>
-
-                            <div className="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-6">
-                                <nav className="flex flex-col gap-4">
-                                    {navLinks.map((link) => (
-                                        <Link
-                                            key={link.name}
-                                            href={link.href}
-                                            onClick={() => setIsOpen(false)}
-                                            className="text-lg font-medium text-slate-300 hover:text-white transition-colors"
-                                        >
-                                            {link.name}
-                                        </Link>
-                                    ))}
-                                </nav>
-
-                                <div className="mt-auto pt-6 border-t border-white/10 flex flex-col gap-4">
-                                    <button
-                                        onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
-                                        className="w-full py-3 flex items-center justify-center gap-2 text-sm font-medium border border-white/10 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
-                                    >
-                                        {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                                        <span>{theme === "dark" ? "Mode clair" : "Mode sombre"}</span>
-                                    </button>
-                                    {isLoggedIn ? (
-                                        <>
-                                            {espaceLinks.map((l) => (
-                                                <Link
-                                                    key={l.href}
-                                                    href={l.href}
-                                                    onClick={() => setIsOpen(false)}
-                                                    className="w-full py-3 text-center font-bold text-slate-900 bg-primary rounded-xl"
-                                                >
-                                                    {l.name}
-                                                </Link>
-                                            ))}
-                                            <button
-                                                onClick={logout}
-                                                className="w-full py-3 text-center font-medium text-red-400 border border-white/10 rounded-xl hover:bg-white/10"
-                                            >
-                                                Déconnexion
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Link
-                                                href="/login"
-                                                onClick={() => setIsOpen(false)}
-                                                className="w-full py-3 text-center font-medium text-slate-300 border border-white/10 rounded-xl hover:bg-white/10"
-                                            >
-                                                Se connecter
-                                            </Link>
-                                            <Link
-                                                href="/inscription"
-                                                onClick={() => setIsOpen(false)}
-                                                className="w-full py-3 text-center font-bold text-slate-900 bg-primary rounded-xl"
-                                            >
-                                                S'enregistrer
-                                            </Link>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence >
         </>
     );
 }

@@ -14,7 +14,7 @@ export default function SocialProof() {
             <img
                 src="/images/badge-modifiable-tout-moment.svg"
                 alt=""
-                className="absolute right-[2em] -top-[3em] size-[8em] rotate-12"
+                className="absolute right-4 -top-8 size-20 rotate-12 sm:right-[2em] sm:-top-[3em] sm:size-[8em]"
             />
             <div className="container mx-auto px-4 md:px-6 py-10 md:py-12">
                 <h2 className="text-center text-2xl md:text-[28px] font-extrabold text-[#0F172A] font-heading tracking-tight">

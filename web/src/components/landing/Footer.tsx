@@ -102,6 +102,7 @@ export default function Footer() {
                         title="Légal"
                         links={[
                             { name: "Mentions Légales", href: "/mentions-legales" },
+                            { name: "Politique de confidentialité", href: "/confidentialite" },
                         ]}
                     />
                 </div>
