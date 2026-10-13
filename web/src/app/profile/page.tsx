@@ -1,567 +1,325 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ChevronDown } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
-import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, AlertCircle, CheckCircle2, DollarSign, Edit2, Save, X, Lock, Mail, User, Phone, Loader2 } from "lucide-react";
-import Link from "next/link";
+import { Card } from "@/components/ui/card";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE as string;
-const AUTH_API = API_BASE;
 
-// Helper to decode JWT
-function parseJwt(token: string) {
-    try {
-        return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-        return null;
-    }
+const FORMES = ["EI", "EARL", "GAEC", "SCEA", "GFA", "CUMA", "SARL"];
+const PRODUCTIONS = ["Élevage", "Céréales", "Maraîchage", "Viticulture", "Arboriculture", "Polyculture-élevage"];
+const DOCUMENTS = ["Attestation MSA", "Documents PAC", "Justificatifs exploitation", "Statuts de l'exploitation"];
+const NOTIFS = [
+    { id: "rappels", label: "Recevoir des rappels pour les échéances" },
+    { id: "aides", label: "Recevoir les nouvelles aides disponibles" },
+    { id: "alertes", label: "Recevoir les alertes importantes" },
+];
+
+const EXPLOITATION_VIDE = { nomExploitation: "", forme: "EARL", siret: "", sau: "", production: "", region: "" };
+const NOTIFS_DEFAUT: Record<string, boolean> = { rappels: true, aides: true, alertes: true };
+
+const carte = "rounded-2xl border-0 bg-white dark:bg-slate-800 shadow-[0_1px_10px_rgba(0,0,0,0.2)]";
+const champ = "h-[43px] w-full rounded-[15px] border border-[#94a3b8] bg-[#f4faff] dark:bg-slate-700 px-4 text-[15px] font-light text-[#14233c] dark:text-white placeholder:text-[#14233c]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-80";
+const champLarge = `${champ} !h-[57px]`;
+const bouton = "inline-flex h-10 w-full items-center justify-center gap-3 whitespace-nowrap rounded-full bg-primary px-4 text-base xl:text-lg font-medium text-[#0f1729] shadow-[0_0_10px_rgba(0,0,0,0.15)] transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60";
+const boutonContour = "inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-full border px-3 text-base bg-white dark:bg-slate-800 font-medium shadow-[0_0_10px_rgba(0,0,0,0.15)] transition-all hover:-translate-y-0.5";
+
+// Recadrages de la planche d'icônes (valeurs de la maquette)
+const ICONE_DOC: CSSProperties = { width: "681.53%", height: "338.41%", left: "-108.65%", top: "-121.31%" };
+const ICONE_CRAYON: CSSProperties = { width: "601.47%", height: "403.99%", left: "-200.88%", top: "-269.53%" };
+
+function Etiquette({ id, children }: { id: string; children: ReactNode }) {
+    return <label htmlFor={id} className="mb-2 block text-lg font-medium leading-[26px]">{children}</label>;
 }
 
-interface UserInfo {
-    user_id: number;
-    start_date: string;
-    payment_frequency: string;
-    has_acre: boolean; // or number 1/0
+function Liste({ id, valeur, options, onChange, disabled, vide }: { id: string; valeur: string; options: string[]; onChange: (v: string) => void; disabled: boolean; vide?: string }) {
+    return (
+        <div className="relative">
+            <select id={id} value={valeur} disabled={disabled} onChange={(e) => onChange(e.target.value)} className={`${champLarge} appearance-none pr-12`}>
+                {vide && <option value="">{vide}</option>}
+                {options.map((o) => <option key={o}>{o}</option>)}
+            </select>
+            <ChevronDown aria-hidden className="pointer-events-none absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2" />
+        </div>
+    );
 }
 
-interface Deadlines {
-    urssaf?: Date[];
-    cfe?: { exempt: boolean; date?: Date; message?: string };
-}
-
-// Logic provided by user
-function getNextDeadlines(profile: UserInfo, today = new Date()) {
-    const deadlines: Deadlines = {};
-    const paymentFreq = profile.payment_frequency ? profile.payment_frequency.toLowerCase() : 'monthly';
-    const currentYear = today.getFullYear();
-    const years = [currentYear, currentYear + 1]; // Generate for this year and next year
-    const urssafDates: Date[] = [];
-
-    // URSSAF
-    if (paymentFreq === 'monthly') {
-        years.forEach(year => {
-            for (let month = 0; month < 12; month++) {
-                const d = new Date(year, month + 2, 0);
-                urssafDates.push(d);
-            }
-        });
-    } else if (paymentFreq === 'quarterly') {
-        years.forEach(year => {
-            urssafDates.push(new Date(year, 3, 30)); // 30 Apr
-            urssafDates.push(new Date(year, 6, 31)); // 31 July
-            urssafDates.push(new Date(year, 9, 31)); // 31 Oct
-            urssafDates.push(new Date(year + 1, 0, 31)); // 31 Jan next year
-        });
-    } else if (paymentFreq === 'annually') {
-        years.forEach(year => {
-            urssafDates.push(new Date(year + 1, 0, 31)); // 31 Jan N+1
-        });
-    }
-
-    deadlines.urssaf = urssafDates;
-
-    // CFE
-    if (profile.start_date) {
-        const startYear = new Date(profile.start_date).getFullYear();
-        if (startYear === currentYear) {
-            deadlines.cfe = { exempt: true, message: "Exonéré pour ta 1ère année ! 🎉" };
-        } else {
-            deadlines.cfe = { exempt: false, date: new Date(currentYear, 11, 15) }; // 15 Dec
-        }
-    }
-
-    return deadlines;
+function BoutonModifier({ editing, saving, label = "Modifier les informations" }: { editing: boolean; saving?: boolean; label?: string }) {
+    return (
+        <button type="submit" disabled={saving} className={bouton}>
+            {!editing && (
+                <span className="relative block size-[21px] overflow-hidden" aria-hidden>
+                    <img src="/images/profil/crayon.png" alt="" className="absolute max-w-none" style={ICONE_CRAYON} />
+                </span>
+            )}
+            {editing ? (saving ? "Enregistrement..." : "Enregistrer") : label}
+        </button>
+    );
 }
 
 export default function ProfilePage() {
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
-    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-    const [deadlines, setDeadlines] = useState<Deadlines>({});
     const [loading, setLoading] = useState(true);
 
-    // Calendar state
-    const [currentDate, setCurrentDate] = useState(new Date());
+    // Mes informations
+    const [infos, setInfos] = useState({ nom: "", prenom: "", email: "", phone: "" });
+    const [editInfos, setEditInfos] = useState(false);
+    const [saving, setSaving] = useState(false);
+
+    // Mon exploitation
+    // ponytail: pas encore d'API pour ces champs, stockés localement ; brancher sur le backend quand il existera
+    const [expl, setExpl] = useState(EXPLOITATION_VIDE);
+    const [editExpl, setEditExpl] = useState(false);
+
+    const [notifs, setNotifs] = useState(NOTIFS_DEFAUT);
+
+    // Mot de passe
+    const [showPwd, setShowPwd] = useState(false);
+    const [pwd, setPwd] = useState({ password: "", confirm: "" });
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        const userStorage = localStorage.getItem("user");
-
-        if (!token || !userStorage) {
+        const stored = localStorage.getItem("user");
+        if (!token || !stored) {
             router.push("/login");
             return;
         }
-
         try {
-            const userData = JSON.parse(userStorage);
-            setUser(userData);
-
-            const id = userData.id;
-
-            // Correction de la route pour éviter le 404 (on utilise /users/{id})
-            fetch(`${API_BASE}/users/${id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json'
-                }
-            })
-                .then(async (res) => {
-                    if (res.ok) {
-                        const data = await res.json();
-                        setUserInfo(data);
-                        const d = getNextDeadlines(data);
-                        setDeadlines(d);
-                    } else if (res.status === 401) {
-                        localStorage.clear();
-                        router.push("/login");
-                    }
-                })
-                .catch(err => console.error("Erreur fetch profile:", err))
-                .finally(() => setLoading(false));
-
-        } catch (e) {
-            console.error("Erreur de parsing userStorage", e);
+            const u = JSON.parse(stored);
+            setUser(u);
+            const [prenom = "", ...reste] = String(u.username || u.name || "").split(" ");
+            setInfos({ prenom, nom: reste.join(" "), email: u.email || "", phone: u.phone || "" });
+            setExpl({ ...EXPLOITATION_VIDE, ...JSON.parse(localStorage.getItem("exploitation") || "{}") });
+            setNotifs({ ...NOTIFS_DEFAUT, ...JSON.parse(localStorage.getItem("notifications") || "{}") });
+        } catch {
             router.push("/login");
+            return;
         }
+        setLoading(false);
     }, [router]);
 
-    // Calendar logic
-    const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
-    const getFirstDayOfMonth = (year: number, month: number) => {
-        const day = new Date(year, month, 1).getDay();
-        return day === 0 ? 6 : day - 1;
-    };
-
-    const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
-    const firstDay = getFirstDayOfMonth(currentDate.getFullYear(), currentDate.getMonth());
-
-    const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-    const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-
-    const isSameDate = (d1: Date, d2: Date) => {
-        return d1.getDate() === d2.getDate() &&
-            d1.getMonth() === d2.getMonth() &&
-            d1.getFullYear() === d2.getFullYear();
-    };
-
-    const isToday = (day: number) => {
-        const today = new Date();
-        return day === today.getDate() &&
-            currentDate.getMonth() === today.getMonth() &&
-            currentDate.getFullYear() === today.getFullYear();
-    };
-
-    const getDeadlineForDay = (day: number) => {
-        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-        const events = [];
-
-        if (deadlines.urssaf && Array.isArray(deadlines.urssaf)) {
-            const hasUrssaf = deadlines.urssaf.some(d => isSameDate(d, date));
-            if (hasUrssaf) {
-                events.push({ type: 'URSSAF', label: 'Déclaration URSSAF', color: 'bg-red-100 text-red-700 border-red-200' });
-            }
-        }
-
-        if (deadlines.cfe && !deadlines.cfe.exempt && deadlines.cfe.date && isSameDate(deadlines.cfe.date, date)) {
-            events.push({ type: 'CFE', label: 'Paiement CFE', color: 'bg-orange-100 text-orange-700 border-orange-200' });
-        }
-        return events;
-    };
-
-    const getNextUpcomingDeadline = () => {
-        if (!deadlines.urssaf) return null;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const sorted = [...deadlines.urssaf].sort((a, b) => a.getTime() - b.getTime());
-        return sorted.find(d => d >= today);
-    };
-
-    const nextUrssaf = getNextUpcomingDeadline();
-
-    const [selectedDateEvents, setSelectedDateEvents] = useState<{ date: Date; events: any[] } | null>(null);
-
-    const goToToday = () => {
-        setCurrentDate(new Date());
-    };
-
-    const handleDayClick = (day: number, events: any[]) => {
-        if (events.length > 0) {
-            const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-            setSelectedDateEvents({ date, events });
-        }
-    };
-
-    const [isEditing, setIsEditing] = useState(false);
-    const [editForm, setEditForm] = useState({
-        username: "",
-        email: "",
-        phone: "",
-        password: "",
-        confirmPassword: ""
-    });
-    const [isSaving, setIsSaving] = useState(false);
-
-    useEffect(() => {
-        if (user) {
-            setEditForm(prev => ({
-                ...prev,
-                username: user.username || "",
-                email: user.email || "",
-                phone: user.phone || ""
-            }));
-        }
-    }, [user]);
-
-    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEditForm({ ...editForm, [e.target.name]: e.target.value });
-    };
-
-    const handleEditSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (editForm.password && editForm.password !== editForm.confirmPassword) {
-            toast.error("Les mots de passe ne correspondent pas");
-            return;
-        }
-
-        setIsSaving(true);
+    const maj = (changes: { name?: string; email?: string; phone?: string; password?: string }) => {
         const token = localStorage.getItem("token");
+        return fetch(`${API_BASE}/users/${user.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", Accept: "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify(changes),
+        });
+    };
+
+    const enregistrer = async (changes: Parameters<typeof maj>[0], ok: string) => {
+        setSaving(true);
         try {
-            const body: any = {
-                name: editForm.username,
-                email: editForm.email,
-                phone: editForm.phone,
-            };
-            if (editForm.password) body.password = editForm.password;
-
-            const res = await fetch(`${API_BASE}/users/${user.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (res.ok) {
-                const updatedUser = await res.json();
-                // Update local storage and state
-                const newUserObj = {
-                    ...user,
-                    username: updatedUser.name,
-                    email: updatedUser.email,
-                    phone: updatedUser.phone
-                };
-                localStorage.setItem("user", JSON.stringify(newUserObj));
-                setUser(newUserObj);
-                setIsEditing(false);
-                toast.success("Profil mis à jour avec succès !");
-            } else {
-                const errorData = await res.json();
-                toast.error(errorData.message || "Erreur lors de la mise à jour");
+            const res = await maj(changes);
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                toast.error(err.message || "Erreur lors de la mise à jour");
+                return false;
             }
-        } catch (error) {
-            console.error("Update error:", error);
+            const updated = await res.json();
+            const next = { ...user, username: updated.name ?? user.username, email: updated.email ?? user.email, phone: updated.phone ?? user.phone };
+            localStorage.setItem("user", JSON.stringify(next));
+            setUser(next);
+            toast.success(ok);
+            return true;
+        } catch {
             toast.error("Erreur réseau");
+            return false;
         } finally {
-            setIsSaving(false);
+            setSaving(false);
         }
+    };
+
+    const submitInfos = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!editInfos) return setEditInfos(true);
+        const name = `${infos.prenom} ${infos.nom}`.trim();
+        if (await enregistrer({ name, email: infos.email, phone: infos.phone }, "Profil mis à jour avec succès !")) setEditInfos(false);
+    };
+
+    const submitExpl = (e: FormEvent) => {
+        e.preventDefault();
+        if (!editExpl) return setEditExpl(true);
+        localStorage.setItem("exploitation", JSON.stringify(expl));
+        setEditExpl(false);
+        toast.success("Informations de l'exploitation enregistrées.");
+    };
+
+    const submitPwd = async (e: FormEvent) => {
+        e.preventDefault();
+        if (pwd.password.length < 8) return toast.error("Le mot de passe doit contenir au moins 8 caractères.");
+        if (pwd.password !== pwd.confirm) return toast.error("Les mots de passe ne correspondent pas");
+        if (await enregistrer({ password: pwd.password }, "Mot de passe modifié.")) {
+            setPwd({ password: "", confirm: "" });
+            setShowPwd(false);
+        }
+    };
+
+    const toggleNotif = (id: string) => {
+        const next = { ...notifs, [id]: !notifs[id] };
+        setNotifs(next);
+        localStorage.setItem("notifications", JSON.stringify(next));
     };
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-200">Chargement...</div>;
+        return <div className="flex min-h-screen items-center justify-center bg-[#f7f6fe] dark:bg-background">Chargement...</div>;
     }
 
-    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-
     return (
-        <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans text-slate-900 dark:text-slate-100">
+        <>
             <Navbar />
+            <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
+                <div className="dark:hidden pointer-events-none absolute -left-[35%] top-[15%] h-[85%] w-[70%] rounded-full bg-[radial-gradient(closest-side,rgba(255,204,0,0.9),rgba(247,246,254,0))]" />
+                <div className="dark:hidden pointer-events-none absolute -right-[20%] top-[10%] h-[45%] w-[55%] rotate-[36deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 
-            <div className="flex-grow container mx-auto px-4 py-8 md:py-12 mt-16">
-                <div className="flex flex-col md:flex-row gap-8 items-start">
-                    {/* Sidebar / Info Card */}
-                    <div className="w-full md:w-1/3 space-y-6">
-                        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
-                            <div className="flex items-center gap-4 mb-6 relative">
-                                <div className="w-12 h-12 rounded-full bg-[#FFCC00]/20 flex items-center justify-center text-[#FFCC00] font-bold text-xl shrink-0">
-                                    {user?.username ? user.username[0].toUpperCase() : 'U'}
-                                </div>
-                                <div className="flex-1 overflow-hidden">
-                                    {!isEditing ? (
-                                        <>
-                                            <h2 className="text-xl font-bold text-slate-900 dark:text-white truncate">{user?.username}</h2>
-                                            <p className="text-slate-500 dark:text-slate-300 text-sm truncate">{user?.email}</p>
-                                            <p className="text-slate-500 dark:text-slate-300 text-sm truncate">{user?.phone}</p>
-                                        </>
-                                    ) : (
-                                        <div className="text-sm font-medium text-slate-900 dark:text-white">Modification du profil</div>
-                                    )}
-                                </div>
-                                {!isEditing && (
-                                    <button
-                                        onClick={() => setIsEditing(true)}
-                                        className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                                        title="Modifier le profil"
-                                    >
-                                        <Edit2 className="w-4 h-4" />
-                                    </button>
-                                )}
-                            </div>
+                <div className="relative container mx-auto px-4 md:px-6 md:[zoom:0.8] pt-32 md:pt-36 pb-24">
+                    {/* En-tête */}
+                    <Card className={`${carte} flex max-w-[790px] items-center gap-5 px-6 py-5 md:gap-[17px] md:px-9`}>
+                        <img src="/images/profil/avatar.jpg" alt="" className="size-[77px] shrink-0 rounded-full object-cover" />
+                        <div>
+                            <h1 className="text-[22px] leading-tight md:text-[32px]">Mon espace personnel</h1>
+                            <p className="mt-1 text-sm md:text-base">Gérez vos informations personnelles et celles de votre exploitation.</p>
+                        </div>
+                    </Card>
 
-                            {isEditing && (
-                                <form onSubmit={handleEditSubmit} className="space-y-4 mb-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    <div className="space-y-3">
-                                        <div className="relative">
-                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                            <input
-                                                type="text"
-                                                name="username"
-                                                value={editForm.username}
-                                                onChange={handleEditChange}
-                                                placeholder="Nom d'utilisateur"
-                                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
-                                                required
-                                            />
+                    <div className="mt-12 grid items-start gap-8 md:grid-cols-2 xl:grid-cols-[301fr_511fr_301fr] xl:gap-11">
+                        {/* Colonne gauche */}
+                        <div className="flex flex-col gap-8">
+                            <Card className={`${carte} px-6 pb-8 pt-7 md:px-[54px]`}>
+                                <h2 className="text-2xl leading-[26px]">Mes informations</h2>
+                                <form onSubmit={submitInfos} className="mt-8 flex flex-col gap-5">
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <div>
+                                            <Etiquette id="nom">Nom</Etiquette>
+                                            <input id="nom" autoComplete="family-name" disabled={!editInfos} value={infos.nom} onChange={(e) => setInfos({ ...infos, nom: e.target.value })} className={champ} />
                                         </div>
-                                        <div className="relative">
-                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                value={editForm.email}
-                                                onChange={handleEditChange}
-                                                placeholder="Email"
-                                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
-                                                required
-                                            />
+                                        <div>
+                                            <Etiquette id="prenom">Prénom</Etiquette>
+                                            <input id="prenom" autoComplete="given-name" disabled={!editInfos} value={infos.prenom} onChange={(e) => setInfos({ ...infos, prenom: e.target.value })} className={champ} />
                                         </div>
-                                        <div className="relative">
-                                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                            <input
-                                                type="text"
-                                                name="phone"
-                                                value={editForm.phone}
-                                                onChange={handleEditChange}
-                                                placeholder="Téléphone"
-                                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
-                                            />
-                                        </div>
-                                        <div className="relative">
-                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                            <input
-                                                type="password"
-                                                name="password"
-                                                value={editForm.password}
-                                                onChange={handleEditChange}
-                                                placeholder="Nouveau mot de passe"
-                                                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
-                                            />
-                                        </div>
-                                        {editForm.password && (
-                                            <div className="relative">
-                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                                <input
-                                                    type="password"
-                                                    name="confirmPassword"
-                                                    value={editForm.confirmPassword}
-                                                    onChange={handleEditChange}
-                                                    placeholder="Confirmer le mot de passe"
-                                                    className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-[#FFCC00]/20 outline-none text-sm"
-                                                    required
-                                                />
-                                            </div>
-                                        )}
                                     </div>
-                                    <div className="flex gap-2 pt-2">
-                                        <button
-                                            type="submit"
-                                            disabled={isSaving}
-                                            className="flex-1 py-2 bg-[#FFCC00] text-slate-900 rounded-xl font-bold text-xs hover:bg-[#F0B400] transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            {isSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-                                            Enregistrer
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsEditing(false)}
-                                            className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
+                                    <div>
+                                        <Etiquette id="email">Email</Etiquette>
+                                        <input id="email" type="email" autoComplete="email" disabled={!editInfos} value={infos.email} onChange={(e) => setInfos({ ...infos, email: e.target.value })} className={champ} />
                                     </div>
+                                    <div>
+                                        <Etiquette id="phone">Téléphone</Etiquette>
+                                        <input id="phone" type="tel" autoComplete="tel" disabled={!editInfos} value={infos.phone} onChange={(e) => setInfos({ ...infos, phone: e.target.value })} className={champ} />
+                                    </div>
+                                    <BoutonModifier editing={editInfos} saving={saving} />
                                 </form>
-                            )}
+                            </Card>
 
-                            {/* Section masquée temporairement sur demande utilisateur */}
-                            {/* 
-                            <div className="space-y-4">
-                                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                    <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Fréquence de paiement</h3>
-                                    <p className="text-slate-900 dark:text-white font-medium capitalize">
-                                        {userInfo?.payment_frequency || 'Non défini'}
-                                    </p>
-                                </div>
-                                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                    <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Date de début</h3>
-                                    <p className="text-slate-900 dark:text-white font-medium">
-                                        {userInfo?.start_date || 'Non définie'}
-                                    </p>
-                                </div>
-                                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                    <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-300 mb-1">Prochaine Échéance URSSAF</h3>
-                                    <p className="text-slate-900 dark:text-white font-medium flex items-center gap-2">
-                                        {nextUrssaf ? nextUrssaf.toLocaleDateString() : 'Aucune'}
-                                    </p>
-                                </div>
-                            </div>
-                            */}
-
-                            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-                                {/* Lien calculateur masqué
-                                <Link href="/calculateur" className="block w-full py-3 text-center bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 transition-colors">
-                                    Mettre à jour mes infos
-                                </Link>
-                                */}
-                                <button
-                                    onClick={() => {
-                                        localStorage.removeItem("token");
-                                        router.push("/login");
-                                    }}
-                                    className="mt-3 block w-full py-3 text-center text-red-600 font-medium hover:bg-red-50 rounded-xl transition-colors"
-                                >
-                                    Déconnexion
+                            <Card className={`${carte} px-6 pb-8 pt-7 md:px-[54px]`}>
+                                <h2 className="text-2xl leading-[26px]">Mes documents</h2>
+                                <ul className="mt-8 flex flex-col gap-[23px]">
+                                    {DOCUMENTS.map((d) => (
+                                        <li key={d} className="flex items-center gap-4 text-[15px] font-light">
+                                            <span aria-hidden className="relative block h-[31px] w-[23px] shrink-0 overflow-hidden">
+                                                <img src="/images/dashboard/icones.png" alt="" className="absolute max-w-none" style={ICONE_DOC} />
+                                            </span>
+                                            {d}
+                                        </li>
+                                    ))}
+                                </ul>
+                                {/* ponytail: pas d'API d'upload pour l'instant */}
+                                <button type="button" onClick={() => toast.info("L'ajout de documents arrive bientôt.")} className={`${bouton} mt-8`}>
+                                    <span aria-hidden className="text-xl leading-none">+</span> Ajouter des documents
                                 </button>
-                            </div>
+                            </Card>
                         </div>
-                    </div>
 
-                    {/* Calendar Section */}
-                    <div className="w-full md:w-2/3">
-                        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-lg shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 overflow-hidden relative">
-                            {/* Header */}
-                            <div className="p-4 md:p-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80">
-                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                                    <CalendarIcon className="w-6 h-6 text-[#FFCC00]" />
-                                    Calendrier Fiscal
-                                </h2>
-                                <div className="flex items-center gap-4">
-                                    <button
-                                        onClick={goToToday}
-                                        className="hidden md:block px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                                    >
-                                        Aujourd'hui
+                        {/* Colonne centrale */}
+                        <div className="overflow-hidden rounded-2xl border-[3px] border-[#14233c] bg-white shadow-[0_1px_10px_rgba(0,0,0,0.2)] dark:border-white/30 dark:bg-slate-800">
+                            <h2 className="flex h-[91px] items-center bg-[#0f172a] px-6 text-2xl text-white md:px-[54px]">Mon exploitation</h2>
+                            <form onSubmit={submitExpl} className="flex flex-col gap-5 px-6 pb-8 pt-7 md:px-[51px]">
+                                <div>
+                                    <Etiquette id="nomExploitation">Nom de l'exploitation</Etiquette>
+                                    <input id="nomExploitation" disabled={!editExpl} value={expl.nomExploitation} onChange={(e) => setExpl({ ...expl, nomExploitation: e.target.value })} className={champLarge} />
+                                </div>
+                                <div>
+                                    <Etiquette id="forme">Forme juridique</Etiquette>
+                                    <Liste id="forme" valeur={expl.forme} options={FORMES} disabled={!editExpl} onChange={(v) => setExpl({ ...expl, forme: v })} />
+                                </div>
+                                <div>
+                                    <Etiquette id="siret">SIRET</Etiquette>
+                                    <input id="siret" inputMode="numeric" maxLength={14} disabled={!editExpl} value={expl.siret} onChange={(e) => setExpl({ ...expl, siret: e.target.value.replace(/\D/g, "") })} className={champLarge} />
+                                </div>
+                                <div>
+                                    <Etiquette id="sau">Surface agricole utile (SAU)</Etiquette>
+                                    <input id="sau" inputMode="decimal" placeholder="xx ha" disabled={!editExpl} value={expl.sau} onChange={(e) => setExpl({ ...expl, sau: e.target.value.replace(",", ".") })} className={champLarge} />
+                                </div>
+                                <div>
+                                    <Etiquette id="production">Type de production</Etiquette>
+                                    <Liste id="production" valeur={expl.production} options={PRODUCTIONS} vide="élevages, céréales, etc" disabled={!editExpl} onChange={(v) => setExpl({ ...expl, production: v })} />
+                                </div>
+                                <div>
+                                    <Etiquette id="region">Région/Département</Etiquette>
+                                    <input id="region" disabled={!editExpl} value={expl.region} onChange={(e) => setExpl({ ...expl, region: e.target.value })} className={champLarge} />
+                                </div>
+                                <div className="mx-auto mt-3 flex w-full max-w-[358px] flex-col items-center gap-3">
+                                    <BoutonModifier editing={editExpl} />
+                                    <p className="text-center text-[13px] font-light">Ces données servent à déterminer les aides disponibles</p>
+                                </div>
+                            </form>
+                        </div>
+
+                        {/* Colonne droite */}
+                        <div className="grid items-start gap-8 md:col-span-2 md:grid-cols-2 xl:col-span-1 xl:grid-cols-1">
+                            <Card className={`${carte} px-6 pb-7 pt-7 md:px-[18px]`}>
+                                <h2 className="text-2xl leading-[26px] md:pl-9">Mes notifications</h2>
+                                <ul className="mt-6 flex flex-col gap-1.5">
+                                    {NOTIFS.map((n) => (
+                                        <li key={n.id}>
+                                            <label className="flex cursor-pointer items-center gap-2 text-[15px] font-medium">
+                                                <input type="checkbox" checked={notifs[n.id]} onChange={() => toggleNotif(n.id)} className="peer sr-only" />
+                                                <span className="relative block size-[34px] shrink-0 rounded-lg peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
+                                                    <img src="/images/profil/coche.png" alt="" aria-hidden className={`size-full object-cover dark:invert ${notifs[n.id] ? "" : "opacity-30"}`} />
+                                                </span>
+                                                {n.label}
+                                            </label>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </Card>
+
+                            <Card className={`${carte} px-6 pb-8 pt-7 md:px-6 xl:px-6`}>
+                                <h2 className="text-2xl leading-[26px]">Gestion du compte</h2>
+                                <div className="mt-6 flex flex-col gap-3">
+                                    <button type="button" onClick={() => setShowPwd((s) => !s)} aria-expanded={showPwd} className={`${boutonContour} border-primary text-[#0f1729] dark:text-white`}>
+                                        Modifier le mot de passe
                                     </button>
-                                    <div className="flex items-center gap-4 bg-white dark:bg-slate-900 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                                        <button onClick={prevMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"><ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-200" /></button>
-                                        <span className="font-bold text-slate-800 dark:text-white w-32 text-center select-none">
-                                            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-                                        </span>
-                                        <button onClick={nextMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"><ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-200" /></button>
-                                    </div>
+                                    {showPwd && (
+                                        <form onSubmit={submitPwd} className="flex flex-col gap-3">
+                                            <input type="password" aria-label="Nouveau mot de passe" autoComplete="new-password" placeholder="Nouveau mot de passe" value={pwd.password} onChange={(e) => setPwd({ ...pwd, password: e.target.value })} className={champ} />
+                                            <input type="password" aria-label="Confirmer le mot de passe" autoComplete="new-password" placeholder="Confirmer" value={pwd.confirm} onChange={(e) => setPwd({ ...pwd, confirm: e.target.value })} className={champ} />
+                                            <button type="submit" disabled={saving} className={bouton}>Valider</button>
+                                        </form>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => { setEditInfos(true); document.getElementById("email")?.focus(); }}
+                                        className={`${boutonContour} border-primary text-[#0f1729] dark:text-white`}
+                                    >
+                                        Modifier l'email
+                                    </button>
+                                    {/* ponytail: pas d'endpoint de suppression, on renvoie vers le contact */}
+                                    <Link href="/contact" className={`${boutonContour} border-[#dc2626] text-[#e5504b]`}>
+                                        Supprimer mon compte
+                                    </Link>
                                 </div>
-                            </div>
-
-                            {/* Grid */}
-                            <div className="p-4 md:p-6">
-                                <div className="grid grid-cols-7 mb-4">
-                                    {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
-                                        <div key={day} className="text-center text-slate-400 dark:text-slate-300 text-sm font-semibold uppercase tracking-wider">
-                                            {day}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="grid grid-cols-7 gap-1 md:gap-2">
-                                    {Array.from({ length: firstDay }).map((_, i) => (
-                                        <div key={`empty-${i}`} className="h-16 md:h-24 bg-slate-50/50 dark:bg-slate-900 rounded-xl border border-transparent" />
-                                    ))}
-                                    {Array.from({ length: daysInMonth }).map((_, i) => {
-                                        const day = i + 1;
-                                        const events = getDeadlineForDay(day);
-                                        const today = isToday(day);
-                                        const hasEvents = events.length > 0;
-
-                                        return (
-                                            <div
-                                                key={day}
-                                                onClick={() => handleDayClick(day, events)}
-                                                className={`h-16 md:h-24 p-1.5 md:p-2 rounded-xl border transition-all relative group flex flex-col justify-between
-                                                    ${today ? 'border-[#FFCC00] bg-[#FFCC00]/5 dark:bg-[#FFCC00]/10 ring-2 ring-[#FFCC00]/10' : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md'}
-                                                    ${hasEvents ? 'cursor-pointer hover:scale-[1.02]' : ''}
-                                                `}
-                                            >
-                                                <div className="flex justify-between items-start">
-                                                    <span className={`text-sm font-bold ${today ? 'text-[#e5b800]' : 'text-slate-700 dark:text-white'}`}>
-                                                        {day}
-                                                    </span>
-                                                    {today && <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />}
-                                                </div>
-
-                                                <div className="flex flex-col gap-1 mt-auto">
-                                                    {events.map((evt, idx) => (
-                                                        <div key={idx} className={`text-[10px] md:text-xs px-2 py-1 rounded-lg font-bold border ${evt.color} truncate shadow-sm`}>
-                                                            {evt.label}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Legend / Info */}
-                            <div className="px-8 pb-8 flex gap-6 text-sm text-slate-500 dark:text-slate-400">
-                                {deadlines.cfe?.exempt && (
-                                    <div className="flex items-center gap-2 text-primary dark:text-primary bg-primary/10 dark:bg-primary/20 px-3 py-1.5 rounded-lg border border-primary/20 dark:border-primary/30">
-                                        <CheckCircle2 className="w-4 h-4" />
-                                        <span>{deadlines.cfe.message}</span>
-                                    </div>
-                                )}
-                            </div>
+                            </Card>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {/* Event Details Modal */}
-            {selectedDateEvents && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setSelectedDateEvents(null)}>
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80 flex justify-between items-center">
-                            <h3 className="font-bold text-lg text-slate-900 dark:text-white">
-                                {selectedDateEvents.date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                            </h3>
-                            <button onClick={() => setSelectedDateEvents(null)} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
-                                <ChevronLeft className="w-5 h-5 rotate-180" />
-                            </button>
-                        </div>
-                        <div className="p-6 space-y-4">
-                            {selectedDateEvents.events.map((evt, idx) => (
-                                <div key={idx} className={`p-4 rounded-xl border ${evt.color.replace('bg-', 'bg-opacity-20 bg-')} dark:border-slate-700`}>
-                                    <h4 className="font-bold text-base mb-1">{evt.label}</h4>
-                                    <p className="text-sm opacity-90">
-                                        N'oubliez pas de déclarer et payer avant minuit.
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-end">
-                            <button
-                                onClick={() => setSelectedDateEvents(null)}
-                                className="px-4 py-2 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors"
-                            >
-                                Fermer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
+            </main>
             <Footer />
-        </main>
+        </>
     );
 }
