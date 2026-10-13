@@ -1,0 +1,72 @@
+name: CI/CD Web
+
+on:
+  push:
+    branches:
+      - DEV
+      - main
+  pull_request:
+    branches:
+      - DEV
+      - main
+
+jobs:
+  test:
+    name: Lint, tests & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Tests unitaires (Jest)
+        run: npm run test:ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_BASE: http://localhost:8000/api
+          API_BASE: http://localhost:8000/api
+          API_URL: http://localhost:8000
+          JWT_SECRET: ci-dummy-secret
+
+  # Déploiement automatique sur le VPS (stack DEV) quand on pousse sur DEV
+  # et seulement si le job "test" est vert.
+  deploy:
+    name: Déploiement VPS (DEV)
+    needs: test
+    if: github.ref == 'refs/heads/DEV' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Déploiement via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+            cd /var/www/dev_app_phobee
+            git fetch origin DEV
+            git reset --hard origin/DEV
+            docker exec phobee_nextjs_dev npm install
+            docker restart phobee_nextjs_dev
