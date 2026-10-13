@@ -5,10 +5,12 @@ on:
     branches:
       - DEV
       - main
+      - PROD
   pull_request:
     branches:
       - DEV
       - main
+      - PROD
 
 jobs:
   test:
@@ -70,3 +72,27 @@ jobs:
             git reset --hard origin/DEV
             docker exec -u root phobee_nextjs_dev npm install
             docker restart phobee_nextjs_dev
+
+  # Déploiement automatique sur la PROD quand on pousse sur PROD (après merge DEV -> PROD),
+  # et seulement si le job "test" est vert. En prod on RE-BUILD l'image (NEXT_PUBLIC_* figé au build).
+  deploy-prod:
+    name: Déploiement VPS (PROD)
+    needs: test
+    if: github.ref == 'refs/heads/PROD' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Déploiement via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+            sudo chown -R debian:debian /var/www/app_phobee
+            cd /var/www/app_phobee
+            git fetch origin PROD
+            git reset --hard origin/PROD
+            docker compose up -d --build nextjs
