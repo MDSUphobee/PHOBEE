@@ -39,9 +39,10 @@ export const options = {
         http_req_failed: ['rate<0.01'],
         // 95 % des requêtes sous 2 s.
         http_req_duration: ['p(95)<2000'],
-        // Objectifs différenciés pages / API.
+        // Objectifs différenciés pages / API (lecture) / écriture PDF (plus lourd).
         'http_req_duration{type:page}': ['p(95)<1500'],
         'http_req_duration{type:api}': ['p(95)<2500'],
+        'http_req_duration{type:api_write}': ['p(95)<5000'],
     },
 };
 
@@ -54,9 +55,9 @@ export default function () {
         check(res, { 'page -> 200': (r) => r.status === 200 });
     });
 
-    group('API', () => {
-        const res = http.get(`${BASE_URL}/api/pdfs`, { tags: { type: 'api' } });
-        check(res, {
+    group('API (lecture)', () => {
+        const pdfs = http.get(`${BASE_URL}/api/pdfs`, { tags: { type: 'api' } });
+        check(pdfs, {
             'api/pdfs -> 200': (r) => r.status === 200,
             'api/pdfs -> JSON success': (r) => {
                 try {
@@ -66,7 +67,45 @@ export default function () {
                 }
             },
         });
+
+        const aides = http.get(`${BASE_URL}/api/aides`, { tags: { type: 'api' } });
+        check(aides, {
+            'api/aides -> 200': (r) => r.status === 200,
+            'api/aides -> liste non vide': (r) => {
+                try {
+                    const body = r.json();
+                    return Array.isArray(body) ? body.length > 0 : Array.isArray(body?.data);
+                } catch {
+                    return false;
+                }
+            },
+        });
     });
+
+    // Remplissage PDF = écriture (génère un PDF, opération lourde).
+    // Limité à ~1 itération sur 5 pour tester l'écriture sans saturer le disque du serveur.
+    if (Math.random() < 0.2) {
+        group('API (écriture — remplissage PDF)', () => {
+            const payload = JSON.stringify({
+                mapping: { demandeur: { siret: '12345678900012', commune: 'Nantes' } },
+                flatten: false,
+            });
+            const res = http.post(`${BASE_URL}/api/pdfs/fill?pdf=cerfa_16015`, payload, {
+                headers: { 'Content-Type': 'application/json' },
+                tags: { type: 'api_write' },
+            });
+            check(res, {
+                'fill -> 200': (r) => r.status === 200,
+                'fill -> success': (r) => {
+                    try {
+                        return r.json('success') === true;
+                    } catch {
+                        return false;
+                    }
+                },
+            });
+        });
+    }
 
     // Pause réaliste entre deux actions d'un même utilisateur.
     sleep(Math.random() * 2 + 1);

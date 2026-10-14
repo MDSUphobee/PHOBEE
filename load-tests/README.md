@@ -31,10 +31,11 @@ BASE_URL=https://phobee.net k6 run load-tests/load-test.js
 ### Ce que fait le test
 - **Montée progressive** : 0 → 10 → 30 utilisateurs simultanés, avec paliers, puis descente.
 - **Pages testées** : accueil, abonnements, FAQ, dictionnaire, contact.
-- **API testée** : `GET /api/pdfs` (statut + JSON valide).
+- **API en lecture** : `GET /api/pdfs` (statut + JSON valide) et `GET /api/aides` (liste non vide).
+- **API en écriture** : `POST /api/pdfs/fill` (remplissage CERFA 16015 → génère un PDF), sur ~1 itération sur 5 (opération lourde, pour ne pas saturer le disque).
 - **Seuils (SLA)** — le test **échoue** si :
   - plus de **1 %** des requêtes sont en erreur,
-  - le **p95** global dépasse **2 s** (1,5 s pour les pages, 2,5 s pour l'API).
+  - le **p95** dépasse : **2 s** global, **1,5 s** pages, **2,5 s** API lecture, **5 s** écriture PDF.
 
 ### Le rapport (tableau de bord)
 À la fin, k6 génère **`load-tests/rapport.html`** : ouvre-le dans un navigateur pour le tableau de bord (débit, p90/p95/p99, taux d'erreur, courbes). C'est le livrable à mettre dans le dossier / montrer en soutenance.
