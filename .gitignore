@@ -54,3 +54,6 @@ docker-compose.override.yml
 
 # Rapports de test de charge (générés par k6)
 load-tests/rapport.html
+
+# Rapports de couverture (générés)
+web/coverage/

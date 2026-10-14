@@ -37,8 +37,16 @@ jobs:
       - name: Lint (règles a11y jsx-a11y bloquantes)
         run: npm run lint
 
-      - name: Tests unitaires (Jest)
-        run: npm run test:ci
+      - name: Tests unitaires (Jest) + couverture
+        run: npm run test:ci -- --coverage
+
+      - name: Archiver le rapport de couverture (front)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-front
+          path: web/coverage/
+          if-no-files-found: ignore
 
       - name: Tests accessibilité (axe, WCAG 2.1 AA)
         run: |
