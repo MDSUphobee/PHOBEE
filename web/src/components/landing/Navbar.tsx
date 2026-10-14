@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronDown, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "../ThemeProvider";
@@ -12,6 +13,12 @@ export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const { theme, toggleTheme } = useTheme();
+
+    // Navbar bleue uniquement sur l'accueil ; blanche (comme le fond) sur les autres pages.
+    const pathname = usePathname();
+    const isHome = pathname === "/";
+    // Logo clair (sur fond foncé) sur l'accueil et en dark mode ; logo foncé (sur fond blanc) ailleurs.
+    const useLightLogo = isHome || theme === "dark";
 
     const espaceLinks = [
         { name: "Mon profil", href: "/profile" },
@@ -86,13 +93,23 @@ export default function Navbar() {
                     hidden ? "-translate-y-full md:translate-y-0" : "translate-y-0"
                 )}
             >
-                <div suppressHydrationWarning={true} className="absolute inset-0 bg-[#14233c] backdrop-blur-[6px] border-b-[0.8px] border-[rgba(30,41,59,0.6)] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
+                <div
+                    suppressHydrationWarning={true}
+                    className={cn(
+                        "absolute inset-0 backdrop-blur-[6px] border-b-[0.8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]",
+                        isHome
+                            ? "bg-[#14233c] border-[rgba(30,41,59,0.6)]"
+                            : "bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                    )}
+                />
 
                 <div suppressHydrationWarning={true} className="relative container mx-auto px-4 md:px-6 h-[80px] flex items-center gap-10">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
                         <img
-                            src="/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Noir.svg"
+                            src={useLightLogo
+                                ? "/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Noir.svg"
+                                : "/Logo PhoBee/Logo PhoBee/Logo-Phobee-Fond-Blanc.svg"}
                             alt="Logo Phobee"
                             className="h-32 md:h-44 w-auto transition-transform duration-300 group-hover:scale-105"
                         />
@@ -104,7 +121,10 @@ export default function Navbar() {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-sm font-medium text-[#e2e8f0] hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full"
+                                className={cn(
+                                    "text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full",
+                                    isHome ? "text-[#e2e8f0]" : "text-[#14233c] dark:text-[#e2e8f0]"
+                                )}
                             >
                                 {link.name}
                             </Link>
@@ -116,7 +136,12 @@ export default function Navbar() {
                         <button
                             onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
                             aria-label="Basculer le thème"
-                            className="p-2 rounded-full border border-[#334155] bg-[rgba(30,41,59,0.8)] text-white hover:text-primary transition-all shadow-sm"
+                            className={cn(
+                                "p-2 rounded-full border hover:text-primary transition-all shadow-sm",
+                                isHome
+                                    ? "border-[#334155] bg-[rgba(30,41,59,0.8)] text-white"
+                                    : "border-slate-300 bg-slate-100 text-[#14233c] dark:border-[#334155] dark:bg-[rgba(30,41,59,0.8)] dark:text-white"
+                            )}
                         >
                             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                         </button>
@@ -160,7 +185,10 @@ export default function Navbar() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2 text-base font-medium text-[#f8fafc] hover:text-primary transition-colors"
+                                    className={cn(
+                                        "px-4 py-2 text-base font-medium hover:text-primary transition-colors",
+                                        isHome ? "text-[#f8fafc]" : "text-[#14233c] dark:text-[#f8fafc]"
+                                    )}
                                 >
                                     Se connecter
                                 </Link>
@@ -178,7 +206,12 @@ export default function Navbar() {
                     <button
                         onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
                         aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
-                        className="md:hidden ml-auto p-2 rounded-full border border-[#334155] bg-[rgba(30,41,59,0.8)] text-white hover:text-primary transition-colors"
+                        className={cn(
+                            "md:hidden ml-auto p-2 rounded-full border hover:text-primary transition-colors",
+                            isHome
+                                ? "border-[#334155] bg-[rgba(30,41,59,0.8)] text-white"
+                                : "border-slate-300 bg-slate-100 text-[#14233c] dark:border-[#334155] dark:bg-[rgba(30,41,59,0.8)] dark:text-white"
+                        )}
                     >
                         {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
