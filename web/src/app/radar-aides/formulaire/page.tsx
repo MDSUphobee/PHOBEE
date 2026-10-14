@@ -7,6 +7,7 @@ import Footer from "@/components/landing/Footer";
 import { ArrowLeft, Loader2, Download, CheckCircle2, AlertCircle, FileText } from "lucide-react";
 import Cerfa11423Form from "@/components/forms/Cerfa11423Form";
 import Cerfa16015Form from "@/components/forms/Cerfa16015Form";
+import DocumentPret from "@/components/forms/DocumentPret";
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -439,54 +440,6 @@ function PdfProcessingOverlay() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Success screen
-// ─────────────────────────────────────────────────────────────────────────────
-
-function SuccessScreen({
-    cerfa_name,
-    onReset,
-    onBack,
-}: {
-    cerfa_name: string;
-    onReset: () => void;
-    onBack: () => void;
-}) {
-    return (
-        <div className="flex-1 pt-32 pb-24 container mx-auto px-4 max-w-lg text-center" suppressHydrationWarning>
-            <div className="bg-card rounded-3xl shadow-sm border border-border p-12 flex flex-col items-center">
-                <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-500/5">
-                    <CheckCircle2 className="w-10 h-10 text-green-500" />
-                </div>
-                <h2 className="text-2xl font-extrabold text-foreground mb-3">
-                    Votre PDF est prêt&nbsp;!
-                </h2>
-                <p className="text-muted-foreground mb-8 text-sm">
-                    Le document <span className="font-semibold text-foreground/80">{cerfa_name}</span> a
-                    été rempli et téléchargé automatiquement dans votre dossier de téléchargements.
-                </p>
-
-                <div className="flex flex-col gap-3 w-full">
-                    <button
-                        onClick={onReset}
-                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-md hover:shadow-xl transition-all hover:-translate-y-0.5"
-                    >
-                        <Download className="w-5 h-5" />
-                        Remplir à nouveau
-                    </button>
-                    <button
-                        onClick={onBack}
-                        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-2"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        Retour à la liste des aides
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Main form content (reads ?name= from query)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -501,7 +454,8 @@ function CerfaFormContent() {
     const [error,     setError]     = useState("");
     const [formData,  setFormData]  = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
-    const [success,   setSuccess]   = useState(false);
+    // PDF généré (URL http ou blob:) → écran « Bravo, votre document est prêt ! »
+    const [ready,     setReady]     = useState<{ url: string; filename: string } | null>(null);
 
     // ── Fetch fields from API ─────────────────────────────────────────────────
     useEffect(() => {
@@ -593,10 +547,8 @@ function CerfaFormContent() {
             anchor.download  = `${cerfa_name}.pdf`;
             anchor.click();
 
-            // Clean up
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 10_000);
-
-            setSuccess(true);
+            // L'URL reste valide pour le bouton « Télécharger » de l'écran final
+            setReady({ url: blobUrl, filename: `${cerfa_name}.pdf` });
         } catch (err: any) {
             setError(err.message ?? "Erreur lors de la génération du PDF.");
         } finally {
@@ -614,7 +566,16 @@ function CerfaFormContent() {
 
     if (isCerfa11423 || isCerfa16015) {
         return (
-            <div className="flex-1 pt-32 pb-24 container mx-auto px-4 md:px-6 max-w-5xl" suppressHydrationWarning>
+            <>
+            {ready && (
+                <DocumentPret
+                    label={cerfa_name}
+                    url={ready.url}
+                    filename={ready.filename}
+                    onEdit={() => setReady(null)}
+                />
+            )}
+            <div hidden={!!ready} className="flex-1 pt-32 pb-24 container mx-auto px-4 md:px-6 max-w-5xl" suppressHydrationWarning>
                  <button
                     onClick={() => router.back()}
                     className="flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors font-medium text-sm gap-2"
@@ -622,8 +583,11 @@ function CerfaFormContent() {
                     <ArrowLeft className="w-4 h-4" />
                     Retour à la liste des documents
                 </button>
-                {isCerfa11423 ? <Cerfa11423Form /> : <Cerfa16015Form />}
+                {isCerfa11423
+                    ? <Cerfa11423Form onGenerated={(url) => setReady({ url, filename: "cerfa_11423.pdf" })} />
+                    : <Cerfa16015Form onGenerated={(url) => setReady({ url, filename: "cerfa_16015.pdf" })} />}
             </div>
+            </>
         );
     }
 
@@ -655,12 +619,13 @@ function CerfaFormContent() {
         );
     }
 
-    if (success) {
+    if (ready) {
         return (
-            <SuccessScreen
-                cerfa_name={cerfa_name}
-                onReset={() => { setSuccess(false); setError(""); }}
-                onBack={() => router.push("/radar-aides")}
+            <DocumentPret
+                label={schema?.form_title ?? cerfa_name}
+                url={ready.url}
+                filename={ready.filename}
+                onEdit={() => { if (ready.url.startsWith("blob:")) URL.revokeObjectURL(ready.url); setReady(null); setError(""); }}
             />
         );
     }

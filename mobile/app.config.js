@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { resolve } from 'path';
 
-// Load .env from parent directory
-require('dotenv').config({ path: resolve(__dirname, '../.env') });
+// Load .env shared with the web app
+require('dotenv').config({ path: resolve(__dirname, '../web/.env') });
 
 export default {
     expo: {
@@ -33,6 +33,9 @@ export default {
         },
         extra: {
             urlMobileApp: process.env.URL_MOBILE_APP,
-        }
+            eas: { projectId: "1351a371-bc93-4d5c-91bb-9064027f6d80" },
+        },
+        runtimeVersion: { policy: "appVersion" },
+        updates: { url: "https://u.expo.dev/1351a371-bc93-4d5c-91bb-9064027f6d80" }
     }
 };

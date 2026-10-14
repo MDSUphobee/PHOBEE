@@ -195,7 +195,7 @@ export default function UnderNavbar({
                                 {highlightTextNodes(title)}
                             </h1>
 
-                            <p style={subtitleStyle} className="mt-4 max-w-2xl mx-auto">
+                            <p style={subtitleStyle} className="mt-4 max-w-2xl mx-auto whitespace-pre-line">
                                 {highlightTextNodes(subtitle)}
                             </p>
 
