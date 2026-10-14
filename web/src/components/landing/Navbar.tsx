@@ -99,7 +99,7 @@ export default function Navbar() {
                         "absolute inset-0 backdrop-blur-[6px] border-b-[0.8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]",
                         isHome
                             ? "bg-[#14233c] border-[rgba(30,41,59,0.6)]"
-                            : "bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                            : "bg-background border-slate-200 dark:border-slate-800"
                     )}
                 />
 
