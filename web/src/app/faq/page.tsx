@@ -8,7 +8,7 @@ import Footer from "@/components/landing/Footer";
 
 export default function FAQPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-white via-white to-[#EEF2FF] dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
+        <div className="min-h-screen bg-[#f7f6fe] dark:bg-background">
             <Navbar />
             <UnderNavbar
                 imageSrc="/images/faq-hero.png"

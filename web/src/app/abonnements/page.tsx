@@ -28,7 +28,7 @@ const aideRows = [
 
 export default function AbonnementsPage() {
     return (
-        <main className="flex min-h-screen flex-col bg-[#f7f6fe] dark:bg-slate-900">
+        <main className="flex min-h-screen flex-col bg-[#f7f6fe] dark:bg-background">
             <Navbar />
 
             <UnderNavbar
