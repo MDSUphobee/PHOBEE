@@ -26,12 +26,13 @@
 
     --primary: 48 100% 50%; /* #FFCC00 */
     --primary-foreground: 222 47% 11%;
+    --primary-text: 47 100% 27%; /* #8A6D00 : jaune lisible sur fond clair (>= 4.5:1) */
 
     --secondary: 222 47% 11%; /* #0F172A */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.3 19.3% 34.5%; /* slate-600 : >= 4.5:1 sur les fonds clairs */
 
     --accent: 60 4.8% 95.9%;
     --accent-foreground: 215 25% 27%;
@@ -54,6 +55,7 @@
 
     --primary: 48 100% 50%; /* #FFCC00 */
     --primary-foreground: 222 47% 11%;
+    --primary-text: 48 100% 50%;
 
     --secondary: 210 40% 16%; /* #0B1224 */
     --secondary-foreground: 0 0% 100%;

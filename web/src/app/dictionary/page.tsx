@@ -184,7 +184,7 @@ export default function DictionaryPage() {
                 searchValue={searchTerm}
                 onSearchChange={setSearchTerm}
             />
-            <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background font-['Poppins',sans-serif] text-[#0f172a] dark:text-white">
+            <main id="contenu" className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background font-['Poppins',sans-serif] text-[#0f172a] dark:text-white">
                 <div className="dark:hidden pointer-events-none absolute bottom-0 left-1/2 h-[420px] w-[800px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
                 <div className="relative mx-auto max-w-[830px] px-4 md:px-6 md:[zoom:0.8] pt-8 pb-24">
                     <Breadcrumb items={[{ label: "Dictionnaire de l'entrepreneur" }]} className="mb-8" />

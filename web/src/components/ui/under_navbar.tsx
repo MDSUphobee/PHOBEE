@@ -212,7 +212,7 @@ export default function UnderNavbar({
                                         aria-label="Rechercher"
                                         placeholder={searchPlaceholder}
                                         {...(onSearchChange ? { value: searchValue ?? "", onChange: (e) => onSearchChange(e.target.value) } : {})}
-                                        className="w-full pl-14 pr-4 py-3 rounded-full border border-white bg-transparent text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 transition"
+                                        className="w-full pl-14 pr-4 py-3 rounded-full border border-white bg-transparent text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition"
                                     />
                                     <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hidden md:block" />
                                 </div>

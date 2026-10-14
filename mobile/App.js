@@ -49,7 +49,7 @@ export default function App() {
             startInLoadingState={true}
             renderLoading={() => (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#0000ff" accessibilityLabel="Chargement" />
               </View>
             )}
             style={styles.webview}

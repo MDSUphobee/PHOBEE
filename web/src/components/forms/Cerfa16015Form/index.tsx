@@ -176,7 +176,7 @@ export default function Cerfa16015Form({ onGenerated }: { onGenerated?: (url: st
                   )}
                 </motion.div>
                 <span className={`absolute -bottom-7 text-[10px] sm:text-xs font-medium whitespace-nowrap transition-colors duration-300 ${
-                  index <= currentStep ? 'text-primary' : 'text-muted-foreground'
+                  index <= currentStep ? 'text-primary-text' : 'text-muted-foreground'
                 }`}>
                   {step.title}
                 </span>
@@ -277,7 +277,7 @@ export default function Cerfa16015Form({ onGenerated }: { onGenerated?: (url: st
                     setCurrentStep(0);
                     setPdfUrl(null);
                   }}
-                  className="mt-10 text-sm text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-2 mx-auto"
+                  className="mt-10 text-sm text-muted-foreground hover:text-primary-text transition-colors flex items-center justify-center gap-2 mx-auto"
                 >
                   <RotateCcw size={14} />
                   Recommencer une saisie

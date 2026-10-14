@@ -26,7 +26,7 @@ function SignupContent() {
                 subtitleSize="clamp(32px, 7vw, 64px)"
                 highlightAngle={-1}
             />
-            <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background">
+            <main id="contenu" className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background">
                 <div className="dark:hidden pointer-events-none absolute -bottom-1/4 -right-1/4 h-3/4 w-[70%] rounded-full bg-[radial-gradient(closest-side,rgba(234,179,8,0.72),rgba(247,246,254,0))]" />
                 <div className="relative md:[zoom:0.8]">
                     <Signup />
@@ -46,7 +46,7 @@ function SignupContent() {
 export default function Page() {
     return (
         <Suspense fallback={
-            <main className="min-h-screen bg-white flex items-center justify-center">
+            <main id="contenu" className="min-h-screen bg-white flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-muted-foreground">Chargement...</p>

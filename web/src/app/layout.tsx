@@ -24,8 +24,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
     themeColor: [
         { media: "(prefers-color-scheme: light)", color: "#ffffff" },
         { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
@@ -93,6 +91,13 @@ export default function RootLayout({
                 }}
             />
         ) : null}
+
+        <a
+            href="#contenu"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[#14233c] focus:px-5 focus:py-3 focus:font-semibold focus:text-white focus:outline-none focus:ring-2 focus:ring-[#FFCC00]"
+        >
+            Aller au contenu
+        </a>
 
         <ThemeProvider>
             <Suspense fallback={null}>

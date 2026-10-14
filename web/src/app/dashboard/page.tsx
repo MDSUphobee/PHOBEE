@@ -119,16 +119,16 @@ export default function DashboardPage() {
     return (
         <>
             <Navbar />
-            <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
+            <main id="contenu" className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
                 {/* Halos de fond (maquette) */}
                 <div className="dark:hidden pointer-events-none absolute -left-[40%] top-1/4 h-[110%] w-[95%] rounded-full bg-[radial-gradient(closest-side,#fff7d7,transparent)]" />
                 <div className="dark:hidden pointer-events-none absolute -right-[20%] top-0 h-[45%] w-[55%] rotate-[34deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 
                 {/* ponytail: zoom global 0.8 car la maquette est dessinée en grand ; remplacer par des tailles Tailwind réduites si Firefox < 126 compte */}
-                <div className="relative container mx-auto px-4 md:px-6 [zoom:0.8] pt-32 md:pt-36">
+                <div className="relative container mx-auto px-4 md:px-6 md:[zoom:0.8] pt-32 md:pt-36">
                     <Breadcrumb items={[{ label: "Tableau de bord" }]} />
                 </div>
-                <div className="relative container mx-auto px-4 md:px-6 [zoom:0.8] pt-6 pb-24 grid gap-x-10 xl:gap-x-16 2xl:gap-x-[132px] gap-y-12 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(320px,441px)] items-start">
+                <div className="relative container mx-auto px-4 md:px-6 md:[zoom:0.8] pt-6 pb-24 grid gap-x-10 xl:gap-x-16 2xl:gap-x-[132px] gap-y-12 grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(320px,441px)] items-start">
                     {/* Colonne gauche */}
                     <div className="flex flex-col">
                         <Card className={`${carte} px-6 md:px-[46px] py-11`}>

@@ -176,7 +176,7 @@ export default function ProfilePage() {
     return (
         <>
             <Navbar />
-            <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
+            <main id="contenu" className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
                 <div className="dark:hidden pointer-events-none absolute -left-[35%] top-[15%] h-[85%] w-[70%] rounded-full bg-[radial-gradient(closest-side,rgba(255,204,0,0.9),rgba(247,246,254,0))]" />
                 <div className="dark:hidden pointer-events-none absolute -right-[20%] top-[10%] h-[45%] w-[55%] rotate-[36deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 

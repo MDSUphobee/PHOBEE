@@ -125,7 +125,7 @@ export default function LoginForm() {
                 <div className="w-full max-w-md mx-auto">
                     <Link
                         href="/"
-                        className="inline-flex items-center text-sm text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white transition-colors mb-8"
+                        className="inline-flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white transition-colors mb-8"
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Retour à l'accueil
@@ -139,11 +139,11 @@ export default function LoginForm() {
                             <span className="text-2xl font-bold text-slate-900 dark:text-white">PhoBee</span>
                         </div>
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Bon retour !</h1>
-                        <p className="text-slate-500 dark:text-slate-300">Connectez-vous pour accéder à votre espace.</p>
+                        <p className="text-slate-600 dark:text-slate-300">Connectez-vous pour accéder à votre espace.</p>
                     </div>
 
                     {error && (
-                        <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 text-red-600 dark:text-red-200 text-sm">
+                        <div id="login-erreur" role="alert" className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 text-red-600 dark:text-red-200 text-sm">
                             {error}
                         </div>
                     )}
@@ -156,9 +156,12 @@ export default function LoginForm() {
                                 <input
                                     id="email"
                                     type="email"
+                                    autoComplete="email"
+                                    aria-invalid={!!error}
+                                    aria-describedby={error ? "login-erreur" : undefined}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white dark:bg-slate-900 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-[#FFCC00] focus:ring-2 focus:ring-slate-900 dark:focus:ring-[#FFCC00] bg-white dark:bg-slate-900 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     placeholder="vous@exemple.com"
                                     required
                                 />
@@ -172,9 +175,12 @@ export default function LoginForm() {
                                 <input
                                     id="password"
                                     type="password"
+                                    autoComplete="current-password"
+                                    aria-invalid={!!error}
+                                    aria-describedby={error ? "login-erreur" : undefined}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-[#FFCC00] focus:ring-2 focus:ring-[#FFCC00]/20 bg-white dark:bg-slate-900 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-[#FFCC00] focus:ring-2 focus:ring-slate-900 dark:focus:ring-[#FFCC00] bg-white dark:bg-slate-900 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -197,7 +203,7 @@ export default function LoginForm() {
                         </button>
                     </form>
 
-                    <p className="mt-8 text-center text-sm text-slate-500 dark:text-slate-300">
+                    <p className="mt-8 text-center text-sm text-slate-600 dark:text-slate-300">
                         Pas encore de compte ?{" "}
                         <Link href="/signup" className="text-[#0F172A] dark:text-white font-semibold hover:underline">
                             S'inscrire

@@ -94,13 +94,13 @@ export default function CalendrierPage() {
     return (
         <>
             <Navbar />
-            <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
+            <main id="contenu" className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
                 {/* Halos de fond (maquette) */}
                 <div className="dark:hidden pointer-events-none absolute -left-[40%] top-1/4 h-[110%] w-[95%] rounded-full bg-[radial-gradient(closest-side,#fff7d7,transparent)]" />
                 <div className="dark:hidden pointer-events-none absolute -right-[20%] top-0 h-[45%] w-[55%] rotate-[34deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 
-                {/* ponytail: zoom 0.8 comme le dashboard (maquette dessinée en grand) */}
-                <div className="relative container mx-auto px-4 md:px-6 [zoom:0.8] pt-32 md:pt-36 pb-24">
+                {/* ponytail: zoom 0.8 desktop seulement comme le dashboard (maquette dessinée en grand) ; jamais sur mobile, le texte y deviendrait trop petit */}
+                <div className="relative container mx-auto px-4 md:px-6 md:[zoom:0.8] pt-32 md:pt-36 pb-24">
                     <Breadcrumb items={[{ label: "Calendrier" }]} className="mb-8" />
                     <Card className={`${carte} px-5 pb-10 pt-8 md:px-[60px] md:pb-[67px] md:pt-[44px]`}>
                         <h1 className="text-[26px] font-bold leading-[26px] md:text-[32px]">Calendrier des démarches</h1>

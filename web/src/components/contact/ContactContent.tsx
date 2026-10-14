@@ -12,7 +12,7 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrgnkdqj";
 
 // Champs "pilule" réutilisés dans les deux formulaires (fidèle à la maquette Figma).
 const pillBase =
-    "w-full h-[53px] rounded-full bg-[#f4faff] dark:bg-slate-900 border border-slate-400 dark:border-slate-700 px-6 text-base text-foreground placeholder:text-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition";
+    "w-full h-[53px] rounded-full bg-[#f4faff] dark:bg-slate-900 border border-slate-400 dark:border-slate-700 px-6 text-base text-foreground placeholder:text-slate-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-primary transition";
 
 export default function ContactContent() {
     const [method, setMethod] = useState<"phone" | "video">("phone");
@@ -56,17 +56,17 @@ export default function ContactContent() {
                     >
                         <input type="hidden" name="_subject" value="Nouveau message — Contact Phobee" />
                         <div className="grid sm:grid-cols-2 gap-4">
-                            <input className={pillBase} name="nom" type="text" placeholder="Votre Nom" autoComplete="family-name" required />
-                            <input className={pillBase} name="prenom" type="text" placeholder="Votre Prénom" autoComplete="given-name" required />
+                            <input className={pillBase} name="nom" type="text" placeholder="Votre Nom" aria-label="Votre Nom" autoComplete="family-name" required />
+                            <input className={pillBase} name="prenom" type="text" placeholder="Votre Prénom" aria-label="Votre Prénom" autoComplete="given-name" required />
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4">
-                            <input className={pillBase} name="telephone" type="tel" placeholder="Téléphone" autoComplete="tel" />
-                            <input className={pillBase} name="email" type="email" placeholder="Adresse Email" autoComplete="email" required />
+                            <input className={pillBase} name="telephone" type="tel" placeholder="Téléphone" aria-label="Téléphone" autoComplete="tel" />
+                            <input className={pillBase} name="email" type="email" placeholder="Adresse Email" aria-label="Adresse Email" autoComplete="email" required />
                         </div>
                         <textarea
                             className={cn(pillBase, "h-auto min-h-[180px] rounded-[31px] py-4 resize-y")}
                             name="message"
-                            placeholder="Sur quoi souhaitez-vous être aidé ?"
+                            placeholder="Sur quoi souhaitez-vous être aidé ?" aria-label="Sur quoi souhaitez-vous être aidé ?"
                             required
                         />
                         <div className="flex flex-wrap items-center gap-4 pt-1">
@@ -76,7 +76,7 @@ export default function ContactContent() {
                             >
                                 Envoyer
                             </button>
-                            <span className="italic text-sm text-slate-400">*Réponse sous 24 à 48h</span>
+                            <span className="italic text-sm text-slate-600">*Réponse sous 24 à 48h</span>
                         </div>
                     </form>
                 </div>
@@ -103,33 +103,33 @@ export default function ContactContent() {
                         <input type="hidden" name="_subject" value="Demande d'échange — Contact Phobee" />
                         <input type="hidden" name="type_echange" value={method === "phone" ? "Appel téléphonique" : "Visioconférence"} />
                         <div className="grid sm:grid-cols-2 gap-4">
-                            <input className={pillBase} name="nom" type="text" placeholder="Votre Nom" autoComplete="family-name" required />
-                            <input className={pillBase} name="prenom" type="text" placeholder="Votre Prénom" autoComplete="given-name" required />
+                            <input className={pillBase} name="nom" type="text" placeholder="Votre Nom" aria-label="Votre Nom" autoComplete="family-name" required />
+                            <input className={pillBase} name="prenom" type="text" placeholder="Votre Prénom" aria-label="Votre Prénom" autoComplete="given-name" required />
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4">
-                            <input className={pillBase} name="telephone" type="tel" placeholder="Téléphone" autoComplete="tel" required />
-                            <input className={pillBase} name="email" type="email" placeholder="Adresse Email" autoComplete="email" required />
+                            <input className={pillBase} name="telephone" type="tel" placeholder="Téléphone" aria-label="Téléphone" autoComplete="tel" required />
+                            <input className={pillBase} name="email" type="email" placeholder="Adresse Email" aria-label="Adresse Email" autoComplete="email" required />
                         </div>
                         <textarea
                             className={cn(pillBase, "h-auto min-h-[90px] rounded-[31px] py-4 resize-y")}
                             name="besoin"
-                            placeholder="Décrivez rapidement votre besoin"
+                            placeholder="Décrivez rapidement votre besoin" aria-label="Décrivez rapidement votre besoin"
                         />
                         <div className="grid sm:grid-cols-2 gap-4">
-                            <label className={cn(pillBase, "flex items-center gap-2 cursor-text")}>
-                                <span className="text-slate-400 whitespace-nowrap">Date&nbsp;:</span>
+                            <label className={cn(pillBase, "flex items-center gap-2 cursor-text focus-within:ring-2 focus-within:ring-slate-900 dark:focus-within:ring-primary")}>
+                                <span className="text-slate-600 whitespace-nowrap">Date&nbsp;:</span>
                                 <input
                                     type="date"
                                     name="date"
-                                    className="flex-1 bg-transparent text-primary font-semibold focus:outline-none [color-scheme:light] dark:[color-scheme:dark]"
+                                    className="flex-1 bg-transparent text-[#14233c] dark:text-primary font-semibold focus:outline-none [color-scheme:light] dark:[color-scheme:dark]"
                                 />
                             </label>
-                            <label className={cn(pillBase, "flex items-center gap-2")}>
-                                <span className="text-slate-400 whitespace-nowrap">Horaire&nbsp;:</span>
+                            <label className={cn(pillBase, "flex items-center gap-2 focus-within:ring-2 focus-within:ring-slate-900 dark:focus-within:ring-primary")}>
+                                <span className="text-slate-600 whitespace-nowrap">Horaire&nbsp;:</span>
                                 <select
                                     name="horaire"
                                     defaultValue="12:00 - 12:30"
-                                    className="flex-1 bg-transparent text-primary font-semibold focus:outline-none cursor-pointer"
+                                    className="flex-1 bg-transparent text-[#14233c] dark:text-primary font-semibold focus:outline-none cursor-pointer"
                                 >
                                     <option>09:00 - 09:30</option>
                                     <option>10:00 - 10:30</option>
@@ -181,7 +181,7 @@ export default function ContactContent() {
                             >
                                 Réserver un échange gratuit
                             </button>
-                            <span className="italic text-sm text-slate-400">
+                            <span className="italic text-sm text-slate-600">
                                 *Nous vous appelons à l&apos;heure choisie
                             </span>
                         </div>

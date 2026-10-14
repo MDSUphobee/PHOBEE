@@ -198,7 +198,7 @@ export default function QuestionnairePage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-slate-50 dark:bg-black text-foreground flex flex-col items-center justify-center">
+      <main id="contenu" className="min-h-screen bg-slate-50 dark:bg-black text-foreground flex flex-col items-center justify-center">
         <Navbar />
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
@@ -224,7 +224,7 @@ export default function QuestionnairePage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main id="contenu" className="min-h-screen bg-background text-foreground">
       <Navbar />
       
       <div className="container mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-24 md:pb-12">
@@ -281,6 +281,7 @@ export default function QuestionnairePage() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <input
                       type="text"
+                            aria-label="Rechercher un statut"
                       placeholder="Rechercher un statut (ex: EARL, GAEC, CUMA...)"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}

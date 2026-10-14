@@ -13,8 +13,8 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
       ref={ref}
       className={cn(
         "flex h-12 w-full rounded-xl border border-input bg-slate-100 dark:bg-slate-800/50 px-4 py-2 text-base ring-offset-background transition-all duration-200",
-        "text-foreground placeholder:text-slate-900 dark:placeholder:text-slate-300",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:border-primary focus-visible:bg-card",
+        "text-foreground placeholder:text-slate-500 dark:placeholder:text-slate-400",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-primary focus-visible:border-primary focus-visible:bg-card",
         "hover:border-primary/30",
         "md:text-sm",
         className
@@ -29,7 +29,7 @@ export const Select = ({ children, className, ...props }: React.SelectHTMLAttrib
   <select
     className={cn(
       "flex h-12 w-full rounded-xl border border-input bg-slate-100 dark:bg-slate-800/50 px-4 py-2 text-base ring-offset-background transition-all duration-200 text-foreground",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:border-primary focus-visible:bg-slate-800",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-primary focus-visible:border-primary focus-visible:bg-card",
       "hover:border-primary/30 cursor-pointer",
       "md:text-sm appearance-none",
       className
@@ -41,17 +41,18 @@ export const Select = ({ children, className, ...props }: React.SelectHTMLAttrib
 );
 
 export const Checkbox = ({ label, checked, onChange, className }: { label: string, checked: boolean, onChange: (checked: boolean) => void, className?: string }) => (
-  <div 
-    onClick={() => onChange(!checked)}
+  <label
     className={cn(
       "flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none",
+      "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-slate-900 dark:has-[:focus-visible]:ring-primary",
       checked 
         ? "bg-primary/5 border-primary shadow-sm" 
         : "bg-slate-100 dark:bg-slate-800/30 border-transparent hover:border-primary/20 hover:bg-card",
       className
     )}
   >
-    <div className={cn(
+    <input type="checkbox" className="sr-only" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+    <div aria-hidden className={cn(
       "h-5 w-5 rounded border-2 flex items-center justify-center transition-all",
       checked ? "bg-primary border-primary" : "bg-transparent border-muted-foreground/30"
     )}>
@@ -61,17 +62,18 @@ export const Checkbox = ({ label, checked, onChange, className }: { label: strin
         </svg>
       )}
     </div>
-    <span className={cn("text-sm font-bold transition-colors", checked ? "text-primary font-bold" : "text-foreground/90")}>
+    <span className="text-sm font-bold transition-colors text-foreground/90">
       {label}
     </span>
-  </div>
+  </label>
 );
 
-export const RadioGroup = ({ value, onChange, options, name }: { value: string, onChange: (val: any) => void, options: { label: string, value: string }[], name: string }) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+export const RadioGroup = ({ value, onChange, options, name, label }: { value: string, onChange: (val: any) => void, options: { label: string, value: string }[], name: string, label?: string }) => (
+  <div role="radiogroup" aria-label={label} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
     {options.map((opt) => (
       <label key={opt.value} className={cn(
         "flex items-center space-x-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200",
+        "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-slate-900 dark:has-[:focus-visible]:ring-primary",
         value === opt.value 
           ? "bg-primary/5 border-primary shadow-sm" 
           : "bg-slate-100 dark:bg-slate-800/30 border-input hover:border-primary/20 hover:bg-card"
@@ -82,15 +84,15 @@ export const RadioGroup = ({ value, onChange, options, name }: { value: string, 
           value={opt.value}
           checked={value === opt.value}
           onChange={() => onChange(opt.value)}
-          className="h-4 w-4 text-primary focus:ring-primary hidden"
+          className="sr-only"
         />
-        <div className={cn(
+        <div aria-hidden className={cn(
           "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
           value === opt.value ? "border-primary" : "border-muted-foreground/30"
         )}>
           {value === opt.value && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
         </div>
-        <span className={cn("text-sm font-bold transition-colors", value === opt.value ? "text-primary" : "text-foreground/90")}>
+        <span className="text-sm font-bold transition-colors text-foreground/90">
           {opt.label}
         </span>
       </label>

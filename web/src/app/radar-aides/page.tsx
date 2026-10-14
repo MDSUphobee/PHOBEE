@@ -64,14 +64,14 @@ export default function RadarAides() {
     };
 
     return (
-        <main suppressHydrationWarning={true} className="min-h-screen bg-background text-foreground flex flex-col">
+        <main id="contenu" suppressHydrationWarning={true} className="min-h-screen bg-background text-foreground flex flex-col">
             <Navbar />
 
             <div suppressHydrationWarning={true} className="flex-1 pt-[120px] pb-24 container mx-auto px-4 md:px-6">
                 <Breadcrumb items={[{ label: "Radar à documents" }]} className="mb-10" />
                 <div className="max-w-3xl mx-auto text-center mb-12">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-6">
-                        Radar à <span className="text-primary">Documents</span>
+                        Radar à <span className="text-primary-text">Documents</span>
                     </h1>
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Retrouvez facilement les déclarations et formulaires nécessaires à vos démarches.
@@ -83,6 +83,7 @@ export default function RadarAides() {
                         </div>
                         <input
                             type="text"
+                            aria-label="Rechercher une aide"
                             placeholder="Rechercher par mot-clé..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -92,14 +93,14 @@ export default function RadarAides() {
                 </div>
 
                 {error && (
-                    <div className="text-center text-destructive bg-destructive/10 p-4 rounded-xl mb-8 max-w-2xl mx-auto border border-destructive/20 shadow-sm">
+                    <div role="alert" className="text-center text-destructive bg-destructive/10 p-4 rounded-xl mb-8 max-w-2xl mx-auto border border-destructive/20 shadow-sm">
                         {error}
                     </div>
                 )}
 
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-xl font-bold text-foreground border-l-4 border-primary pl-3">
-                        <span className="text-primary">{loading ? '...' : filteredPdfs.length}</span> documents trouvés
+                        <span className="text-primary-text">{loading ? '...' : filteredPdfs.length}</span> documents trouvés
                     </h2>
                 </div>
 
@@ -115,7 +116,7 @@ export default function RadarAides() {
                                             <FileText className="w-6 h-6" />
                                         </div>
                                         <div className="flex-1 pt-1 break-words">
-                                            <h3 className="text-lg font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
+                                            <h3 className="text-lg font-bold text-foreground leading-tight group-hover:text-primary-text transition-colors">
                                                 {formatTitle(pdf)}
                                             </h3>
                                         </div>

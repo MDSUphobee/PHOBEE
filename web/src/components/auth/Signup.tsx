@@ -173,18 +173,18 @@ export default function SignupForm() {
             </p>
 
             {error && (
-                <div role="alert" className="mt-6 max-w-[760px] rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
+                <div id="signup-erreur" role="alert" className="mt-6 max-w-[760px] rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-600">
                     {error}
                 </div>
             )}
 
             <form onSubmit={handleSubmit} className="mt-8 max-w-[760px]" noValidate>
                 <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
-                    <input name="nom" aria-label="Votre nom" placeholder="Votre Nom" autoComplete="family-name" value={formData.nom} onChange={handleChange} className={champ} required />
-                    <input name="prenom" aria-label="Votre prénom" placeholder="Votre Prénom" autoComplete="given-name" value={formData.prenom} onChange={handleChange} className={champ} required />
-                    <input name="phone" type="tel" aria-label="Téléphone" placeholder="Téléphone" autoComplete="tel" value={formData.phone} onChange={handleChange} className={champ} required />
-                    <input name="email" type="email" aria-label="Adresse email" placeholder="Adresse Email" autoComplete="email" value={formData.email} onChange={handleChange} className={champ} required />
-                    <input name="password" type="password" aria-label="Mot de passe" placeholder="Mot de passe (8 caractères minimum)" autoComplete="new-password" value={formData.password} onChange={handleChange} className={`${champ} sm:col-span-2`} required />
+                    <input name="nom" aria-label="Votre nom" placeholder="Votre Nom" autoComplete="family-name" value={formData.nom} onChange={handleChange} className={champ} aria-invalid={!!error} aria-describedby={error ? "signup-erreur" : undefined} required />
+                    <input name="prenom" aria-label="Votre prénom" placeholder="Votre Prénom" autoComplete="given-name" value={formData.prenom} onChange={handleChange} className={champ} aria-invalid={!!error} aria-describedby={error ? "signup-erreur" : undefined} required />
+                    <input name="phone" type="tel" aria-label="Téléphone" placeholder="Téléphone" autoComplete="tel" value={formData.phone} onChange={handleChange} className={champ} aria-invalid={!!error} aria-describedby={error ? "signup-erreur" : undefined} required />
+                    <input name="email" type="email" aria-label="Adresse email" placeholder="Adresse Email" autoComplete="email" value={formData.email} onChange={handleChange} className={champ} aria-invalid={!!error} aria-describedby={error ? "signup-erreur" : undefined} required />
+                    <input name="password" type="password" aria-label="Mot de passe" placeholder="Mot de passe (8 caractères minimum)" autoComplete="new-password" value={formData.password} onChange={handleChange} className={`${champ} sm:col-span-2`} aria-invalid={!!error} aria-describedby={error ? "signup-erreur" : undefined} required />
                 </div>
 
                 <label className="mt-8 flex items-center gap-4 text-sm cursor-pointer">
