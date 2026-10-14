@@ -34,12 +34,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - name: Lint (règles a11y jsx-a11y bloquantes)
         run: npm run lint
-        continue-on-error: true
 
       - name: Tests unitaires (Jest)
         run: npm run test:ci
+
+      - name: Tests accessibilité (axe, WCAG 2.1 AA)
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test tests/system/a11y.spec.ts --project=system
+        env:
+          NEXT_PUBLIC_API_BASE: http://localhost:8000/api
+          API_BASE: http://localhost:8000/api
+          API_URL: http://localhost:8000
+          JWT_SECRET: ci-dummy-secret
 
       - name: Build
         run: npm run build
