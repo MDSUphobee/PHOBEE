@@ -43,7 +43,7 @@ const INITIAL_DATA: Cerfa16015Data = {
   pieces: {},
 };
 
-export default function Cerfa16015Form() {
+export default function Cerfa16015Form({ onGenerated }: { onGenerated?: (url: string) => void }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Cerfa16015Data>(INITIAL_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,8 +79,12 @@ export default function Cerfa16015Form() {
       
       if (result.success && result.data?.url) {
         toast.success('Document généré !', { id: toastId });
-        setPdfUrl(result.data.url);
-        setIsCompleted(true);
+        if (onGenerated) {
+          onGenerated(result.data.url);
+        } else {
+          setPdfUrl(result.data.url);
+          setIsCompleted(true);
+        }
       } else {
         throw new Error('URL du PDF manquante dans la réponse');
       }
