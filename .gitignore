@@ -51,3 +51,6 @@ docker-compose.override.yml
 # Config Claude Code (local)
 .claude/
 /.claude/
+
+# Rapports de test de charge (générés par k6)
+load-tests/rapport.html
