@@ -31,8 +31,10 @@ export function CookieBanner() {
 
     if (!mounted || consent) return null;
 
+    // Sur mobile, on remonte le bandeau au-dessus de la MobileBottomBar (z-[55], fixée en bas)
+    // pour que les boutons restent cliquables ; sur desktop (barre masquée) il reste en bas.
     return (
-        <div className="fixed inset-x-4 bottom-4 z-50">
+        <div className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-[56] md:bottom-4">
             <div className="mx-auto max-w-4xl rounded-2xl border border-border/60 bg-card/95 backdrop-blur shadow-xl shadow-black/5 dark:shadow-black/30">
                 <div className="flex flex-col gap-4 p-4 sm:p-5 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1">
