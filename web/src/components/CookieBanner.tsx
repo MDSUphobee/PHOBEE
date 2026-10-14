@@ -35,7 +35,7 @@ export function CookieBanner() {
     // pour que les boutons restent cliquables ; sur desktop (barre masquée) il reste en bas.
     return (
         <div className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-[56] md:bottom-4">
-            <div className="mx-auto max-w-4xl rounded-2xl border border-border/60 bg-card/95 backdrop-blur shadow-xl shadow-black/5 dark:shadow-black/30">
+            <div className="mx-auto max-w-4xl rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-xl shadow-black/10 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:shadow-black/40">
                 <div className="flex flex-col gap-4 p-4 sm:p-5 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1">
                         <p className="text-sm sm:text-base font-semibold text-foreground">Gestion des cookies</p>
