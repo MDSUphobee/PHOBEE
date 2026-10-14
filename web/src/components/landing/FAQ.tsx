@@ -90,7 +90,7 @@ export default function FAQ() {
                     >
                         Consulter toute la FAQ
                     </Link>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
                         Vous ne trouvez pas votre réponse ?{" "}
                         <Link href="/contact" className="font-semibold text-[#344256] underline underline-offset-2 hover:text-[#14233c] dark:text-slate-200">
                             Contactez-nous

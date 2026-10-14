@@ -416,7 +416,7 @@ function PdfProcessingOverlay() {
                                     i < step
                                         ? "text-green-500"
                                         : i === step
-                                        ? "text-primary font-semibold"
+                                        ? "text-primary-text font-semibold"
                                         : "text-muted-foreground/30"
                                 }`}
                             >
@@ -605,7 +605,7 @@ function CerfaFormContent() {
     if (error && fields.length === 0 && !schema) {
         return (
             <div className="flex-1 pt-32 pb-24 container mx-auto px-4 max-w-2xl text-center" suppressHydrationWarning>
-                <div className="bg-destructive/10 text-destructive p-8 rounded-2xl border border-destructive/20 flex flex-col items-center gap-4">
+                <div role="alert" className="bg-destructive/10 text-destructive p-8 rounded-2xl border border-destructive/20 flex flex-col items-center gap-4">
                     <AlertCircle className="w-8 h-8" />
                     <p className="font-medium">{error}</p>
                     <button
@@ -654,7 +654,7 @@ function CerfaFormContent() {
                     </div>
 
                     {error && (
-                        <div className="mb-6 px-5 py-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center gap-3 text-destructive text-sm">
+                        <div role="alert" className="mb-6 px-5 py-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center gap-3 text-destructive text-sm">
                             <AlertCircle className="w-5 h-5 flex-shrink-0" />
                             {error}
                         </div>
@@ -735,7 +735,7 @@ function CerfaFormContent() {
                         </div>
                     </div>
 
-                    <div className="px-10 py-4 bg-primary/5 border-t border-primary/10 flex items-center gap-2 text-xs text-primary/80 font-medium">
+                    <div className="px-10 py-4 bg-primary/5 border-t border-primary/10 flex items-center gap-2 text-xs text-primary-text font-medium">
                         <span className="w-2 h-2 rounded-full bg-primary inline-block" />
                         {fields.length} champ{fields.length > 1 ? "s" : ""} détecté{fields.length > 1 ? "s" : ""} dans ce document PDF
                     </div>
@@ -743,7 +743,7 @@ function CerfaFormContent() {
 
                 {/* Error banner (non-fatal) */}
                 {error && (
-                    <div className="mb-6 px-5 py-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center gap-3 text-destructive text-sm">
+                    <div role="alert" className="mb-6 px-5 py-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center gap-3 text-destructive text-sm">
                         <AlertCircle className="w-5 h-5 flex-shrink-0" />
                         {error}
                     </div>
@@ -843,7 +843,7 @@ function CerfaFormContent() {
 
 export default function FormulaireCerfaPage() {
     return (
-        <main
+        <main id="contenu"
             className="min-h-screen bg-background text-foreground flex flex-col"
             suppressHydrationWarning
         >

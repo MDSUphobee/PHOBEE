@@ -42,7 +42,7 @@ export function CookieBanner() {
                         <p className="text-xs sm:text-sm text-muted-foreground">
                             Nous utilisons des cookies pour améliorer votre expérience et mesurer l&apos;audience. Vous pouvez refuser si vous le
                             souhaitez. En savoir plus dans nos{" "}
-                            <Link href="/mentions-legales" className="font-semibold text-primary hover:underline">
+                            <Link href="/mentions-legales" className="font-semibold text-primary-text hover:underline">
                                 mentions légales
                             </Link>
                             .

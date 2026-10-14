@@ -39,7 +39,7 @@ export default function ProblemSection() {
                 </h2>
 
                 <div className="relative mx-auto mt-8 w-full max-w-[440px] sm:max-w-[520px]">
-                    <img {...IMAGE} decoding="async" className="w-full h-auto rounded-[1.5rem] object-cover" />
+                    <img src={IMAGE.src} alt={IMAGE.alt} decoding="async" className="w-full h-auto rounded-[1.5rem] object-cover" />
                     <img src={BADGE} alt="" aria-hidden className="absolute -top-4 -left-4 size-[130px] object-contain drop-shadow-lg -rotate-6" />
                 </div>
 
@@ -54,7 +54,7 @@ export default function ProblemSection() {
 
             {/* ── DESKTOP (lg+) ── */}
             <div className="hidden lg:block absolute bottom-[3.5em] left-[10em] z-10 -rotate-1 w-full max-w-[450px]">
-                <img {...IMAGE} decoding="async" className="w-full h-auto object-cover" />
+                <img src={IMAGE.src} alt={IMAGE.alt} decoding="async" className="w-full h-auto object-cover" />
                 <img src={BADGE} alt="" aria-hidden className="absolute -top-8 -left-8 size-[130px] object-contain drop-shadow-xl -rotate-3" />
             </div>
 

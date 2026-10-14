@@ -141,14 +141,14 @@ export default function CalculateurPage() {
 
     if (loading) {
         return (
-            <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-600 dark:text-slate-100">
+            <main id="contenu" className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center text-slate-600 dark:text-slate-100">
                 <Loader2 className="w-8 h-8 animate-spin text-[#FFCC00]" />
             </main>
         );
     }
 
     return (
-        <main className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans mt-16 text-slate-900 dark:text-slate-100">
+        <main id="contenu" className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans mt-16 text-slate-900 dark:text-slate-100">
             <Navbar />
 
             <div className="container mx-auto px-4 pt-24 md:pt-28">
@@ -181,7 +181,7 @@ export default function CalculateurPage() {
                                         id="start_date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-[#FFCC00] focus:ring-4 focus:ring-[#FFCC00]/10 bg-slate-50 dark:bg-slate-900 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 focus:border-[#FFCC00] focus:ring-2 focus:ring-slate-900 dark:focus:ring-[#FFCC00] bg-slate-50 dark:bg-slate-900 transition-all outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                                         required
                                     />
                                     <p className="text-sm text-slate-500 dark:text-slate-400">La date à laquelle vous avez commencé votre exploitation.</p>
@@ -229,15 +229,16 @@ export default function CalculateurPage() {
                                 </div>
 
                                 {/* ACRE Checkbox */}
-                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center gap-4 cursor-pointer hover:border-slate-200 dark:hover:border-slate-600 transition-colors" onClick={() => setHasAcre(!hasAcre)}>
-                                    <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${hasAcre ? "bg-[#FFCC00] border-[#FFCC00]" : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950"}`}>
+                                <label className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center gap-4 cursor-pointer hover:border-slate-200 dark:hover:border-slate-600 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-slate-900 dark:has-[:focus-visible]:ring-[#FFCC00]">
+                                    <input type="checkbox" className="sr-only" checked={hasAcre} onChange={(e) => setHasAcre(e.target.checked)} />
+                                    <div aria-hidden className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${hasAcre ? "bg-[#FFCC00] border-[#FFCC00]" : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950"}`}>
                                         {hasAcre && <CheckCircle2 className="w-4 h-4 text-slate-900" />}
                                     </div>
                                     <div className="flex-1">
                                         <span className="font-semibold text-slate-800 dark:text-slate-100 block">Bénéficiaire de l'ACRE</span>
                                         <span className="text-sm text-slate-500 dark:text-slate-400">Cochez cette case si vous bénéficiez de l'aide à la création ou à la reprise d'une entreprise.</span>
                                     </div>
-                                </div>
+                                </label>
 
                                 <button
                                     type="submit"

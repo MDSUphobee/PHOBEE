@@ -31,6 +31,7 @@ export default function FamilyStep({ data, updateData }: StepProps) {
       <FormSection title="Votre situation familiale actuelle">
         <div className="space-y-6">
           <RadioGroup
+            label="Votre situation familiale actuelle"
             name="relationStatus"
             value={data.relations?.status || ''}
             onChange={(val) => handleRelationChange('status', val)}
@@ -59,6 +60,7 @@ export default function FamilyStep({ data, updateData }: StepProps) {
       <FormSection title="Autre cas (changement de situation)">
         <div className="space-y-6">
           <RadioGroup
+            label="Autre cas (changement de situation)"
             name="livingStatus"
             value={data.livingSituation?.status || ''}
             onChange={(val) => handleLivingChange('status', val)}

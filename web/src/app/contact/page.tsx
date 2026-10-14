@@ -4,7 +4,7 @@ import Footer from "@/components/landing/Footer";
 
 export default function ContactPage() {
     return(
-        <main className="min-h-screen bg-background text-foreground">
+        <main id="contenu" className="min-h-screen bg-background text-foreground">
             <Navbar />
             <ContactContent />
             <Footer />

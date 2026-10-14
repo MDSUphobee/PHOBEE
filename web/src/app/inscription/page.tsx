@@ -26,7 +26,7 @@ export default function InscriptionPage() {
                 subtitleSize="clamp(32px, 7vw, 64px)"
                 highlightAngle={-1}
             />
-            <main className="bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
+            <main id="contenu" className="bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
                 <div className="container mx-auto px-4 md:px-6 md:[zoom:0.8] pb-24">
                     {/* Choix */}
                     <section className="mx-auto max-w-[1080px] pt-14 md:pt-[70px]">

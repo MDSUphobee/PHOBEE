@@ -23,6 +23,7 @@ export default function PiecesStep({ data, updateData }: StepProps) {
             <div key={p.key} className="space-y-3">
               <Label>{p.label}</Label>
               <RadioGroup
+                label={p.label}
                 name={`piece_${p.key}`}
                 value={data.pieces[p.key] || ''}
                 onChange={(v: EtatPiece) => updateData({ pieces: { ...data.pieces, [p.key]: v } })}

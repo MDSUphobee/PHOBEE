@@ -27,6 +27,7 @@ export default function ProfileStep({ data, updateData }: StepProps) {
           <div className="space-y-3">
             <Label>Civilité</Label>
             <RadioGroup
+              label="Civilité"
               name={`${key}_gender`}
               value={person.gender || ''}
               onChange={(val) => handlePersonChange(key, 'gender', val)}

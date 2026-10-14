@@ -30,10 +30,11 @@ const AccordionItem = ({ title, tag, children }: { title: string, tag?: string, 
         <div className="border border-slate-200 rounded-xl bg-white overflow-hidden transition-all hover:shadow-md">
             <button
                 onClick={() => setIsOpen(!isOpen)}
+                aria-expanded={isOpen}
                 className="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-slate-50 transition-colors"
             >
                 <div>
-                    {tag && <span className="inline-block px-2 py-1 bg-slate-100 text-slate-500 text-xs font-bold rounded-md mb-2 tracking-wide uppercase">{tag}</span>}
+                    {tag && <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-md mb-2 tracking-wide uppercase">{tag}</span>}
                     <h3 className="text-lg font-bold text-slate-900">{title}</h3>
                 </div>
                 {isOpen ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
@@ -230,7 +231,7 @@ export default function SurvivalManualPage() {
     const activeCategory = categories.find(c => c.id === activeTab) || categories[0];
 
     return (
-        <main className="min-h-screen bg-background text-foreground flex flex-col mt-16 font-sans">
+        <main id="contenu" className="min-h-screen bg-background text-foreground flex flex-col mt-16 font-sans">
             <Navbar />
 
             {/* Header */}
@@ -239,11 +240,11 @@ export default function SurvivalManualPage() {
                     <Breadcrumb items={[{ label: "Guide de survie" }]} className="mb-8" />
                 </div>
                 <div className="container mx-auto max-w-4xl text-center">
-                    <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFCC00]/15 text-[#af8c00] dark:text-[#FFD54F] text-xs font-bold tracking-wide uppercase mb-6">
+                    <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFCC00]/15 text-[#7a6000] dark:text-[#FFD54F] text-xs font-bold tracking-wide uppercase mb-6">
                         Documentation Développeur
                     </p>
                     <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-6 tracking-tight">
-                        Manuel de Survie <span className="text-[#FFCC00]">PhoBee</span>
+                        Manuel de Survie <span className="text-primary-text">PhoBee</span>
                     </h1>
                     <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                         Le guide ultime pour survivre à la jungle administrative. Tout ce qu'on aurait aimé savoir avant de se lancer.
@@ -254,8 +255,9 @@ export default function SurvivalManualPage() {
                         <Search className="absolute left-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-[#FFCC00] transition-colors" />
                         <input
                             type="text"
+                            aria-label="Rechercher dans le guide"
                             placeholder="Ex: TVA, Facture, Peur..."
-                            className="w-full h-12 pl-12 pr-4 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 focus:border-[#FFCC00] focus:ring-4 focus:ring-[#FFCC00]/10 outline-none transition-all shadow-sm"
+                            className="w-full h-12 pl-12 pr-4 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-800 focus:border-[#FFCC00] focus:ring-2 focus:ring-slate-900 dark:focus:ring-[#FFCC00] outline-none transition-all shadow-sm"
                         />
                     </div>
                 </div>
@@ -285,7 +287,7 @@ export default function SurvivalManualPage() {
                                     </div>
                                     <div>
                                         <div className={`font-bold ${isActive ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>{cat.title}</div>
-                                        <div className={`text-xs ${isActive ? 'text-slate-300' : 'text-slate-400 dark:text-slate-400'}`}>{cat.subtitle}</div>
+                                        <div className={`text-xs ${isActive ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>{cat.subtitle}</div>
                                     </div>
                                 </button>
                             )
@@ -330,7 +332,7 @@ export default function SurvivalManualPage() {
                             </div>
                         </div>
 
-                        <p className="text-center text-slate-400 text-xs mt-8">
+                        <p className="text-center text-slate-600 text-xs mt-8">
                             ⚠️ Ces informations sont données à titre indicatif. PhoBee t'aide à comprendre, mais tu restes capitaine de ton navire.
                         </p>
                     </div>

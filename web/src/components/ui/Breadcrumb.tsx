@@ -24,7 +24,7 @@ export default function Breadcrumb({ items, className }: BreadcrumbProps) {
 
     return (
         <nav aria-label="Fil d'Ariane" className={cn("w-full", className)}>
-            <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+            <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-slate-600 dark:text-slate-400">
                 {crumbs.map((crumb, i) => {
                     const isLast = i === crumbs.length - 1;
                     const isHome = i === 0;

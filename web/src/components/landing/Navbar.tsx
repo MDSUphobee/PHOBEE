@@ -122,7 +122,7 @@ export default function Navbar() {
                                 key={link.name}
                                 href={link.href}
                                 className={cn(
-                                    "text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full",
+                                    "text-sm font-medium hover:text-primary-text transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full",
                                     isHome ? "text-[#e2e8f0]" : "text-[#14233c] dark:text-[#e2e8f0]"
                                 )}
                             >
@@ -137,7 +137,7 @@ export default function Navbar() {
                             onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
                             aria-label="Basculer le thème"
                             className={cn(
-                                "p-2 rounded-full border hover:text-primary transition-all shadow-sm",
+                                "p-2 rounded-full border hover:text-primary-text transition-all shadow-sm",
                                 isHome
                                     ? "border-[#334155] bg-[rgba(30,41,59,0.8)] text-white"
                                     : "border-slate-300 bg-slate-100 text-[#14233c] dark:border-[#334155] dark:bg-[rgba(30,41,59,0.8)] dark:text-white"
@@ -186,7 +186,7 @@ export default function Navbar() {
                                 <Link
                                     href="/login"
                                     className={cn(
-                                        "px-4 py-2 text-base font-medium hover:text-primary transition-colors",
+                                        "px-4 py-2 text-base font-medium hover:text-primary-text transition-colors",
                                         isHome ? "text-[#f8fafc]" : "text-[#14233c] dark:text-[#f8fafc]"
                                     )}
                                 >
@@ -207,7 +207,7 @@ export default function Navbar() {
                         onClick={(e) => toggleTheme({ x: e.clientX, y: e.clientY })}
                         aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
                         className={cn(
-                            "md:hidden ml-auto p-2 rounded-full border hover:text-primary transition-colors",
+                            "md:hidden ml-auto p-2 rounded-full border hover:text-primary-text transition-colors",
                             isHome
                                 ? "border-[#334155] bg-[rgba(30,41,59,0.8)] text-white"
                                 : "border-slate-300 bg-slate-100 text-[#14233c] dark:border-[#334155] dark:bg-[rgba(30,41,59,0.8)] dark:text-white"

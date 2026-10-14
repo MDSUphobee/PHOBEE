@@ -41,6 +41,7 @@ export const OuiNon = ({
   <div className="space-y-3 md:col-span-2">
     <Label>{label}</Label>
     <RadioGroup
+      label={label}
       name={name}
       value={value === undefined ? '' : String(value)}
       onChange={(v) => onChange(v === 'true')}

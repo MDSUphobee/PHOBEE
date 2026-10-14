@@ -57,11 +57,11 @@ export default function MesAidesPage() {
     return (
         <>
             <Navbar />
-            <main className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
+            <main id="contenu" className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
                 <div className="dark:hidden pointer-events-none absolute -left-[40%] top-[10%] h-[100%] w-[95%] rounded-full bg-[radial-gradient(closest-side,#fff7d7,transparent)]" />
                 <div className="dark:hidden pointer-events-none absolute -right-[20%] top-0 h-[45%] w-[55%] rotate-[34deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 
-                <div className="relative container mx-auto px-4 md:px-6 [zoom:0.8] pt-32 md:pt-36 pb-24">
+                <div className="relative container mx-auto px-4 md:px-6 md:[zoom:0.8] pt-32 md:pt-36 pb-24">
                     <Breadcrumb items={[{ label: "Mes aides" }]} className="mb-8" />
                     <Card className={`${carte} max-w-[790px] px-6 md:px-[46px] pt-8 pb-7`}>
                         <h1 className="text-[26px] md:text-[32px] leading-tight">Mes aides disponibles</h1>

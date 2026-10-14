@@ -11,7 +11,7 @@ const sections = [
         title: "Edition du site",
         content: (
             <>
-                Le présent site, accessible à l’URL <a href="https://www.phobee.fr" className="text-primary font-semibold">https://www.phobee.fr</a> (le « Site »), est édité par :
+                Le présent site, accessible à l’URL <a href="https://www.phobee.fr" className="text-primary-text font-semibold">https://www.phobee.fr</a> (le « Site »), est édité par :
                 <br />
                 Raphaël Lhommeau, résidant 49220, de nationalité Française (France), né(e) le 04/09/2004.
             </>
@@ -34,9 +34,9 @@ const sections = [
         title: "Nous contacter",
         content: (
             <>
-                Par téléphone : <a href="tel:+33786549033" className="text-primary font-semibold">+33 7 86 54 90 33</a>
+                Par téléphone : <a href="tel:+33786549033" className="text-primary-text font-semibold">+33 7 86 54 90 33</a>
                 <br />
-                Par email : <a href="mailto:phobeepro@gmail.com" className="text-primary font-semibold">phobeepro@gmail.com</a>
+                Par email : <a href="mailto:phobeepro@gmail.com" className="text-primary-text font-semibold">phobeepro@gmail.com</a>
             </>
         ),
     },
@@ -54,7 +54,7 @@ const sections = [
 
 export default function MentionsLegalesPage() {
     return (
-        <main className="min-h-screen bg-background flex flex-col">
+        <main id="contenu" className="min-h-screen bg-background flex flex-col">
             <Navbar />
 
             <section className="bg-[#0F172A] text-white py-16 md:py-20">

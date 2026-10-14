@@ -85,7 +85,7 @@ const droits = [
 ];
 
 const email = (
-    <a href="mailto:phobeepro@gmail.com" className="font-semibold text-primary hover:underline">
+    <a href="mailto:phobeepro@gmail.com" className="font-semibold text-primary-text hover:underline">
         phobeepro@gmail.com
     </a>
 );
@@ -101,7 +101,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 export default function ConfidentialitePage() {
     return (
-        <main className="flex min-h-screen flex-col bg-background">
+        <main id="contenu" className="flex min-h-screen flex-col bg-background">
             <Navbar />
 
             <section className="bg-[#0F172A] py-16 text-white md:py-20">
@@ -270,7 +270,7 @@ export default function ConfidentialitePage() {
                                 href="https://www.cnil.fr"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="font-semibold text-primary hover:underline"
+                                className="font-semibold text-primary-text hover:underline"
                             >
                                 cnil.fr
                             </a>

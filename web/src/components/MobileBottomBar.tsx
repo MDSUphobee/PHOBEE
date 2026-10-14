@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -29,6 +29,8 @@ export default function MobileBottomBar() {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [sheetOpen, setSheetOpen] = useState(false);
+    const sheetRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
 
     // La barre vit dans le layout racine (montée une seule fois). On relit donc le token
     // à chaque navigation (pathname) + sur l'événement storage, sinon l'état "connecté"
@@ -46,13 +48,35 @@ export default function MobileBottomBar() {
         return () => window.removeEventListener("storage", sync);
     }, [pathname]);
 
-    // Ferme la feuille à chaque changement de page + sur Échap
+    // Ferme la feuille à chaque changement de page.
+    // Feuille ouverte = vraie modale : focus dedans, Tab piégé, Échap ferme, focus rendu au bouton "Compte".
     useEffect(() => setSheetOpen(false), [pathname]);
     useEffect(() => {
         if (!sheetOpen) return;
-        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setSheetOpen(false);
+        const trigger = triggerRef.current;
+        const focusables = () =>
+            Array.from(sheetRef.current?.querySelectorAll<HTMLElement>("a[href], button") ?? []);
+        focusables()[0]?.focus();
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") return setSheetOpen(false);
+            if (e.key !== "Tab") return;
+            const els = focusables();
+            if (!els.length) return;
+            const first = els[0];
+            const last = els[els.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        };
         document.addEventListener("keydown", onKey);
-        return () => document.removeEventListener("keydown", onKey);
+        return () => {
+            document.removeEventListener("keydown", onKey);
+            trigger?.focus();
+        };
     }, [sheetOpen]);
 
     const logout = () => {
@@ -110,7 +134,9 @@ export default function MobileBottomBar() {
                             animate={{ y: 0 }}
                             exit={{ y: "100%" }}
                             transition={{ type: "spring", damping: 28, stiffness: 300 }}
+                            ref={sheetRef}
                             role="dialog"
+                            aria-modal="true"
                             aria-label="Mon espace"
                             className="fixed inset-x-0 bottom-0 z-[65] rounded-t-3xl bg-[#14233c] px-4 pb-[calc(env(safe-area-inset-bottom,0px)+20px)] pt-3 text-white shadow-[0_-8px_30px_rgba(0,0,0,0.45)] md:hidden"
                         >
@@ -118,6 +144,7 @@ export default function MobileBottomBar() {
                             <div className="mb-2 flex items-center justify-between px-2">
                                 <span className="text-base font-bold">Mon espace</span>
                                 <button
+                                    type="button"
                                     onClick={() => setSheetOpen(false)}
                                     aria-label="Fermer"
                                     className="rounded-full p-1.5 text-white/70 hover:bg-white/10 hover:text-white"
@@ -182,6 +209,7 @@ export default function MobileBottomBar() {
 
                     {/* Onglet Compte : ouvre la feuille de l'espace */}
                     <button
+                        ref={triggerRef}
                         type="button"
                         onClick={() => setSheetOpen((o) => !o)}
                         aria-label="Mon compte"

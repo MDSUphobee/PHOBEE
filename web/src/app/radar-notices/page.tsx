@@ -124,7 +124,7 @@ export default function RadarNotices() {
     }, [notices, searchQuery]);
 
     return (
-        <main suppressHydrationWarning={true} className="min-h-screen bg-[#F9FAFB] text-foreground flex flex-col">
+        <main id="contenu" suppressHydrationWarning={true} className="min-h-screen bg-[#F9FAFB] text-foreground flex flex-col">
             <Navbar />
 
             <div suppressHydrationWarning={true} className="flex-1 pt-[120px] pb-24 container mx-auto px-4 md:px-6">
@@ -143,6 +143,7 @@ export default function RadarNotices() {
                         </div>
                         <input
                             type="text"
+                            aria-label="Rechercher une notice"
                             placeholder="Rechercher un guide, un formulaire (ex: PAC, Bio)..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
