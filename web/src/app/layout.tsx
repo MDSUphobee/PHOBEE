@@ -39,10 +39,11 @@ export default function RootLayout({
     return (
         <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
         <head>
-            {/* Konfector (analytics pôle Data) — doit rester le plus haut possible dans le <head> */}
+            {/* Konfector (analytics pôle Data) — doit rester le plus haut possible dans le <head>.
+                Script servi en first-party via /kf/* (proxy Next → Konfector) pour éviter le blocage adblocker. */}
             <script
                 dangerouslySetInnerHTML={{
-                    __html: `(function(w,d,k){w.konfector=w.konfector||function(){(w.konfector.q=w.konfector.q||[]).push(arguments)};var s=d.createElement('script');s.async=1;s.src='https://k.konfector.fr/k.js';s.dataset.k=k;d.head.appendChild(s)})(window,document,'${KONFECTOR_KEY}');`,
+                    __html: `(function(w,d,k){w.konfector=w.konfector||function(){(w.konfector.q=w.konfector.q||[]).push(arguments)};var s=d.createElement('script');s.async=1;s.src='/kf/k.js';s.dataset.k=k;d.head.appendChild(s)})(window,document,'${KONFECTOR_KEY}');`,
                 }}
             />
 
