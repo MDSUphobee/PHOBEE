@@ -8,6 +8,7 @@ import { ArrowLeft, Loader2, Download, CheckCircle2, AlertCircle, FileText } fro
 import Cerfa11423Form from "@/components/forms/Cerfa11423Form";
 import Cerfa16015Form from "@/components/forms/Cerfa16015Form";
 import DocumentPret from "@/components/forms/DocumentPret";
+import { useEspace } from "@/lib/espace";
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -456,6 +457,9 @@ function CerfaFormContent() {
     const [submitting, setSubmitting] = useState(false);
     // PDF généré (URL http ou blob:) → écran « Bravo, votre document est prêt ! »
     const [ready,     setReady]     = useState<{ url: string; filename: string } | null>(null);
+    // Enregistrement du CERFA rempli dans « Mes documents »
+    const { ajouterDocument } = useEspace();
+    const [docEnregistre, setDocEnregistre] = useState<string | null>(null);
 
     // ── Fetch fields from API ─────────────────────────────────────────────────
     useEffect(() => {
@@ -509,6 +513,15 @@ function CerfaFormContent() {
 
         fetchFields();
     }, [cerfa_name]);
+
+    // Dès qu'un document est généré, on l'enregistre dans « Mes documents » (une fois par document).
+    useEffect(() => {
+        if (!ready || docEnregistre === ready.filename) return;
+        const nom = schema?.form_title || cerfa_name || ready.filename;
+        ajouterDocument({ nom, cerfa: cerfa_name || ready.filename.replace(/\.pdf$/i, "") });
+        setDocEnregistre(ready.filename);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ready, docEnregistre, schema, cerfa_name]);
 
     // ── Input handler ─────────────────────────────────────────────────────────
     const handleChange = useCallback((name: string, value: string) => {
