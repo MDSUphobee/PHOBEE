@@ -1,40 +1,13 @@
 "use client";
 
-import { useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/landing/Navbar";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import { Card } from "@/components/ui/card";
-
-// ponytail: données en dur (maquette), à brancher sur l'API quand le suivi des aides existera côté Laravel
-const AIDES = [
-    { nom: "Aide PAC", statut: "En cours", action: "Compléter justificatif" },
-    { nom: "Aide bio", statut: "Acceptée", action: "–" },
-    { nom: "Aide jeunes agriculteurs", statut: "À compléter", action: "Finaliser votre demande" },
-    { nom: "Aide calamité agricole", statut: "À compléter", action: "Finaliser votre demande" },
-];
-
-// Recadrages de la planche d'icônes /images/dashboard/icones.png (valeurs de la maquette)
-const ALERTES: { w: number; h: number; crop: CSSProperties; texte: ReactNode }[] = [
-    {
-        w: 46, h: 46,
-        crop: { width: "397.67%", height: "263.61%", left: "-249.71%", top: "-66.8%" },
-        texte: <>Il vous reste <b className="font-semibold">7 jours</b> pour compléter votre dossier PAC.</>,
-    },
-    {
-        w: 37, h: 49,
-        crop: { width: "681.53%", height: "338.41%", left: "-108.65%", top: "-121.31%" },
-        texte: <>Un <b className="font-semibold">justificatif manquant</b> est requis pour votre aide jeunes agriculteurs</>,
-    },
-    {
-        w: 44, h: 46,
-        crop: { width: "1284.01%", height: "827.58%", left: "-585.58%", top: "-368.18%" },
-        texte: <><b className="font-semibold">Nouvelle aide</b> disponible pour calamité agricole</>,
-    },
-];
-
-const ECHEANCES = [{ date: new Date(2026, 9, 15), label: "Dossier MSA à envoyer" }];
+import { getApiBase } from "@/lib/api";
+import { useEspace, STATUTS, type Statut } from "@/lib/espace";
 
 const carte = "rounded-2xl border-0 bg-white dark:bg-slate-800 shadow-[0_1px_10px_rgba(0,0,0,0.2)] overflow-hidden";
 const lienSouligne = "text-base md:text-lg font-medium underline underline-offset-[6px] hover:text-[#b38f00] dark:hover:text-primary transition-colors";
@@ -59,7 +32,7 @@ function Horloge() {
     );
 }
 
-function Calendrier() {
+function Calendrier({ echeances }: { echeances: { dateISO: string; label: string }[] }) {
     const aujourdhui = new Date();
     const [mois, setMois] = useState(new Date(aujourdhui.getFullYear(), aujourdhui.getMonth(), 1));
     const y = mois.getFullYear();
@@ -67,7 +40,9 @@ function Calendrier() {
     const decalage = (mois.getDay() + 6) % 7; // semaine commençant le lundi
     const jours = Array.from({ length: 42 }, (_, i) => new Date(y, m, 1 - decalage + i));
     const memeJour = (a: Date, b: Date) => a.toDateString() === b.toDateString();
-    const echeance = ECHEANCES.find((e) => e.date.getFullYear() === y && e.date.getMonth() === m);
+    const duMois = echeances
+        .map((e) => ({ ...e, d: new Date(e.dateISO) }))
+        .filter((e) => e.d.getFullYear() === y && e.d.getMonth() === m);
     const nomMois = mois.toLocaleDateString("fr-FR", { month: "long" });
 
     return (
@@ -89,24 +64,27 @@ function Calendrier() {
                 {["L", "M", "M", "J", "V", "S", "D"].map((j, i) => (
                     <span key={i} className="text-[15px] text-[#6b6b6b] dark:text-white/60">{j}</span>
                 ))}
-                {jours.map((d, i) => (
-                    <span
-                        key={i}
-                        className={[
-                            "mx-auto flex size-8 items-center justify-center rounded-full",
-                            d.getMonth() !== m ? "text-[#b5b5b5] dark:text-white/30" : i % 7 > 4 ? "text-[#555] dark:text-white/80" : "text-[#222] dark:text-white",
-                            memeJour(d, aujourdhui) && "bg-primary !text-[#14233c]",
-                            echeance && memeJour(d, echeance.date) && "ring-2 ring-primary",
-                        ].filter(Boolean).join(" ")}
-                    >
-                        {d.getDate()}
-                    </span>
-                ))}
+                {jours.map((d, i) => {
+                    const marque = duMois.some((e) => memeJour(d, e.d));
+                    return (
+                        <span
+                            key={i}
+                            className={[
+                                "mx-auto flex size-8 items-center justify-center rounded-full",
+                                d.getMonth() !== m ? "text-[#b5b5b5] dark:text-white/30" : i % 7 > 4 ? "text-[#555] dark:text-white/80" : "text-[#222] dark:text-white",
+                                memeJour(d, aujourdhui) && "bg-primary !text-[#14233c]",
+                                marque && !memeJour(d, aujourdhui) && "ring-2 ring-primary",
+                            ].filter(Boolean).join(" ")}
+                        >
+                            {d.getDate()}
+                        </span>
+                    );
+                })}
             </div>
 
-            {echeance ? (
+            {duMois.length ? (
                 <p className="mt-6 flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-center text-base md:text-lg font-medium text-[#0f1729] shadow-[0_0_10px_rgba(0,0,0,0.15)]">
-                    {echeance.date.getDate()} {nomMois} : {echeance.label}
+                    {duMois[0].d.getDate()} {nomMois} : {duMois[0].label}
                 </p>
             ) : (
                 <p className="mt-6 flex min-h-10 items-center justify-center text-center">Aucune échéance ce mois-ci</p>
@@ -116,15 +94,43 @@ function Calendrier() {
 }
 
 export default function DashboardPage() {
+    const { ready, data, alertes, ajouterAide, changerStatut, retirerAide } = useEspace();
+    const [aidesApi, setAidesApi] = useState<string[]>([]);
+    const [choix, setChoix] = useState("");
+    const [statut, setStatut] = useState<Statut>("À compléter");
+
+    // Noms d'aides réels depuis l'API (pour alimenter le suivi).
+    useEffect(() => {
+        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        fetch(`${getApiBase()}/aides`, { headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } })
+            .then((r) => (r.ok ? r.json() : []))
+            .then((rows: any[]) => {
+                const noms = Array.isArray(rows)
+                    ? rows.map((a) => a.aide_name || a.nom).filter(Boolean)
+                    : [];
+                setAidesApi([...new Set(noms)]);
+            })
+            .catch(() => setAidesApi([]));
+    }, []);
+
+    const dispo = useMemo(
+        () => aidesApi.filter((n) => !data.suivi.some((a) => a.nom === n)),
+        [aidesApi, data.suivi],
+    );
+
+    const ajouter = () => {
+        if (!choix) return;
+        ajouterAide(choix, statut);
+        setChoix("");
+    };
+
     return (
         <>
             <Navbar />
             <main id="contenu" className="relative overflow-hidden bg-[#f7f6fe] dark:bg-background text-[#14233c] dark:text-white font-['Poppins',sans-serif]">
-                {/* Halos de fond (maquette) */}
                 <div className="dark:hidden pointer-events-none absolute -left-[40%] top-1/4 h-[110%] w-[95%] rounded-full bg-[radial-gradient(closest-side,#fff7d7,transparent)]" />
                 <div className="dark:hidden pointer-events-none absolute -right-[20%] top-0 h-[45%] w-[55%] rotate-[34deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 
-                {/* ponytail: zoom global 0.8 car la maquette est dessinée en grand ; remplacer par des tailles Tailwind réduites si Firefox < 126 compte */}
                 <div className="relative container mx-auto px-4 md:px-6 md:[zoom:0.8] pt-32 md:pt-36">
                     <Breadcrumb items={[{ label: "Tableau de bord" }]} />
                 </div>
@@ -148,35 +154,83 @@ export default function DashboardPage() {
                                 <table className="w-full min-w-[600px] whitespace-nowrap text-left text-base md:text-lg">
                                     <thead className="bg-[#deeefc] dark:bg-slate-700 text-lg md:text-[22px]">
                                         <tr className="h-[86px]">
-                                            <th className="w-[43%] pl-6 md:pl-[54px] font-medium">Aide</th>
-                                            <th className="w-[22%] font-medium">Statut</th>
-                                            <th className="pr-6 font-medium">Prochaine action</th>
+                                            <th className="w-[40%] pl-6 md:pl-[54px] font-medium">Aide</th>
+                                            <th className="w-[28%] font-medium">Statut</th>
+                                            <th className="pr-6 font-medium">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {AIDES.map((a) => (
+                                        {ready && data.suivi.length === 0 && (
+                                            <tr className="h-[84px] border-b border-[#deeefc] dark:border-slate-700">
+                                                <td colSpan={3} className="px-6 md:px-[54px] text-[#64748b] dark:text-slate-400">
+                                                    Aucune aide suivie pour l'instant. Ajoutez-en une ci-dessous.
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {data.suivi.map((a) => (
                                             <tr
-                                                key={a.nom}
+                                                key={a.id}
                                                 className={`h-[84px] border-b border-[#deeefc] dark:border-slate-700 ${a.statut === "À compléter" ? "bg-[#f4faff] dark:bg-slate-700/40" : ""}`}
                                             >
                                                 <td className="pl-6 md:pl-[54px]">{a.nom}</td>
                                                 <td>
-                                                    <span className={`inline-flex items-center gap-1.5 ${a.statut === "Acceptée" ? "font-semibold" : ""}`}>
-                                                        {a.statut}
+                                                    <span className="inline-flex items-center gap-2">
+                                                        <select
+                                                            aria-label={`Statut de ${a.nom}`}
+                                                            value={a.statut}
+                                                            onChange={(e) => changerStatut(a.id, e.target.value as Statut)}
+                                                            className="rounded-lg border border-[#94a3b8] bg-[#f4faff] dark:bg-slate-700 px-2 py-1 text-sm md:text-base"
+                                                        >
+                                                            {STATUTS.map((s) => <option key={s}>{s}</option>)}
+                                                        </select>
                                                         {a.statut === "Acceptée" && <Coche />}
+                                                        {a.statut === "En cours" && <Horloge />}
                                                     </span>
                                                 </td>
                                                 <td className="pr-6">
-                                                    <span className="inline-flex items-center gap-1.5">
-                                                        {a.action}
-                                                        {a.statut === "En cours" && <Horloge />}
-                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => retirerAide(a.id)}
+                                                        className="text-sm md:text-base text-[#e5504b] underline underline-offset-4 hover:opacity-80"
+                                                    >
+                                                        Retirer
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* Ajout d'une aide au suivi (noms réels issus de l'API) */}
+                            <div className="flex flex-wrap items-center gap-3 px-6 md:px-[54px] py-5 border-b border-[#deeefc] dark:border-slate-700">
+                                <select
+                                    aria-label="Choisir une aide à suivre"
+                                    value={choix}
+                                    onChange={(e) => setChoix(e.target.value)}
+                                    className="min-w-[200px] flex-1 rounded-lg border border-[#94a3b8] bg-[#f4faff] dark:bg-slate-700 px-3 py-2 text-base"
+                                >
+                                    <option value="">{dispo.length ? "Choisir une aide…" : "Aucune aide disponible"}</option>
+                                    {dispo.map((n) => <option key={n}>{n}</option>)}
+                                </select>
+                                <select
+                                    aria-label="Statut initial"
+                                    value={statut}
+                                    onChange={(e) => setStatut(e.target.value as Statut)}
+                                    className="rounded-lg border border-[#94a3b8] bg-[#f4faff] dark:bg-slate-700 px-3 py-2 text-base"
+                                >
+                                    {STATUTS.map((s) => <option key={s}>{s}</option>)}
+                                </select>
+                                <button
+                                    type="button"
+                                    onClick={ajouter}
+                                    disabled={!choix}
+                                    className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-5 text-base font-medium text-[#0f1729] shadow-[0_0_10px_rgba(0,0,0,0.15)] transition-all hover:-translate-y-0.5 disabled:opacity-50"
+                                >
+                                    <span aria-hidden className="text-xl leading-none">+</span> Suivre
+                                </button>
+                            </div>
+
                             <div className="flex h-[85px] items-center px-6 md:px-[54px]">
                                 <Link href="/mes-aides" className={lienSouligne}>Voir toutes mes aides</Link>
                             </div>
@@ -185,27 +239,30 @@ export default function DashboardPage() {
 
                     {/* Colonne droite */}
                     <div className="flex flex-col">
-                        <Calendrier />
+                        <Calendrier echeances={data.echeances} />
 
                         <h2 className="mt-12 mb-6 text-2xl">Mes alertes</h2>
                         <Card className={carte}>
                             <div className="flex h-[86px] items-center bg-[#deeefc] dark:bg-slate-700 pl-6 md:pl-[54px] text-lg md:text-[22px] font-medium">
-                                Aide
+                                Alertes
                             </div>
                             <ul>
-                                {ALERTES.map((a, i) => (
-                                    <li key={i} className="flex min-h-[84px] items-center gap-[13px] border-b border-[#deeefc] dark:border-slate-700 py-3 pl-4 md:pl-[23px] pr-6 text-base md:text-lg leading-[26px]">
-                                        <span className="flex w-[46px] shrink-0 justify-center">
-                                            <span className="relative block overflow-hidden" style={{ width: a.w, height: a.h }}>
-                                                <img src="/images/dashboard/icones.png" alt="" className="absolute max-w-none" style={a.crop} />
-                                            </span>
+                                {ready && alertes.length === 0 && (
+                                    <li className="flex min-h-[84px] items-center px-6 md:px-[54px] text-base md:text-lg text-[#64748b] dark:text-slate-400">
+                                        Aucune alerte pour le moment.
+                                    </li>
+                                )}
+                                {alertes.map((a, i) => (
+                                    <li key={i} className="flex min-h-[84px] items-center gap-[13px] border-b border-[#deeefc] dark:border-slate-700 py-3 pl-6 md:pl-[54px] pr-6 text-base md:text-lg leading-[26px]">
+                                        <span aria-hidden className="relative inline-block size-[23px] shrink-0">
+                                            <img src={pastille} alt="" className="absolute inset-0" />
                                         </span>
                                         <p>{a.texte}</p>
                                     </li>
                                 ))}
                             </ul>
                             <div className="flex h-[79px] items-center px-6 md:px-[54px]">
-                                <Link href="/mes-aides" className={lienSouligne}>Voir toutes mes aides</Link>
+                                <Link href="/calendrier" className={lienSouligne}>Voir le calendrier</Link>
                             </div>
                         </Card>
                     </div>

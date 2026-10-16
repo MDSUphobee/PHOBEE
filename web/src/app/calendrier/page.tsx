@@ -1,32 +1,20 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import Navbar from "@/components/landing/Navbar";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import { Card } from "@/components/ui/card";
+import { useEspace, joursRestants, type TypeEcheance } from "@/lib/espace";
 
-type Type = "Déclaration" | "Aide" | "Justificatif";
-type Echeance = { date: Date; label: string; type: Type; detail?: string };
+type EcheanceVue = { id: string; date: Date; label: string; type: TypeEcheance; detail?: string };
 
-// ponytail: données en dur (maquette), à brancher sur l'API quand le suivi des échéances existera côté Laravel
-const ECHEANCES: Echeance[] = [
-    { date: new Date(2026, 2, 13), label: "Déclaration PAC à faire", type: "Déclaration", detail: "Déclaration PAC à compléter" },
-    { date: new Date(2026, 2, 19), label: "Aide bio complétée", type: "Aide" },
-    { date: new Date(2026, 2, 30), label: "Envoyer justificatif aide jeunes agriculteurs", type: "Justificatif" },
-    { date: new Date(2026, 9, 15), label: "Dossier MSA à envoyer", type: "Justificatif" },
-    { date: new Date(2026, 9, 28), label: "Déclaration PAC à faire", type: "Déclaration", detail: "Déclaration PAC à compléter" },
-    { date: new Date(2026, 10, 9), label: "Aide bio complétée", type: "Aide" },
-];
-
-const NOTIFICATIONS = ["Vous avez une échéance dans 5 jours", "Nouveau justificatif pour une aide", "Nouvelle aide disponible"];
-
-const COULEURS: Record<Type, string> = {
+const COULEURS: Record<TypeEcheance, string> = {
     Déclaration: "bg-[#e5504b] text-white",
     Aide: "bg-[#c0e2ab] text-black",
     Justificatif: "bg-[#ffbf80] text-black",
 };
-const POINTS: Record<Type, string> = { Déclaration: "bg-[#e5504b]", Aide: "bg-[#c0e2ab]", Justificatif: "bg-[#ffbf80]" };
+const POINTS: Record<TypeEcheance, string> = { Déclaration: "bg-[#e5504b]", Aide: "bg-[#c0e2ab]", Justificatif: "bg-[#ffbf80]" };
 
 const IMG = "/images/calendrier";
 const carte = "rounded-2xl border-0 bg-white dark:bg-slate-800 shadow-[0_1px_10px_rgba(0,0,0,0.2)] overflow-hidden";
@@ -66,13 +54,18 @@ function EnteteCarte({ couleur, titre, icone }: { couleur: string; titre: string
 }
 
 export default function CalendrierPage() {
+    const { ready, data, ajouterEcheance, retirerEcheance } = useEspace();
     const aujourdhui = new Date();
     const [mois, setMois] = useState(new Date(aujourdhui.getFullYear(), aujourdhui.getMonth(), 1));
     const [selection, setSelection] = useState<Date | null>(null);
-    const [ajouts, setAjouts] = useState<Echeance[]>([]);
     const [form, setForm] = useState({ nom: "", date: "", type: "" });
 
-    const tous = [...ECHEANCES, ...ajouts];
+    // Échéances persistées (store) converties pour l'affichage.
+    const tous: EcheanceVue[] = useMemo(
+        () => data.echeances.map((e) => ({ id: e.id, date: new Date(e.dateISO), label: e.label, type: e.type, detail: e.detail })),
+        [data.echeances],
+    );
+
     const y = mois.getFullYear();
     const m = mois.getMonth();
     const decalage = (mois.getDay() + 6) % 7; // semaine commençant le lundi
@@ -82,11 +75,22 @@ export default function CalendrierPage() {
     const prochaines = tous.filter((e) => e.date >= debut).sort((a, b) => +a.date - +b.date).slice(0, 2);
     const liste = selection ? duJour(selection) : prochaines;
 
+    // Notifications importantes dérivées : échéances proches (≤ 15 jours).
+    const notifications = useMemo(() => {
+        if (!data.notifs.rappels) return [] as string[];
+        return tous
+            .map((e) => ({ e, j: joursRestants(e.date.toISOString()) }))
+            .filter((x) => x.j >= 0 && x.j <= 15)
+            .sort((a, b) => a.j - b.j)
+            .slice(0, 4)
+            .map(({ e, j }) => (j === 0 ? `Aujourd'hui : ${e.label}` : `Dans ${j} jour${j > 1 ? "s" : ""} : ${e.label}`));
+    }, [tous, data.notifs.rappels]);
+
     const ajouter = (e: FormEvent) => {
         e.preventDefault();
         if (!form.nom.trim() || !form.date || !form.type) return;
         const [a, mo, j] = form.date.split("-").map(Number);
-        setAjouts([...ajouts, { date: new Date(a, mo - 1, j), label: form.nom.trim(), type: form.type as Type }]);
+        ajouterEcheance({ dateISO: new Date(a, mo - 1, j).toISOString(), label: form.nom.trim(), type: form.type as TypeEcheance });
         setMois(new Date(a, mo - 1, 1));
         setForm({ nom: "", date: "", type: "" });
     };
@@ -99,7 +103,6 @@ export default function CalendrierPage() {
                 <div className="dark:hidden pointer-events-none absolute -left-[40%] top-1/4 h-[110%] w-[95%] rounded-full bg-[radial-gradient(closest-side,#fff7d7,transparent)]" />
                 <div className="dark:hidden pointer-events-none absolute -right-[20%] top-0 h-[45%] w-[55%] rotate-[34deg] rounded-full bg-[radial-gradient(closest-side,#deeefc,transparent)] blur-[32px]" />
 
-                {/* ponytail: zoom 0.8 desktop seulement comme le dashboard (maquette dessinée en grand) ; jamais sur mobile, le texte y deviendrait trop petit */}
                 <div className="relative container mx-auto px-4 md:px-6 md:[zoom:0.8] pt-32 md:pt-36 pb-24">
                     <Breadcrumb items={[{ label: "Calendrier" }]} className="mb-8" />
                     <Card className={`${carte} px-5 pb-10 pt-8 md:px-[60px] md:pb-[67px] md:pt-[44px]`}>
@@ -171,8 +174,11 @@ export default function CalendrierPage() {
                                 <Card className={carte}>
                                     <EnteteCarte couleur="bg-primary text-[#14233c]" titre="Notifications importantes" icone="cloche" />
                                     <ul className="text-sm">
-                                        {NOTIFICATIONS.map((n, i) => (
-                                            <li key={n} className={`flex h-[60px] items-center px-[21px] ${i < NOTIFICATIONS.length - 1 ? "border-b border-[#f1f5f9] dark:border-slate-700" : ""}`}>{n}</li>
+                                        {ready && notifications.length === 0 && (
+                                            <li className="flex h-[60px] items-center px-[21px] text-[#64748b] dark:text-slate-400">Aucune notification</li>
+                                        )}
+                                        {notifications.map((n, i) => (
+                                            <li key={i} className={`flex min-h-[60px] items-center px-[21px] py-2 ${i < notifications.length - 1 ? "border-b border-[#f1f5f9] dark:border-slate-700" : ""}`}>{n}</li>
                                         ))}
                                     </ul>
                                 </Card>
@@ -180,14 +186,15 @@ export default function CalendrierPage() {
                                 <Card className={`${carte} lg:-mt-[7px]`}>
                                     <EnteteCarte couleur="bg-[#14233c] text-white dark:bg-slate-900" titre={selection ? `Échéances du ${formatJour(selection)}` : "Prochaines échéances"} icone="mégaphone" />
                                     <ul className="text-sm">
-                                        {liste.length === 0 && <li className="flex h-[60px] items-center px-[21px] text-[#64748b] dark:text-slate-400">Aucune échéance ce jour</li>}
+                                        {liste.length === 0 && <li className="flex h-[60px] items-center px-[21px] text-[#64748b] dark:text-slate-400">Aucune échéance</li>}
                                         {liste.map((e, i) => (
-                                            <li key={i} className={`flex min-h-[60px] items-center px-[21px] py-2 leading-[18px] ${i < liste.length - 1 ? "border-b border-[#f1f5f9] dark:border-slate-700" : ""}`}>
+                                            <li key={e.id} className={`flex min-h-[60px] items-center justify-between gap-2 px-[21px] py-2 leading-[18px] ${i < liste.length - 1 ? "border-b border-[#f1f5f9] dark:border-slate-700" : ""}`}>
                                                 <p>
                                                     {!selection && <b className="font-semibold">{formatJour(e.date)}</b>}
                                                     {!selection && " - "}
                                                     {selection ? e.label : e.detail ?? e.label}
                                                 </p>
+                                                <button type="button" onClick={() => retirerEcheance(e.id)} aria-label={`Supprimer ${e.label}`} className="shrink-0 text-[#e5504b] hover:opacity-70">✕</button>
                                             </li>
                                         ))}
                                     </ul>

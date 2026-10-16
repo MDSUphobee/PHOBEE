@@ -10,12 +10,12 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import Footer from "@/components/landing/Footer";
 import { Card } from "@/components/ui/card";
 import { getApiBase } from "@/lib/api";
+import { useEspace } from "@/lib/espace";
 
 const API_BASE = getApiBase();
 
 const FORMES = ["EI", "EARL", "GAEC", "SCEA", "GFA", "CUMA", "SARL"];
 const PRODUCTIONS = ["Élevage", "Céréales", "Maraîchage", "Viticulture", "Arboriculture", "Polyculture-élevage"];
-const DOCUMENTS = ["Attestation MSA", "Documents PAC", "Justificatifs exploitation", "Statuts de l'exploitation"];
 const NOTIFS = [
     { id: "rappels", label: "Recevoir des rappels pour les échéances" },
     { id: "aides", label: "Recevoir les nouvelles aides disponibles" },
@@ -23,7 +23,6 @@ const NOTIFS = [
 ];
 
 const EXPLOITATION_VIDE = { nomExploitation: "", forme: "EARL", siret: "", sau: "", production: "", region: "" };
-const NOTIFS_DEFAUT: Record<string, boolean> = { rappels: true, aides: true, alertes: true };
 
 const carte = "rounded-2xl border-0 bg-white dark:bg-slate-800 shadow-[0_1px_10px_rgba(0,0,0,0.2)]";
 const champ = "h-[43px] w-full rounded-[15px] border border-[#94a3b8] bg-[#f4faff] dark:bg-slate-700 px-4 text-[15px] font-light text-[#14233c] dark:text-white placeholder:text-[#14233c]/50 dark:placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-80";
@@ -79,7 +78,8 @@ export default function ProfilePage() {
     const [expl, setExpl] = useState(EXPLOITATION_VIDE);
     const [editExpl, setEditExpl] = useState(false);
 
-    const [notifs, setNotifs] = useState(NOTIFS_DEFAUT);
+    const { data: espace, ajouterDocument, retirerDocument, setNotifs } = useEspace();
+    const [nouveauDoc, setNouveauDoc] = useState("");
 
     // Mot de passe
     const [showPwd, setShowPwd] = useState(false);
@@ -98,7 +98,6 @@ export default function ProfilePage() {
             const [prenom = "", ...reste] = String(u.username || u.name || "").split(" ");
             setInfos({ prenom, nom: reste.join(" "), email: u.email || "", phone: u.phone || "" });
             setExpl({ ...EXPLOITATION_VIDE, ...JSON.parse(localStorage.getItem("exploitation") || "{}") });
-            setNotifs({ ...NOTIFS_DEFAUT, ...JSON.parse(localStorage.getItem("notifications") || "{}") });
         } catch {
             router.push("/login");
             return;
@@ -164,9 +163,16 @@ export default function ProfilePage() {
     };
 
     const toggleNotif = (id: string) => {
-        const next = { ...notifs, [id]: !notifs[id] };
-        setNotifs(next);
-        localStorage.setItem("notifications", JSON.stringify(next));
+        setNotifs({ ...espace.notifs, [id]: !espace.notifs[id as keyof typeof espace.notifs] });
+    };
+
+    const ajouterDoc = (e: FormEvent) => {
+        e.preventDefault();
+        const nom = nouveauDoc.trim();
+        if (!nom) return;
+        ajouterDocument({ nom });
+        setNouveauDoc("");
+        toast.success("Document ajouté.");
     };
 
     if (loading) {
@@ -222,19 +228,35 @@ export default function ProfilePage() {
                             <Card className={`${carte} px-6 pb-8 pt-7 md:px-[54px]`}>
                                 <h2 className="text-2xl leading-[26px]">Mes documents</h2>
                                 <ul className="mt-8 flex flex-col gap-[23px]">
-                                    {DOCUMENTS.map((d) => (
-                                        <li key={d} className="flex items-center gap-4 text-[15px] font-light">
+                                    {espace.documents.length === 0 && (
+                                        <li className="text-[15px] font-light text-[#64748b] dark:text-slate-400">Aucun document pour l'instant.</li>
+                                    )}
+                                    {espace.documents.map((d) => (
+                                        <li key={d.id} className="flex items-center gap-4 text-[15px] font-light">
                                             <span aria-hidden className="relative block h-[31px] w-[23px] shrink-0 overflow-hidden">
                                                 <img src="/images/dashboard/icones.png" alt="" className="absolute max-w-none" style={ICONE_DOC} />
                                             </span>
-                                            {d}
+                                            {d.url ? (
+                                                <a href={d.url} target="_blank" rel="noopener noreferrer" className="flex-1 underline underline-offset-4 hover:text-[#b38f00] dark:hover:text-primary">{d.nom}</a>
+                                            ) : (
+                                                <span className="flex-1">{d.nom}</span>
+                                            )}
+                                            <button type="button" onClick={() => retirerDocument(d.id)} aria-label={`Supprimer ${d.nom}`} className="shrink-0 text-[#e5504b] hover:opacity-70">✕</button>
                                         </li>
                                     ))}
                                 </ul>
-                                {/* ponytail: pas d'API d'upload pour l'instant */}
-                                <button type="button" onClick={() => toast.info("L'ajout de documents arrive bientôt.")} className={`${bouton} mt-8`}>
-                                    <span aria-hidden className="text-xl leading-none">+</span> Ajouter des documents
-                                </button>
+                                <form onSubmit={ajouterDoc} className="mt-8 flex flex-col gap-3">
+                                    <input
+                                        aria-label="Nom du document à ajouter"
+                                        value={nouveauDoc}
+                                        onChange={(e) => setNouveauDoc(e.target.value)}
+                                        placeholder="Nom du document (ex. Attestation MSA)"
+                                        className={champ}
+                                    />
+                                    <button type="submit" disabled={!nouveauDoc.trim()} className={`${bouton} disabled:opacity-60`}>
+                                        <span aria-hidden className="text-xl leading-none">+</span> Ajouter un document
+                                    </button>
+                                </form>
                             </Card>
                         </div>
 
@@ -281,9 +303,9 @@ export default function ProfilePage() {
                                     {NOTIFS.map((n) => (
                                         <li key={n.id}>
                                             <label className="flex cursor-pointer items-center gap-2 text-[15px] font-medium">
-                                                <input type="checkbox" checked={notifs[n.id]} onChange={() => toggleNotif(n.id)} className="peer sr-only" />
+                                                <input type="checkbox" checked={espace.notifs[n.id as keyof typeof espace.notifs]} onChange={() => toggleNotif(n.id)} className="peer sr-only" />
                                                 <span className="relative block size-[34px] shrink-0 rounded-lg peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
-                                                    <img src="/images/profil/coche.png" alt="" aria-hidden className={`size-full object-cover dark:invert ${notifs[n.id] ? "" : "opacity-30"}`} />
+                                                    <img src="/images/profil/coche.png" alt="" aria-hidden className={`size-full object-cover dark:invert ${espace.notifs[n.id as keyof typeof espace.notifs] ? "" : "opacity-30"}`} />
                                                 </span>
                                                 {n.label}
                                             </label>
